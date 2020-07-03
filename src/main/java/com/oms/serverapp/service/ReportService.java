@@ -1,5 +1,6 @@
 package com.oms.serverapp.service;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Report;
 import com.oms.serverapp.repository.ReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,12 @@ public class ReportService {
         return reportRepository.findAll();
     }
 
-    public Report getReportById(Long id) {
+    public Report getReportById(Long id) throws NotFoundException {
         Optional<Report> report = reportRepository.findById(id);
+
+        if (!report.isPresent()) {
+            throw new NotFoundException(String.format("Report with id = %d not found.", id));
+        }
 
         return report.get();
     }

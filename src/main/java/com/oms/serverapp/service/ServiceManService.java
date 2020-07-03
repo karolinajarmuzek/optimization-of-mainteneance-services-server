@@ -1,5 +1,6 @@
 package com.oms.serverapp.service;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.repository.ServiceManRepository;
 import com.oms.serverapp.model.ServiceMan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +27,12 @@ public class ServiceManService {
         return serviceManRepository.findAll();
     }
 
-    //????
-    public ServiceMan getServiceManById(Long id) {
+    public ServiceMan getServiceManById(Long id) throws NotFoundException {
         Optional<ServiceMan> serviceMan = serviceManRepository.findById(id);
 
-        /*if (!serviceMan.isPresent()) {
-            throw new ServiceManNotFoundException("id-" + id);
-        }*/
+        if (!serviceMan.isPresent()) {
+            throw new NotFoundException(String.format("Serviceman with id = %d not found.", id));
+        }
 
         return serviceMan.get();
     }

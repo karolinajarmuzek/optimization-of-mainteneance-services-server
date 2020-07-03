@@ -1,5 +1,6 @@
 package com.oms.serverapp.controller;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Repair;
 import com.oms.serverapp.service.RepairService;
 import com.oms.serverapp.service.ReportService;
@@ -27,7 +28,7 @@ public class RepairController {
     }
 
     @GetMapping(path = "{id}")
-    public Repair retrieveRepairById(@PathVariable("id") Long id) {
+    public Repair retrieveRepairById(@PathVariable("id") Long id) throws NotFoundException {
         return reportService.getRepairById(id);
     }
 

@@ -1,5 +1,6 @@
 package com.oms.serverapp.controller;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Report;
 import com.oms.serverapp.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class ReportController {
     }
 
     @GetMapping(path = "{id}")
-    public Report retrieveReportById(@PathVariable("id") Long id) {
+    public Report retrieveReportById(@PathVariable("id") Long id) throws NotFoundException {
         return reportService.getReportById(id);
     }
 

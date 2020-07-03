@@ -1,5 +1,6 @@
 package com.oms.serverapp.service;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.ServiceMan;
 import com.oms.serverapp.model.Skill;
 import com.oms.serverapp.repository.SkillRepository;
@@ -26,12 +27,12 @@ public class SkillService {
         return skillRepository.findAll();
     }
 
-    public Skill getSkillById(Long id) {
+    public Skill getSkillById(Long id) throws NotFoundException {
         Optional<Skill> skill = skillRepository.findById(id);
 
-        /*if (!skill.isPresent()) {
-            throw new ServiceManNotFoundException("id-" + id);
-        }*/
+        if (!skill.isPresent()) {
+            throw new NotFoundException(String.format("Skill with id = %d not found.", id));
+        }
 
         return skill.get();
     }

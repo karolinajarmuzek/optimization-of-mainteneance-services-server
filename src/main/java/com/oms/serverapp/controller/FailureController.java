@@ -1,5 +1,6 @@
 package com.oms.serverapp.controller;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Failure;
 import com.oms.serverapp.service.FailureService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class FailureController {
     }
 
     @GetMapping(path = "{id}")
-    public Failure retrieveFailureById(@PathVariable("id") Long id) {
+    public Failure retrieveFailureById(@PathVariable("id") Long id) throws NotFoundException {
         return failureService.getFailureById(id);
     }
 

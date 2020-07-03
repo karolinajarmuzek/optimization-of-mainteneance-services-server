@@ -1,5 +1,6 @@
 package com.oms.serverapp.controller;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Customer;
 import com.oms.serverapp.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class CustomerController {
     }
 
     @GetMapping(path = "{id}")
-    public Customer retrieveCustomerById(@PathVariable("id") Long id) {
+    public Customer retrieveCustomerById(@PathVariable("id") Long id) throws NotFoundException {
         return customerService.getCustomerById(id);
     }
 

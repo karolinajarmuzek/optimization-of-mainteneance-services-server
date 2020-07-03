@@ -1,5 +1,6 @@
 package com.oms.serverapp.exception;
 
+import org.aspectj.weaver.ast.Not;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +37,17 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         body.put("errors", errors);
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = NotFoundException.class)
+    public ResponseEntity<Object> notFoundException(Exception ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDate.now());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("message", ex.getMessage());
+
+        return handleExceptionInternal(ex, body,
+                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 }

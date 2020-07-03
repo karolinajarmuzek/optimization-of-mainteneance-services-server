@@ -1,5 +1,6 @@
 package com.oms.serverapp.service;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Repair;
 import com.oms.serverapp.repository.RepairRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,12 @@ public class RepairService {
         return repairRepository.findAll();
     }
 
-    public Repair getRepairById(Long id) {
+    public Repair getRepairById(Long id) throws NotFoundException {
         Optional<Repair> repair = repairRepository.findById(id);
+
+        if (!repair.isPresent()) {
+            throw new NotFoundException(String.format("Repair with id=%d not found", id));
+        }
 
         return repair.get();
     }

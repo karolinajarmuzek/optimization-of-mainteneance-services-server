@@ -1,5 +1,6 @@
 package com.oms.serverapp.service;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Customer;
 import com.oms.serverapp.model.Device;
 import com.oms.serverapp.model.ServiceMan;
@@ -27,12 +28,12 @@ public class DeviceService {
         return deviceRepository.findAll();
     }
 
-    public Device getDeviceById(Long id) {
+    public Device getDeviceById(Long id) throws NotFoundException {
         Optional<Device> device = deviceRepository.findById(id);
 
-        /*if (!device.isPresent()) {
-            throw new ServiceManNotFoundException("id-" + id);
-        }*/
+        if (!device.isPresent()) {
+            throw new NotFoundException(String.format("Device with id = %d not found.", id));
+        }
 
         return device.get();
     }

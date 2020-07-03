@@ -1,5 +1,6 @@
 package com.oms.serverapp.controller;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Skill;
 import com.oms.serverapp.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class SkillController {
     }
 
     @GetMapping(path = "{id}")
-    public Skill retrieveSkillById(@PathVariable("id") Long id) {
+    public Skill retrieveSkillById(@PathVariable("id") Long id) throws NotFoundException {
         return skillService.getSkillById(id);
     }
 

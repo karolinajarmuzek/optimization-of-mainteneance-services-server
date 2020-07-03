@@ -1,5 +1,6 @@
 package com.oms.serverapp.controller;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Device;
 import com.oms.serverapp.service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class DeviceController {
     }
 
     @GetMapping(path = "{id}")
-    public Device retrieveDeviceById(@PathVariable("id") Long id) {
+    public Device retrieveDeviceById(@PathVariable("id") Long id) throws NotFoundException {
         return deviceService.getDeviceById(id);
     }
 

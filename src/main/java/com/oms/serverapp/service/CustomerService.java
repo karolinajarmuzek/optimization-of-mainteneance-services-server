@@ -1,5 +1,6 @@
 package com.oms.serverapp.service;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Customer;
 import com.oms.serverapp.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,12 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    public Customer getCustomerById(Long id) {
+    public Customer getCustomerById(Long id) throws NotFoundException {
         Optional<Customer> customer = customerRepository.findById(id);
 
-        //
+        if (!customer.isPresent()) {
+            throw new NotFoundException(String.format("Customer with id = %d not found.", id));
+        }
 
         return customer.get();
     }

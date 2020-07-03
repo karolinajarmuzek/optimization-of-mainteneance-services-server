@@ -1,5 +1,6 @@
 package com.oms.serverapp.controller;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.ServiceMan;
 import com.oms.serverapp.service.ServiceManService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class ServiceManController {
     }
 
     @GetMapping(path = "{id}")
-    public ServiceMan retrieveServiceManById(@PathVariable("id") Long id) {
+    public ServiceMan retrieveServiceManById(@PathVariable("id") Long id) throws NotFoundException {
         return serviceManService.getServiceManById(id);
     }
 

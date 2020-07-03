@@ -1,5 +1,6 @@
 package com.oms.serverapp.service;
 
+import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Failure;
 import com.oms.serverapp.model.ServiceMan;
 import com.oms.serverapp.repository.FailureRepository;
@@ -26,12 +27,12 @@ public class FailureService {
         return failureRepository.findAll();
     }
 
-    public Failure getFailureById(Long id) {
+    public Failure getFailureById(Long id) throws NotFoundException {
         Optional<Failure> failure = failureRepository.findById(id);
 
-        /*if (!failure.isPresent()) {
-            throw new ServiceManNotFoundException("id-" + id);
-        }*/
+        if (!failure.isPresent()) {
+            throw new NotFoundException(String.format("Failure with id = %d not found.", id));
+        }
 
         return failure.get();
     }
