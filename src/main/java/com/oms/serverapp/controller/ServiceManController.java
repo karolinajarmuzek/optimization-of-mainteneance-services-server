@@ -21,17 +21,17 @@ public class ServiceManController {
     }
 
     @GetMapping
-    public List<ServiceMan> getAllServiceMan() {
-        return serviceManService.getAllServiceMan();
+    public List<ServiceMan> retrieveAllServiceMen() {
+        return serviceManService.getAllServiceMen();
     }
 
     @GetMapping(path = "{id}")
-    public ServiceMan getServiceManById(@PathVariable("id") Long id) {
+    public ServiceMan retrieveServiceManById(@PathVariable("id") Long id) {
         return serviceManService.getServiceManById(id);
     }
 
     @PostMapping
-    public ServiceMan addServiceMan(@Valid @RequestBody ServiceMan serviceMan) {
+    public ResponseEntity<ServiceMan> createServiceMan(@Valid @RequestBody ServiceMan serviceMan) {
         return serviceManService.addServiceMan(serviceMan);
     }
 
@@ -41,9 +41,8 @@ public class ServiceManController {
     }
 
     @PutMapping(path = "{id}")
-    public ServiceMan updateServiceManById(@Valid @RequestBody ServiceMan serviceManToUpdate) {
-        serviceManService.updateServiceMan(serviceManToUpdate);
-        return serviceManToUpdate;
+    public ResponseEntity<Object> updateServiceManById(@Valid @RequestBody ServiceMan serviceMan, @PathVariable("id") Long id) {
+        return serviceManService.updateServiceMan(serviceMan, id);
     }
 
 }

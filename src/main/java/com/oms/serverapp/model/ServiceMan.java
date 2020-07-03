@@ -2,9 +2,10 @@ package com.oms.serverapp.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.util.Set;
 
 @Entity
-@Table(name = "serviceman")
+@Table(name = "servicemen")
 public class ServiceMan {
 
     @Id
@@ -38,6 +39,19 @@ public class ServiceMan {
     @Min(1)
     @Max(10)
     private int experience;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "skills_owned",
+            joinColumns = @JoinColumn(name = "serviceman_id"),
+            inverseJoinColumns = {@JoinColumn(name = "failure_id"),
+                                    @JoinColumn(name = "device_id")}
+    )
+    Set<Skill> ownedSkills;
+
+    @OneToMany(mappedBy = "serviceMan", cascade = CascadeType.ALL)
+    Set<Repair> repairs;
+
 
     public ServiceMan() {
     }
@@ -114,5 +128,13 @@ public class ServiceMan {
 
     public void setExperience(int experience) {
         this.experience = experience;
+    }
+
+    public Set<Skill> getOwnedSkills() {
+        return ownedSkills;
+    }
+
+    public void setOwnedSkills(Set<Skill> ownedSkills) {
+        this.ownedSkills = ownedSkills;
     }
 }
