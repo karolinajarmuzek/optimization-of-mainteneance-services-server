@@ -1,14 +1,17 @@
 package com.oms.serverapp.service;
 
 import com.oms.serverapp.exception.NotFoundException;
-import com.oms.serverapp.model.Report;
-import com.oms.serverapp.repository.ReportRepository;
+import com.oms.serverapp.model.*;
+import com.oms.serverapp.payload.ReportPayload;
+import com.oms.serverapp.payload.SkillPayload;
+import com.oms.serverapp.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,31 +19,44 @@ import java.util.Optional;
 public class ReportService {
 
     private ReportRepository reportRepository;
+    private CustomerRepository customerRepository;
+    private DeviceRepository deviceRepository;
+    private FailureRepository failureRepository;
+    private RepairRepository repairRepository;
 
     @Autowired
-    public ReportService(ReportRepository repository) {
-        this.reportRepository = repository;
+    public ReportService(ReportRepository reportRepository, CustomerRepository customerRepository, DeviceRepository deviceRepository, FailureRepository failureRepository, RepairRepository repairRepository) {
+        this.reportRepository = reportRepository;
+        this.customerRepository = customerRepository;
+        this.deviceRepository = deviceRepository;
+        this.failureRepository = failureRepository;
+        this.repairRepository = repairRepository;
     }
 
-    public List<Report> getAllReports() {
-        return reportRepository.findAll();
+    public List<ReportPayload> getAllReports() {
+        List<Report> reports = reportRepository.findAll();
+        List<ReportPayload> reportsResponse = new ArrayList<>();
+        for (Report report: reports) {
+            reportsResponse.add(new ReportPayload(report.getId(), report.getCustomer().getId(), report.getFailure().getId(), report.getDevice().getId(), report.getDate(), report.getLocation(), report.getDescription(), report.getStatus(), report.getRepair().getId()));
+        }
+        return reportsResponse;
     }
 
-    public Report getReportById(Long id) throws NotFoundException {
-        Optional<Report> report = reportRepository.findById(id);
-
-        if (!report.isPresent()) {
+    public ReportPayload getReportById(Long id) throws NotFoundException {
+        Report report = reportRepository.findById(id).orElse(null);
+        if (report == null) {
             throw new NotFoundException(String.format("Report with id = %d not found.", id));
         }
-
-        return report.get();
+        return new ReportPayload(report.getId(), report.getCustomer().getId(), report.getFailure().getId(), report.getDevice().getId(), report.getDate(), report.getLocation(), report.getDescription(), report.getStatus(), report.getRepair().getId());
     }
 
-    public ResponseEntity<Report> addReport(Report report) {
-        Report savedReport = reportRepository.save(report);
-
+    public ResponseEntity<Report> addReport(ReportPayload reportPayload) {
+        Customer customer = customerRepository.findById(reportPayload.getCustomer()).orElse(null);
+        Failure failure = failureRepository.findById(reportPayload.getFailure()).orElse(null);
+        Device device = deviceRepository.findById(reportPayload.getDevice()).orElse(null);
+        Repair repair = repairRepository.findById(reportPayload.getRepair()).orElse(null);
+        Report savedReport = reportRepository.save(new Report(customer, failure, device, reportPayload.getDate(), reportPayload.getLocation(), reportPayload.getDescription(), reportPayload.getStatus(), repair));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedReport).toUri();
-
         return ResponseEntity.created(location).build();
     }
 
@@ -48,14 +64,16 @@ public class ReportService {
         reportRepository.deleteById(id);
     }
 
-    public ResponseEntity<Object> updateReport(Report report, Long id) {
-        Optional<Report> reportOptional = reportRepository.findById(id);
-
-        if (!reportOptional.isPresent()) {
+    public ResponseEntity<Object> updateReport(ReportPayload reportPayload, Long id) {
+        Report report = reportRepository.findById(id).orElse(null);
+        if (report == null) {
             return ResponseEntity.notFound().build();
         }
-
-        reportRepository.save(report);
+        Customer customer = customerRepository.findById(reportPayload.getCustomer()).orElse(null);
+        Failure failure = failureRepository.findById(reportPayload.getFailure()).orElse(null);
+        Device device = deviceRepository.findById(reportPayload.getDevice()).orElse(null);
+        Repair repair = repairRepository.findById(reportPayload.getRepair()).orElse(null);
+        reportRepository.save(new Report(repair.getId(), customer, failure, device, reportPayload.getDate(), reportPayload.getLocation(), reportPayload.getDescription(), reportPayload.getStatus(), repair));
         return ResponseEntity.noContent().build();
     }
 

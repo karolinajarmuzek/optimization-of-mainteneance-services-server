@@ -2,6 +2,7 @@ package com.oms.serverapp.controller;
 
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Customer;
+import com.oms.serverapp.payload.CustomerPayload;
 import com.oms.serverapp.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +23,18 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<Customer>  retrieveAllCustomers() {
+    public List<CustomerPayload>  retrieveAllCustomers() {
         return customerService.getAllCustomers();
     }
 
     @GetMapping(path = "{id}")
-    public Customer retrieveCustomerById(@PathVariable("id") Long id) throws NotFoundException {
+    public CustomerPayload retrieveCustomerById(@PathVariable("id") Long id) throws NotFoundException {
         return customerService.getCustomerById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
-        return customerService.addCustomer(customer);
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody CustomerPayload customerPayload) {
+        return customerService.addCustomer(customerPayload);
     }
 
     @DeleteMapping(path = "{id}")
@@ -42,7 +43,7 @@ public class CustomerController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Object> updateCustomerById(@Valid @RequestBody Customer customer, @PathVariable("id") Long id) {
-        return customerService.updateCustomer(customer, id);
+    public ResponseEntity<Object> updateCustomerById(@Valid @RequestBody CustomerPayload customerPayload, @PathVariable("id") Long id) {
+        return customerService.updateCustomer(customerPayload, id);
     }
 }

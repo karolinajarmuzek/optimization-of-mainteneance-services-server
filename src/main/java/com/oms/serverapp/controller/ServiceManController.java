@@ -2,6 +2,7 @@ package com.oms.serverapp.controller;
 
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.ServiceMan;
+import com.oms.serverapp.payload.ServiceManPayload;
 import com.oms.serverapp.service.ServiceManService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +23,18 @@ public class ServiceManController {
     }
 
     @GetMapping
-    public List<ServiceMan> retrieveAllServiceMen() {
+    public List<ServiceManPayload> retrieveAllServiceMen() {
         return serviceManService.getAllServiceMen();
     }
 
     @GetMapping(path = "{id}")
-    public ServiceMan retrieveServiceManById(@PathVariable("id") Long id) throws NotFoundException {
+    public ServiceManPayload retrieveServiceManById(@PathVariable("id") Long id) throws NotFoundException {
         return serviceManService.getServiceManById(id);
     }
 
     @PostMapping
-    public ResponseEntity<ServiceMan> createServiceMan(@Valid @RequestBody ServiceMan serviceMan) {
-        return serviceManService.addServiceMan(serviceMan);
+    public ResponseEntity<ServiceMan> createServiceMan(@Valid @RequestBody ServiceManPayload serviceManPayload) {
+        return serviceManService.addServiceMan(serviceManPayload);
     }
 
     @DeleteMapping(path = "{id}")
@@ -42,8 +43,8 @@ public class ServiceManController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Object> updateServiceManById(@Valid @RequestBody ServiceMan serviceMan, @PathVariable("id") Long id) {
-        return serviceManService.updateServiceMan(serviceMan, id);
+    public ResponseEntity<Object> updateServiceManById(@Valid @RequestBody ServiceManPayload serviceManPayload, @PathVariable("id") Long id) {
+        return serviceManService.updateServiceMan(serviceManPayload, id);
     }
 
 }

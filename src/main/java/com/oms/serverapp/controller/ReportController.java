@@ -2,6 +2,7 @@ package com.oms.serverapp.controller;
 
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Report;
+import com.oms.serverapp.payload.ReportPayload;
 import com.oms.serverapp.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +23,18 @@ public class ReportController {
     }
 
     @GetMapping
-    public List<Report> retrieveAllReports() {
+    public List<ReportPayload> retrieveAllReports() {
         return reportService.getAllReports();
     }
 
     @GetMapping(path = "{id}")
-    public Report retrieveReportById(@PathVariable("id") Long id) throws NotFoundException {
+    public ReportPayload retrieveReportById(@PathVariable("id") Long id) throws NotFoundException {
         return reportService.getReportById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Report> createReport(@Valid @RequestBody Report report) {
-        return reportService.addReport(report);
+    public ResponseEntity<Report> createReport(@Valid @RequestBody ReportPayload reportPayload) {
+        return reportService.addReport(reportPayload);
     }
 
     @DeleteMapping(path = "{id}")
@@ -42,7 +43,7 @@ public class ReportController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Object> updateReportById(@Valid @RequestBody Report report, @PathVariable("id") Long id) {
-        return reportService.updateReport(report, id);
+    public ResponseEntity<Object> updateReportById(@Valid @RequestBody ReportPayload reportPayload, @PathVariable("id") Long id) {
+        return reportService.updateReport(reportPayload, id);
     }
 }

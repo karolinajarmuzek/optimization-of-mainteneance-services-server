@@ -1,11 +1,15 @@
 package com.oms.serverapp.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity
 @Table(name = "failures")
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "skills"})
 public class Failure {
 
     @Id
@@ -15,13 +19,26 @@ public class Failure {
     @NotBlank(message = "Failure type must be between 3 and 30 characters. ")
     private String type;
 
-    @OneToMany(mappedBy = "failure", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "failure", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<Skill> skills;
 
-    @OneToMany(mappedBy = "failure", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "failure", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<Report> reports;
 
     public Failure() {
+    }
+
+    public Failure(String type, Set<Skill> skills, Set<Report> reports) {
+        this.type = type;
+        this.skills = skills;
+        this.reports = reports;
+    }
+
+    public Failure(Long id, String type, Set<Skill> skills, Set<Report> reports) {
+        this.id = id;
+        this.type = type;
+        this.skills = skills;
+        this.reports = reports;
     }
 
     public Long getId() {

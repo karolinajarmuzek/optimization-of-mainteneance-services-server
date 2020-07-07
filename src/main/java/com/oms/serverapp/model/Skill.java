@@ -1,5 +1,7 @@
 package com.oms.serverapp.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -11,17 +13,16 @@ import java.util.Set;
 @Table(name = "skills")
 public class Skill {
 
-    @EmbeddedId
-    SkillPrimaryKey id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @NotNull(message = "Device data cannot be null.")
-    @ManyToOne
-    @MapsId("device_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Device device;
 
     @NotNull(message = "Failure data cannot be null.")
-    @ManyToOne
-    @MapsId("failure_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Failure failure;
 
     @NotNull(message = "Profit cannot be null")
@@ -41,18 +42,30 @@ public class Skill {
     public Skill() {
     }
 
-    public Skill(Device device, Failure failure, Integer minRepairTime, Integer maxRepairTime) {
+    public Skill(Device device, Failure failure, Integer profit, Integer minRepairTime, Integer maxRepairTime, Set<ServiceMan> serviceMen) {
         this.device = device;
         this.failure = failure;
+        this.profit = profit;
         this.minRepairTime = minRepairTime;
         this.maxRepairTime = maxRepairTime;
+        this.serviceMen = serviceMen;
     }
 
-    public SkillPrimaryKey getId() {
+    public Skill(Long id, Device device, Failure failure, Integer profit, Integer minRepairTime, Integer maxRepairTime, Set<ServiceMan> serviceMen) {
+        this.id = id;
+        this.device = device;
+        this.failure = failure;
+        this.profit = profit;
+        this.minRepairTime = minRepairTime;
+        this.maxRepairTime = maxRepairTime;
+        this.serviceMen = serviceMen;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(SkillPrimaryKey id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

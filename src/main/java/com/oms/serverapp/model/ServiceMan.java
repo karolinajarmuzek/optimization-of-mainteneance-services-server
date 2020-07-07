@@ -38,14 +38,13 @@ public class ServiceMan {
     @NotNull(message = "ServiceMan experience must be between 1 and 10.")
     @Min(1)
     @Max(10)
-    private int experience;
+    private Integer experience;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "skills_owned",
             joinColumns = @JoinColumn(name = "serviceman_id"),
-            inverseJoinColumns = {@JoinColumn(name = "failure_id"),
-                                    @JoinColumn(name = "device_id")}
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
     Set<Skill> ownedSkills;
 
@@ -56,7 +55,7 @@ public class ServiceMan {
     public ServiceMan() {
     }
 
-    public ServiceMan(String firstName, String lastName, String phoneNumber, String username, String password, String startLocalization, int experience) {
+    public ServiceMan(String firstName, String lastName, String phoneNumber, String username, String password, String startLocalization, Integer experience, Set<Skill> ownedSkills, Set<Repair> repairs) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -64,6 +63,21 @@ public class ServiceMan {
         this.password = password;
         this.startLocalization = startLocalization;
         this.experience = experience;
+        this.ownedSkills = ownedSkills;
+        this.repairs = repairs;
+    }
+
+    public ServiceMan(Long id, String firstName, String lastName, String phoneNumber, String username, String password, String startLocalization, Integer experience, Set<Skill> ownedSkills, Set<Repair> repairs) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.username = username;
+        this.password = password;
+        this.startLocalization = startLocalization;
+        this.experience = experience;
+        this.ownedSkills = ownedSkills;
+        this.repairs = repairs;
     }
 
     public Long getId() {
@@ -122,11 +136,11 @@ public class ServiceMan {
         this.startLocalization = startLocalization;
     }
 
-    public int getExperience() {
+    public Integer getExperience() {
         return experience;
     }
 
-    public void setExperience(int experience) {
+    public void setExperience(Integer experience) {
         this.experience = experience;
     }
 
@@ -136,5 +150,13 @@ public class ServiceMan {
 
     public void setOwnedSkills(Set<Skill> ownedSkills) {
         this.ownedSkills = ownedSkills;
+    }
+
+    public Set<Repair> getRepairs() {
+        return repairs;
+    }
+
+    public void setRepairs(Set<Repair> repairs) {
+        this.repairs = repairs;
     }
 }

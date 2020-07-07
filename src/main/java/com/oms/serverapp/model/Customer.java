@@ -31,10 +31,19 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(String firstName, String lastName, String phoneNumber) {
+    public Customer(String firstName, String lastName, String phoneNumber, Set<Report> reports) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
+        this.reports = reports;
+    }
+
+    public Customer(Long id, String firstName, String lastName, String phoneNumber, Set<Report> reports) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.reports = reports;
     }
 
     public Long getId() {

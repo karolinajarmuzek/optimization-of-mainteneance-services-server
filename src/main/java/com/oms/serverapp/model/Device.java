@@ -1,5 +1,8 @@
 package com.oms.serverapp.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -21,18 +24,28 @@ public class Device {
     @Size(min = 3, max = 30)
     private String type;
 
-   @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<Skill> skills;
 
-   @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
-   Set<Report> reports;
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    Set<Report> reports;
 
     public Device() {
     }
 
-    public Device(String name, String type) {
+    public Device(String name, String type, Set<Skill> skills, Set<Report> reports) {
         this.name = name;
         this.type = type;
+        this.skills = skills;
+        this.reports = reports;
+    }
+
+    public Device(Long id, String name, String type, Set<Skill> skills, Set<Report> reports) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.skills = skills;
+        this.reports = reports;
     }
 
     public Long getId() {

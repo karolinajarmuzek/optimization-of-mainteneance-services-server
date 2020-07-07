@@ -32,11 +32,21 @@ public class Repair {
     public Repair() {
     }
 
-    public Repair(ServiceMan serviceMan, Date date, String time, String status) {
+    public Repair(ServiceMan serviceMan, Date date, String time, String status, Report report) {
         this.serviceMan = serviceMan;
         this.date = date;
         this.time = time;
         this.status = status;
+        this.report = report;
+    }
+
+    public Repair(Long id, ServiceMan serviceMan, Date date, String time,String status, Report report) {
+        this.id = id;
+        this.serviceMan = serviceMan;
+        this.date = date;
+        this.time = time;
+        this.status = status;
+        this.report = report;
     }
 
     public Long getId() {

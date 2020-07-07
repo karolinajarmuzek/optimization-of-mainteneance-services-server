@@ -2,8 +2,8 @@ package com.oms.serverapp.controller;
 
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Repair;
+import com.oms.serverapp.payload.RepairPayload;
 import com.oms.serverapp.service.RepairService;
-import com.oms.serverapp.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,18 +23,18 @@ public class RepairController {
     }
 
     @GetMapping
-    public List<Repair> retrieveAllRepairs() {
+    public List<RepairPayload> retrieveAllRepairs() {
         return reportService.getAllRepairs();
     }
 
     @GetMapping(path = "{id}")
-    public Repair retrieveRepairById(@PathVariable("id") Long id) throws NotFoundException {
+    public RepairPayload retrieveRepairById(@PathVariable("id") Long id) throws NotFoundException {
         return reportService.getRepairById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Repair> createRepair(@Valid @RequestBody Repair repair) {
-        return reportService.addRepair(repair);
+    public ResponseEntity<Repair> createRepair(@Valid @RequestBody RepairPayload repairPayload) {
+        return reportService.addRepair(repairPayload);
     }
 
     @DeleteMapping(path = "{id}")
@@ -43,7 +43,7 @@ public class RepairController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Object> updateRepairById(@Valid @RequestBody Repair repair, @PathVariable("id") Long id) {
-        return reportService.updateRepair(repair, id);
+    public ResponseEntity<Object> updateRepairById(@Valid @RequestBody RepairPayload repairPayload, @PathVariable("id") Long id) {
+        return reportService.updateRepair(repairPayload, id);
     }
 }

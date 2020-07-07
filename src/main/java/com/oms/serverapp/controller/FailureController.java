@@ -2,6 +2,7 @@ package com.oms.serverapp.controller;
 
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Failure;
+import com.oms.serverapp.payload.FailurePayload;
 import com.oms.serverapp.service.FailureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +23,18 @@ public class FailureController {
     }
 
     @GetMapping
-    public List<Failure> retrieveAllFailures() {
+    public List<FailurePayload> retrieveAllFailures() {
         return failureService.getAllFailures();
     }
 
     @GetMapping(path = "{id}")
-    public Failure retrieveFailureById(@PathVariable("id") Long id) throws NotFoundException {
+    public FailurePayload retrieveFailureById(@PathVariable("id") Long id) throws NotFoundException {
         return failureService.getFailureById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Failure> createFailure(@Valid @RequestBody Failure failure) {
-        return failureService.addFailure(failure);
+    public ResponseEntity<Failure> createFailure(@Valid @RequestBody FailurePayload failurePayload) {
+        return failureService.addFailure(failurePayload);
     }
 
     @DeleteMapping(path = "{id}")
@@ -42,7 +43,7 @@ public class FailureController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Object> updateFailureById(@Valid @RequestBody Failure failure, @PathVariable("id") Long id) {
-        return failureService.updateFailure(failure, id);
+    public ResponseEntity<Object> updateFailureById(@Valid @RequestBody FailurePayload failurePayload, @PathVariable("id") Long id) {
+        return failureService.updateFailure(failurePayload, id);
     }
 }

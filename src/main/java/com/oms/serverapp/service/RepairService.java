@@ -1,14 +1,19 @@
 package com.oms.serverapp.service;
 
 import com.oms.serverapp.exception.NotFoundException;
-import com.oms.serverapp.model.Repair;
+import com.oms.serverapp.model.*;
+import com.oms.serverapp.payload.RepairPayload;
+import com.oms.serverapp.payload.SkillPayload;
 import com.oms.serverapp.repository.RepairRepository;
+import com.oms.serverapp.repository.ReportRepository;
+import com.oms.serverapp.repository.ServiceManRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,31 +21,38 @@ import java.util.Optional;
 public class RepairService {
 
     private RepairRepository repairRepository;
+    private ServiceManRepository serviceManRepository;
+    private ReportRepository reportRepository;
 
     @Autowired
-    public RepairService(RepairRepository repairRepository) {
+    public RepairService(RepairRepository repairRepository, ServiceManRepository serviceManRepository, ReportRepository reportRepository) {
         this.repairRepository = repairRepository;
+        this.serviceManRepository = serviceManRepository;
+        this.reportRepository = reportRepository;
     }
 
-    public List<Repair> getAllRepairs() {
-        return repairRepository.findAll();
+    public List<RepairPayload> getAllRepairs() {
+        List<Repair> repairs = repairRepository.findAll();
+        List<RepairPayload> repairsResponse = new ArrayList<>();
+        for (Repair repair: repairs) {
+            repairsResponse.add(new RepairPayload(repair.getId(), repair.getServiceMan().getId(), repair.getDate(), repair.getTime(), repair.getStatus(), repair.getReport().getId()));
+        }
+        return repairsResponse;
     }
 
-    public Repair getRepairById(Long id) throws NotFoundException {
-        Optional<Repair> repair = repairRepository.findById(id);
-
-        if (!repair.isPresent()) {
+    public RepairPayload getRepairById(Long id) throws NotFoundException {
+        Repair repair = repairRepository.findById(id).orElse(null);
+        if (repair == null) {
             throw new NotFoundException(String.format("Repair with id=%d not found", id));
         }
-
-        return repair.get();
+        return new RepairPayload(repair.getId(), repair.getServiceMan().getId(), repair.getDate(), repair.getTime(), repair.getStatus(), repair.getReport().getId());
     }
 
-    public ResponseEntity<Repair> addRepair(Repair repair) {
-        Repair savedRepair = repairRepository.save(repair);
-
+    public ResponseEntity<Repair> addRepair(RepairPayload repairPayload) {
+        ServiceMan serviceMan = serviceManRepository.findById(repairPayload.getServiceMan()).orElse(null);
+        Report report = reportRepository.findById(repairPayload.getReport()).orElse(null);
+        Repair savedRepair = repairRepository.save(new Repair(serviceMan, repairPayload.getDate(), repairPayload.getTime(), repairPayload.getStatus(), report));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedRepair).toUri();
-
         return ResponseEntity.created(location).build();
     }
 
@@ -48,14 +60,14 @@ public class RepairService {
         repairRepository.deleteById(id);
     }
 
-    public ResponseEntity<Object> updateRepair(Repair repair, Long id) {
-        Optional<Repair> repairOptional = repairRepository.findById(id);
-
-        if (!repairOptional.isPresent()) {
+    public ResponseEntity<Object> updateRepair(RepairPayload repairPayload, Long id) {
+        Repair repair = repairRepository.findById(id).orElse(null);
+        if (repair == null) {
             return ResponseEntity.notFound().build();
         }
-
-        repairRepository.save(repair);
+        ServiceMan serviceMan = serviceManRepository.findById(repairPayload.getServiceMan()).orElse(null);
+        Report report = reportRepository.findById(repairPayload.getReport()).orElse(null);
+        repairRepository.save(new Repair(repair.getId(), serviceMan, repairPayload.getDate(), repairPayload.getTime(), repairPayload.getStatus(), report));
         return ResponseEntity.noContent().build();
     }
 }
