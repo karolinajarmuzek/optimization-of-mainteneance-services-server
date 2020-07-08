@@ -1,7 +1,5 @@
 package com.oms.serverapp.payload;
 
-import com.oms.serverapp.model.Report;
-
 import java.util.Set;
 
 public class FailurePayload {

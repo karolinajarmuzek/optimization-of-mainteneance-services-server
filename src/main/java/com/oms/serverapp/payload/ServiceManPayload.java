@@ -1,7 +1,5 @@
 package com.oms.serverapp.payload;
 
-import com.oms.serverapp.model.Repair;
-
 import java.util.Set;
 
 public class ServiceManPayload {

@@ -1,8 +1,5 @@
 package com.oms.serverapp.payload;
 
-import com.oms.serverapp.model.Failure;
-
-import java.util.List;
 import java.util.Set;
 
 public class SkillPayload {

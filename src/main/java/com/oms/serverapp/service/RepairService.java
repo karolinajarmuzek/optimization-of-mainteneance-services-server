@@ -3,7 +3,6 @@ package com.oms.serverapp.service;
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.*;
 import com.oms.serverapp.payload.RepairPayload;
-import com.oms.serverapp.payload.SkillPayload;
 import com.oms.serverapp.repository.RepairRepository;
 import com.oms.serverapp.repository.ReportRepository;
 import com.oms.serverapp.repository.ServiceManRepository;

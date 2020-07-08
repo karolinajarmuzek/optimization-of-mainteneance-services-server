@@ -3,7 +3,6 @@ package com.oms.serverapp.service;
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.*;
 import com.oms.serverapp.payload.ReportPayload;
-import com.oms.serverapp.payload.SkillPayload;
 import com.oms.serverapp.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
