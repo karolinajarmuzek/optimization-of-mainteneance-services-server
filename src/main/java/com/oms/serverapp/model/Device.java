@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 import java.util.Set;
 
 @Entity
-@Table(name = "devices")
+@Table(name = "devices", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "type"})})
 public class Device {
 
     @Id

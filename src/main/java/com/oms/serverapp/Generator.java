@@ -57,7 +57,7 @@ public class Generator {
         if (isTableEmpty(URL_SKILL)) generateSkills();
         if (isTableEmpty(URL_SERVICEMAN)) generateUser(serviceManCount, UserType.SERVICEMAN);
         if (isTableEmpty(URL_CUSTOMER)) generateUser(customerCount, UserType.CUSTOMER);
-        System.out.println("\nDATA GENERATION FINISHED");
+        System.out.println("DATA GENERATION FINISHED");
         System.out.println("---------------------------------------------------------------------------------------------------------------");
 
     }

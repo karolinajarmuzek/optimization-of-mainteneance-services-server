@@ -5,7 +5,10 @@ import javax.validation.constraints.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "servicemen")
+@Table(name = "servicemen", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"firstName", "lastName"}),
+        @UniqueConstraint(columnNames = "username")
+})
 public class ServiceMan {
 
     @Id

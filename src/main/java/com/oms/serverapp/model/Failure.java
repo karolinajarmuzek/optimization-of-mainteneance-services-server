@@ -8,8 +8,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity
-@Table(name = "failures")
-//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "skills"})
+@Table(name = "failures", uniqueConstraints = {@UniqueConstraint(columnNames = {"type"})})
 public class Failure {
 
     @Id
