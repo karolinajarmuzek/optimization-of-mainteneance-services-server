@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ReportService {
@@ -75,6 +73,27 @@ public class ReportService {
         Repair repair = repairRepository.findById(reportPayload.getRepair()).orElse(null);
         reportRepository.save(new Report(repair.getId(), customer, failure, device, reportPayload.getDate(), reportPayload.getLocation(), reportPayload.getDescription(), reportPayload.getStatus(), repair));
         return ResponseEntity.noContent().build();
+    }
+
+    public Set<Long> reportsToIds(Set<Report> reports) {
+        Set<Long> reportsIds = new HashSet<>();
+        if (reports != null) {
+            for (Report report : reports) {
+                reportsIds.add(report.getId());
+            }
+        }
+        return reportsIds;
+    }
+
+    public Set<Report> idsToReports(Set<Long> reportsIds) {
+        Set<Report> reports = new HashSet<>();
+        if (reportsIds != null) {
+            for (Long reportId : reportsIds) {
+                Report report = reportRepository.findById(reportId).orElse(null);
+                if (report != null) reports.add(report);
+            }
+        }
+        return reports;
     }
 
 }

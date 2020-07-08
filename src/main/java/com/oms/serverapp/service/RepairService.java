@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class RepairService {
@@ -69,5 +67,26 @@ public class RepairService {
         Report report = reportRepository.findById(repairPayload.getReport()).orElse(null);
         repairRepository.save(new Repair(repair.getId(), serviceMan, repairPayload.getDate(), repairPayload.getTime(), repairPayload.getStatus(), report));
         return ResponseEntity.noContent().build();
+    }
+
+    public Set<Long> repairsToIds(Set<Repair> repairs) {
+        Set<Long> repairsIds = new HashSet<>();
+        if (repairs != null) {
+            for (Repair repair : repairs) {
+                repairsIds.add(repair.getId());
+            }
+        }
+        return repairsIds;
+    }
+
+    public Set<Repair> idsToRepairs(Set<Long> repairsIds) {
+        Set<Repair> repairs = new HashSet<>();
+        if (repairsIds != null) {
+            for (Long repairId : repairsIds) {
+                Repair repair = repairRepository.findById(repairId).orElse(null);
+                if (repair != null) repairs.add(repair);
+            }
+        }
+        return repairs;
     }
 }

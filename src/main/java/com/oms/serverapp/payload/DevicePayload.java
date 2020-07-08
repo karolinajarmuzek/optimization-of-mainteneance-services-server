@@ -3,7 +3,7 @@ package com.oms.serverapp.payload;
 import java.util.Set;
 
 public class DevicePayload {
-    private Long Id;
+    private Long id;
     private String name;
     private String type;
     private Set<Long> skills;
@@ -13,7 +13,7 @@ public class DevicePayload {
     }
 
     public DevicePayload(Long id, String name, String type, Set<Long> skills, Set<Long> reports) {
-        Id = id;
+        this.id = id;
         this.name = name;
         this.type = type;
         this.skills = skills;
@@ -21,11 +21,11 @@ public class DevicePayload {
     }
 
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getName() {

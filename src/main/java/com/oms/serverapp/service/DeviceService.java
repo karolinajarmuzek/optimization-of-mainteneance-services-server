@@ -20,20 +20,23 @@ public class DeviceService {
     private DeviceRepository deviceRepository;
     private SkillRepository skillRepository;
     private ReportRepository reportRepository;
-    private ServiceHelpers serviceHelpers = new ServiceHelpers();
+    private SkillService skillService;
+    private ReportService reportService;
 
     @Autowired
-    public DeviceService(DeviceRepository deviceRepository, SkillRepository skillRepository, ReportRepository reportRepository) {
+    public DeviceService(DeviceRepository deviceRepository, SkillRepository skillRepository, ReportRepository reportRepository, SkillService skillService, ReportService reportService) {
         this.deviceRepository = deviceRepository;
         this.skillRepository = skillRepository;
         this.reportRepository = reportRepository;
+        this.skillService = skillService;
+        this.reportService = reportService;
     }
 
     public List<DevicePayload> getAllDevices() {
         List<Device> devices = deviceRepository.findAll();
         List<DevicePayload> devicesResponse = new ArrayList<>();
         for (Device device: devices) {
-            devicesResponse.add(new DevicePayload(device.getId(), device.getName(), device.getType(), serviceHelpers.skillsToIds(device.getSkills()), serviceHelpers.reportsToIds(device.getReports())));
+            devicesResponse.add(new DevicePayload(device.getId(), device.getName(), device.getType(), skillService.skillsToIds(device.getSkills()), reportService.reportsToIds(device.getReports())));
         }
         return devicesResponse;
     }
@@ -43,11 +46,11 @@ public class DeviceService {
         if (device == null) {
             throw new NotFoundException(String.format("Device with id = %d not found.", id));
         }
-        return new DevicePayload(device.getId(), device.getName(), device.getType(), serviceHelpers.skillsToIds(device.getSkills()), serviceHelpers.reportsToIds(device.getReports()));
+        return new DevicePayload(device.getId(), device.getName(), device.getType(), skillService.skillsToIds(device.getSkills()), reportService.reportsToIds(device.getReports()));
     }
 
     public ResponseEntity<Device> addDevice(DevicePayload devicePayload) {
-        Device savedDevice = deviceRepository.save(new Device(devicePayload.getName(), devicePayload.getType(), serviceHelpers.idsToSkills(devicePayload.getSkills()), serviceHelpers.idsToReports(devicePayload.getReports())));
+        Device savedDevice = deviceRepository.save(new Device(devicePayload.getName(), devicePayload.getType(), skillService.idsToSkills(devicePayload.getSkills()), reportService.idsToReports(devicePayload.getReports())));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedDevice.getId()).toUri();
         return ResponseEntity.created(location).build();
     }
@@ -61,7 +64,7 @@ public class DeviceService {
         if (device == null) {
             return ResponseEntity.notFound().build();
         }
-        deviceRepository.save(new Device(device.getId(), devicePayload.getName(), devicePayload.getType(), serviceHelpers.idsToSkills(devicePayload.getSkills()), serviceHelpers.idsToReports(devicePayload.getReports())));
+        deviceRepository.save(new Device(device.getId(), devicePayload.getName(), devicePayload.getType(), skillService.idsToSkills(devicePayload.getSkills()), reportService.idsToReports(devicePayload.getReports())));
         return ResponseEntity.ok().build();
     }
 }

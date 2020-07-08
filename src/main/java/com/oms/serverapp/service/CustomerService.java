@@ -17,18 +17,19 @@ import java.util.List;
 public class CustomerService {
 
     private CustomerRepository customerRepository;
-    private ServiceHelpers serviceHelpers = new ServiceHelpers();
+    private ReportService reportService;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository, ReportService reportService) {
         this.customerRepository = customerRepository;
+        this.reportService = reportService;
     }
 
     public List<CustomerPayload> getAllCustomers() {
         List<Customer> customers = customerRepository.findAll();
         List<CustomerPayload> customersResponse = new ArrayList<>();
         for (Customer customer: customers) {
-            customersResponse.add(new CustomerPayload(customer.getId(), customer.getFirstName(), customer.getLastName(), customer.getPhoneNumber(), serviceHelpers.reportsToIds(customer.getReports())));
+            customersResponse.add(new CustomerPayload(customer.getId(), customer.getFirstName(), customer.getLastName(), customer.getPhoneNumber(), reportService.reportsToIds(customer.getReports())));
         }
         return customersResponse;
     }
@@ -38,11 +39,11 @@ public class CustomerService {
         if (customer == null) {
             throw new NotFoundException(String.format("Customer with id = %d not found.", id));
         }
-        return new CustomerPayload(customer.getId(), customer.getFirstName(), customer.getLastName(), customer.getPhoneNumber(), serviceHelpers.reportsToIds(customer.getReports()));
+        return new CustomerPayload(customer.getId(), customer.getFirstName(), customer.getLastName(), customer.getPhoneNumber(), reportService.reportsToIds(customer.getReports()));
     }
 
     public ResponseEntity<Customer> addCustomer(CustomerPayload customerPayload) {
-        Customer savedCustomer = customerRepository.save(new Customer(customerPayload.getFirstName(), customerPayload.getLastName(), customerPayload.getPhoneNumber(), serviceHelpers.idsToReports(customerPayload.getReports())));
+        Customer savedCustomer = customerRepository.save(new Customer(customerPayload.getFirstName(), customerPayload.getLastName(), customerPayload.getPhoneNumber(), reportService.idsToReports(customerPayload.getReports())));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedCustomer.getId()).toUri();
 
         return ResponseEntity.created(location).build();
@@ -57,7 +58,7 @@ public class CustomerService {
         if (customer == null) {
             return  ResponseEntity.notFound().build();
         }
-        customerRepository.save(new Customer(customer.getId(), customerPayload.getFirstName(), customerPayload.getLastName(), customerPayload.getPhoneNumber(), serviceHelpers.idsToReports(customerPayload.getReports())));
+        customerRepository.save(new Customer(customer.getId(), customerPayload.getFirstName(), customerPayload.getLastName(), customerPayload.getPhoneNumber(), reportService.idsToReports(customerPayload.getReports())));
         return ResponseEntity.ok().build();
     }
 
