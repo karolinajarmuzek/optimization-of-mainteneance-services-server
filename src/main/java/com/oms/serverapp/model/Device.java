@@ -13,12 +13,12 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Device name must be between 3 and 30 characters.")
-    @Size(min = 3, max = 30)
+    @NotBlank()
+    @Size(min = 3, max = 30, message = "Name must be between 3 and 30 characters.")
     private String name;
 
-    @NotBlank(message = "Device name must be between 3 and 30 characters.")
-    @Size(min = 3, max = 30)
+    @NotBlank()
+    @Size(min = 3, max = 30, message = "Type must be between 3 and 30 characters.")
     private String type;
 
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

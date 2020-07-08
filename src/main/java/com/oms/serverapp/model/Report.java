@@ -14,17 +14,17 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Customer data cannot be null.")
+    @NotNull(message = "Customer cannot be null.")
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @NotNull(message = "Failure data cannot be null.")
+    @NotNull(message = "Failure cannot be null.")
     @ManyToOne
     @JoinColumn(name = "failure_id")
     private Failure failure;
 
-    @NotNull(message = "Device data cannot be null.")
+    @NotNull(message = "Device cannot be null.")
     @ManyToOne
     @JoinColumn(name = "device_id")
     private Device device;
@@ -32,11 +32,11 @@ public class Report {
     @NotNull(message = "Date of submission cannot be null.")
     private Date date;
 
-    @NotBlank(message = "Report location cannot be null")
+    @NotBlank(message = "Report cannot be null")
     private String location;
 
-    @NotBlank(message = "Description location cannot be blank")
-    @Size(min = 10, max = 200)
+    @NotBlank()
+    @Size(min = 10, max = 200, message = "Description must be between 10 and 200characters.")
     private String description;
 
     @NotBlank(message = "Status cannot be blank")

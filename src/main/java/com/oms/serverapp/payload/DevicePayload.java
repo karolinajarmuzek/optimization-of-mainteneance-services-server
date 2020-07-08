@@ -1,11 +1,21 @@
 package com.oms.serverapp.payload;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Set;
 
 public class DevicePayload {
+
     private Long id;
+
+    @NotBlank()
+    @Size(min = 3, max = 30, message = "Name must be between 3 and 30 characters.")
     private String name;
+
+    @NotBlank()
+    @Size(min = 3, max = 30, message = "Type must be between 3 and 30 characters.")
     private String type;
+
     private Set<Long> skills;
     private Set<Long> reports;
 

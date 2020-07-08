@@ -1,13 +1,25 @@
 package com.oms.serverapp.payload;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Set;
 
 public class CustomerPayload {
 
     private Long id;
+
+    @NotBlank()
+    @Size(min = 3, max = 15, message = "Name must be between 3 and 15 characters.")
     private String firstName;
+
+    @NotBlank()
+    @Size(min = 3, max = 15, message = "Surname must be between 3 and 15 characters.")
     private String lastName;
+
+    @NotBlank()
+    @Size(min = 9, max = 9, message = "Phone number must have 9 digits.")
     private String phoneNumber;
+
     private Set<Long> reports;
 
     public CustomerPayload() {

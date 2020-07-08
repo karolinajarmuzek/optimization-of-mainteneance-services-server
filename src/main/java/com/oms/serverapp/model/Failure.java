@@ -12,7 +12,7 @@ public class Failure {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Failure type must be between 3 and 30 characters. ")
+    @NotBlank(message = "Type cannot be blank.")
     private String type;
 
     @OneToMany(mappedBy = "failure", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

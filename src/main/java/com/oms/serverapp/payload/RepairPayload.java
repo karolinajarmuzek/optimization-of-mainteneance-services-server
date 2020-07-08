@@ -1,14 +1,22 @@
 package com.oms.serverapp.payload;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 public class RepairPayload {
 
     private Long id;
     private Long serviceMan;
+
+    @NotNull(message = "Repair date cannot be null.")
     private Date date;
+
+    @NotNull(message = "Repair time cannot be null.")
     private String time;
+
+    @NotNull(message = "Repair status cannot be null.")
     private String status;
+
     private Long report;
 
     public RepairPayload() {

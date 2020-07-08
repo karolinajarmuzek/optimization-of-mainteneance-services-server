@@ -1,5 +1,6 @@
 package com.oms.serverapp.controller;
 
+import com.oms.serverapp.exception.IncorrectRepairTimeException;
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Skill;
 import com.oms.serverapp.payload.SkillPayload;
@@ -33,7 +34,7 @@ public class SkillController {
     }
 
     @PostMapping
-    public ResponseEntity<Skill> createSkill(@Valid @RequestBody SkillPayload skillPayload) {
+    public ResponseEntity<Skill> createSkill(@Valid @RequestBody SkillPayload skillPayload) throws IncorrectRepairTimeException {
         return skillService.addSkill(skillPayload);
     }
 

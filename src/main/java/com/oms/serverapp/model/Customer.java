@@ -13,16 +13,16 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Customer name must be between 3 and 15 characters.")
-    @Size(min = 3, max = 15)
+    @NotBlank()
+    @Size(min = 3, max = 15, message = "Name must be between 3 and 15 characters.")
     private String firstName;
 
-    @NotBlank(message = "Customer surname must be between 3 and 15 characters.")
-    @Size(min = 3, max = 15)
+    @NotBlank()
+    @Size(min = 3, max = 15, message = "Surname must be between 3 and 15 characters.")
     private String lastName;
 
-    @NotBlank(message = "Customer phone number must have 9 digits.")
-    @Size(min = 9, max = 9)
+    @NotBlank()
+    @Size(min = 9, max = 9, message = "Phone number must have 9 digits.")
     private String phoneNumber;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)

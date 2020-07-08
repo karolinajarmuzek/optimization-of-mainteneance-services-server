@@ -1,17 +1,40 @@
 package com.oms.serverapp.payload;
 
+import javax.validation.constraints.*;
 import java.util.Set;
 
 public class ServiceManPayload {
 
     private Long id;
+
+    @NotBlank
+    @Size(min = 3, max = 15, message = "Name must be between 3 and 15 characters.")
     private String firstName;
+
+    @NotBlank
+    @Size(min = 3, max = 15, message = "Surname must be between 3 and 15 characters.")
     private String lastName;
+
+    @NotBlank
+    @Size(min = 9, max = 9, message = "Phone number must have 9 digits.")
     private String phoneNumber;
+
+    @NotBlank
+    @Size(min = 6, max = 30, message = "Username must be between 6 and 30 characters.")
     private String username;
+
+    @NotBlank
+    @Size(min = 6, max = 30, message = "Password must be between 6 and 30 characters.")
     private String password;
+
+    @NotBlank(message = "Location cannot be blank.")
     private String startLocalization;
+
+    @NotNull()
+    @Min(value = 1, message = "Experience must be between 1 and 10.")
+    @Max(value = 10, message = "Experience must be between 1 and 10.")
     private Integer experience;
+
     private Set<Long> skills;
     private Set<Long> repairs;
 

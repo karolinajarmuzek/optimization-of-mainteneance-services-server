@@ -15,32 +15,32 @@ public class ServiceMan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "ServiceMan name must be between 3 and 15 characters.")
-    @Size(min = 3, max = 15)
+    @NotBlank()
+    @Size(min = 3, max = 15, message = "Name must be between 3 and 15 characters.")
     private String firstName;
 
-    @NotBlank(message = "ServiceMan surname must be between 3 and 15 characters.")
-    @Size(min = 3, max = 15)
+    @NotBlank()
+    @Size(min = 3, max = 15, message = "Surname must be between 3 and 15 characters.")
     private String lastName;
 
-    @NotBlank(message = "ServiceMan phone number must have 9 digits.")
-    @Size(min = 9, max = 9)
+    @NotBlank()
+    @Size(min = 9, max = 9, message = "Phone number must have 9 digits.")
     private String phoneNumber;
 
-    @NotBlank(message = "ServiceMan username must be between 6 and 30 characters.")
-    @Size(min = 6, max = 30)
+    @NotBlank()
+    @Size(min = 6, max = 30, message = "Username must be between 6 and 30 characters.")
     private String username;
 
-    @NotBlank(message = "ServiceMan password must be between 6 and 30 characters.")
-    @Size(min = 6, max = 30)
+    @NotBlank()
+    @Size(min = 6, max = 30, message = "Password must be between 6 and 30 characters.")
     private String password;
 
-    @NotBlank(message = "ServiceMan location cannot be blank")
+    @NotBlank(message = "Location cannot be blank.")
     private String startLocalization;
 
-    @NotNull(message = "ServiceMan experience must be between 1 and 10.")
-    @Min(1)
-    @Max(10)
+    @NotNull()
+    @Min(value = 1, message = "Experience must be between 1 and 10.")
+    @Max(value = 10, message = "Experience must be between 1 and 10.")
     private Integer experience;
 
     @ManyToMany(cascade = CascadeType.ALL)

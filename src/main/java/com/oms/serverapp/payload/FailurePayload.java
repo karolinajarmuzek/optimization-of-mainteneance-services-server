@@ -1,11 +1,15 @@
 package com.oms.serverapp.payload;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 public class FailurePayload {
 
     private Long id;
+
+    @NotBlank(message = "Type cannot be blank.")
     private String type;
+
     private Set<Long> skills;
     private Set<Long> reports;
 

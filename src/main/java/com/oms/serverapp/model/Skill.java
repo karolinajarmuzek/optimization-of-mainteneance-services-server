@@ -14,23 +14,25 @@ public class Skill {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Device data cannot be null.")
+    @NotNull(message = "Device cannot be null.")
     @ManyToOne(fetch = FetchType.LAZY)
     private Device device;
 
-    @NotNull(message = "Failure data cannot be null.")
+    @NotNull(message = "Failure cannot be null.")
     @ManyToOne(fetch = FetchType.LAZY)
     private Failure failure;
 
-    @NotNull(message = "Profit cannot be null")
+    @NotNull(message = "Profit cannot be null.")
     private Integer profit;
 
-    @Min(15)
-    @Max(480)
+    @NotNull()
+    @Min(value = 15, message = "Minimum repair time should be between 15 and 480.")
+    @Max(value = 480, message = "Minimum repair time should be between 15 and 480.")
     private Integer minRepairTime; //in minutes
 
-    @Min(15)
-    @Max(480)
+    @NotNull()
+    @Min(value = 15, message = "Maximum repair time should be between 15 and 480.")
+    @Max(value = 480, message = "Maximum repair time should be between 15 and 480.")
     private Integer maxRepairTime; //in minutes
 
     @ManyToMany(mappedBy = "ownedSkills", cascade = CascadeType.ALL)

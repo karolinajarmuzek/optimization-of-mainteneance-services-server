@@ -1,17 +1,36 @@
 package com.oms.serverapp.payload;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 public class ReportPayload {
 
     private Long id;
+
+    @NotNull(message = "Customer cannot be null.")
     private Long customer;
+
+    @NotNull(message = "Failure cannot be null.")
     private Long failure;
+
+    @NotNull(message = "Device cannot be null.")
     private Long device;
+
+    @NotNull(message = "Date of submission cannot be null.")
     private Date date;
+
+    @NotBlank(message = "Report cannot be null")
     private String location;
+
+    @NotBlank()
+    @Size(min = 10, max = 200, message = "Description must be between 10 and 200characters.")
     private String description;
+
+    @NotBlank(message = "Status cannot be blank")
     private String status;
+
     private Long repair;
 
     public ReportPayload() {

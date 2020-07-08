@@ -1,5 +1,6 @@
 package com.oms.serverapp.service;
 
+import com.oms.serverapp.exception.IncorrectRepairTimeException;
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Device;
 import com.oms.serverapp.model.Failure;
@@ -50,7 +51,9 @@ public class SkillService {
         return new SkillPayload(skill.getId(), skill.getDevice().getId(), skill.getFailure().getId(), skill.getProfit(), skill.getMinRepairTime(), skill.getMaxRepairTime(), serviceManService.serviceMenToIds(skill.getServiceMen()));
     }
 
-    public ResponseEntity<Skill> addSkill(SkillPayload skillPayload) {
+    public ResponseEntity<Skill> addSkill(SkillPayload skillPayload) throws IncorrectRepairTimeException {
+        if (skillPayload.getMinRepairTime() > skillPayload.getMaxRepairTime())
+            throw new IncorrectRepairTimeException();
         Device device = deviceRepository.findById(skillPayload.getDevice()).orElse(null);
         Failure failure = failureRepository.findById(skillPayload.getFailure()).orElse(null);
         Skill savedSkill = skillRepository.save(new Skill(device, failure, skillPayload.getProfit(), skillPayload.getMinRepairTime(), skillPayload.getMaxRepairTime(), serviceManService.idsToServiceMen(skillPayload.getServiceMen())));
