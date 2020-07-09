@@ -4,6 +4,7 @@ import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Report;
 import com.oms.serverapp.payload.ReportPayload;
 import com.oms.serverapp.service.ReportService;
+import com.oms.serverapp.util.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,11 @@ public class ReportController {
     @GetMapping
     public List<ReportPayload> retrieveAllReports() {
         return reportService.getAllReports();
+    }
+
+    @GetMapping(path = "status={status}")
+    public List<ReportPayload> retrieveAllReportsByStatus(@PathVariable("status") Status status) {
+        return reportService.getAllReportsByStatus(status);
     }
 
     @GetMapping(path = "{id}")

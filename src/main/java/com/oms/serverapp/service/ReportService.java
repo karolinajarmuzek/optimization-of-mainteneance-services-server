@@ -35,10 +35,16 @@ public class ReportService {
         List<Report> reports = reportRepository.findAll();
         List<ReportPayload> reportsResponse = new ArrayList<>();
         for (Report report: reports) {
-            if (report.getRepair() != null)
-                reportsResponse.add(new ReportPayload(report.getId(), report.getCustomer().getId(), report.getFailure().getId(), report.getDevice().getId(), report.getDate(), report.getLocation(), report.getDescription(), report.getStatus(), report.getRepair().getId()));
-            else
-                reportsResponse.add(new ReportPayload(report.getId(), report.getCustomer().getId(), report.getFailure().getId(), report.getDevice().getId(), report.getDate(), report.getLocation(), report.getDescription(), report.getStatus()));
+            reportsResponse.add(convertReport(report));
+        }
+        return reportsResponse;
+    }
+
+    public List<ReportPayload> getAllReportsByStatus(Status status) {
+        List<Report> reports = reportRepository.findReportsByStatus(status);
+        List<ReportPayload> reportsResponse = new ArrayList<>();
+        for (Report report: reports) {
+            reportsResponse.add(convertReport(report));
         }
         return reportsResponse;
     }
@@ -48,6 +54,10 @@ public class ReportService {
         if (report == null) {
             throw new NotFoundException(String.format("Report with id = %d not found.", id));
         }
+        return convertReport(report);
+    }
+
+    public ReportPayload convertReport(Report report) {
         if (report.getRepair() != null)
             return new ReportPayload(report.getId(), report.getCustomer().getId(), report.getFailure().getId(), report.getDevice().getId(), report.getDate(), report.getLocation(), report.getDescription(), report.getStatus(), report.getRepair().getId());
         else
