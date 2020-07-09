@@ -4,6 +4,7 @@ import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.*;
 import com.oms.serverapp.payload.ReportPayload;
 import com.oms.serverapp.repository.*;
+import com.oms.serverapp.util.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -62,9 +63,9 @@ public class ReportService {
             repairRepository.findById(reportPayload.getRepair()).orElse(null);
         Report savedReport;
         if (repair != null)
-            savedReport = reportRepository.save(new Report(customer, failure, device, reportPayload.getDate(), reportPayload.getLocation(), reportPayload.getDescription(), reportPayload.getStatus(), repair));
+            savedReport = reportRepository.save(new Report(customer, failure, device, reportPayload.getDate(), reportPayload.getLocation(), reportPayload.getDescription(), Status.REPORTED, repair));
         else
-            savedReport = reportRepository.save(new Report(customer, failure, device, reportPayload.getDate(), reportPayload.getLocation(), reportPayload.getDescription(), reportPayload.getStatus()));
+            savedReport = reportRepository.save(new Report(customer, failure, device, reportPayload.getDate(), reportPayload.getLocation(), reportPayload.getDescription(), Status.REPORTED));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedReport).toUri();
         return ResponseEntity.created(location).build();
     }

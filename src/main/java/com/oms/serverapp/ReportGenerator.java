@@ -1,17 +1,16 @@
 package com.oms.serverapp;
 
 import com.google.gson.Gson;
-import com.oms.serverapp.model.Customer;
 import com.oms.serverapp.payload.CustomerPayload;
 import com.oms.serverapp.payload.DevicePayload;
 import com.oms.serverapp.payload.FailurePayload;
+import com.oms.serverapp.util.Helpers;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -35,7 +34,6 @@ public class ReportGenerator {
             put("date", new Date());
             put("location", "loc");
             put("description", "Description");
-            put("status", "status");
         }};
         Helpers.sendPostRequest(body, URL_REPORTS);
     }

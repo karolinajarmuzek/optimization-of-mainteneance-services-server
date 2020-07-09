@@ -1,5 +1,7 @@
 package com.oms.serverapp.model;
 
+import com.oms.serverapp.util.Status;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -39,8 +41,9 @@ public class Report {
     @Size(min = 10, max = 200, message = "Description must be between 10 and 200characters.")
     private String description;
 
-    @NotBlank(message = "Status cannot be blank")
-    private String status;
+    @NotNull(message = "Status cannot be null")
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @OneToOne
     @JoinColumn(name = "repair_id", referencedColumnName = "id")
@@ -49,7 +52,7 @@ public class Report {
     public Report() {
     }
 
-    public Report(Customer customer, Failure failure, Device device, Date date, String location, String description, String status) {
+    public Report(Customer customer, Failure failure, Device device, Date date, String location, String description, Status status) {
         this.customer = customer;
         this.failure = failure;
         this.device = device;
@@ -59,7 +62,7 @@ public class Report {
         this.status = status;
     }
 
-    public Report(Customer customer, Failure failure, Device device, Date date, String location, String description, String status, Repair repair) {
+    public Report(Customer customer, Failure failure, Device device, Date date, String location, String description, Status status, Repair repair) {
         this.customer = customer;
         this.failure = failure;
         this.device = device;
@@ -70,7 +73,7 @@ public class Report {
         this.repair = repair;
     }
 
-    public Report(Long id, Customer customer, Failure failure, Device device, Date date, String location, String description, String status, Repair repair) {
+    public Report(Long id, Customer customer, Failure failure, Device device, Date date, String location, String description, Status status, Repair repair) {
         this.id = id;
         this.customer = customer;
         this.failure = failure;
@@ -138,11 +141,11 @@ public class Report {
         this.description = description;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

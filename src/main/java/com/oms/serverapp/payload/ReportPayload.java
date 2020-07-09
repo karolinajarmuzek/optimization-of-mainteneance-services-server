@@ -1,5 +1,9 @@
 package com.oms.serverapp.payload;
 
+import com.oms.serverapp.util.Status;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -28,15 +32,16 @@ public class ReportPayload {
     @Size(min = 10, max = 200, message = "Description must be between 10 and 200characters.")
     private String description;
 
-    @NotBlank(message = "Status cannot be blank")
-    private String status;
+    //@NotNull(message = "Status cannot be null")
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     private Long repair;
 
     public ReportPayload() {
     }
 
-    public ReportPayload(Long id, Long customer, Long failure, Long device, Date date, String location, String description, String status) {
+    public ReportPayload(Long id, Long customer, Long failure, Long device, Date date, String location, String description, Status status) {
         this.id = id;
         this.customer = customer;
         this.failure = failure;
@@ -47,7 +52,7 @@ public class ReportPayload {
         this.status = status;
     }
 
-    public ReportPayload(Long id, Long customer, Long failure, Long device, Date date, String location, String description, String status, Long repair) {
+    public ReportPayload(Long id, Long customer, Long failure, Long device, Date date, String location, String description, Status status, Long repair) {
         this.id = id;
         this.customer = customer;
         this.failure = failure;
@@ -115,11 +120,11 @@ public class ReportPayload {
         this.description = description;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

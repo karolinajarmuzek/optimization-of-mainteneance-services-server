@@ -1,11 +1,10 @@
 package com.oms.serverapp;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
 import com.oms.serverapp.payload.DevicePayload;
 import com.oms.serverapp.payload.FailurePayload;
 import com.oms.serverapp.payload.SkillPayload;
+import com.oms.serverapp.util.Helpers;
 
 import java.io.IOException;
 import java.net.URI;
@@ -44,7 +43,7 @@ public class Generator {
             put("WARMTEC WRMS12+", "kurtyna powietrzna");
         }};
 
-    private static final List<String> failures = new ArrayList<>(Arrays.asList("F1", "F2", "F3"));
+    private static final Set<String> failures = new HashSet<>(Set.of("F1", "F2", "F3"));
 
     public static void generateData(){
         int serviceManCount = 2;
