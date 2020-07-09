@@ -49,6 +49,16 @@ public class Report {
     public Report() {
     }
 
+    public Report(Customer customer, Failure failure, Device device, Date date, String location, String description, String status) {
+        this.customer = customer;
+        this.failure = failure;
+        this.device = device;
+        this.date = date;
+        this.location = location;
+        this.description = description;
+        this.status = status;
+    }
+
     public Report(Customer customer, Failure failure, Device device, Date date, String location, String description, String status, Repair repair) {
         this.customer = customer;
         this.failure = failure;

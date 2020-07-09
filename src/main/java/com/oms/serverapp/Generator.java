@@ -92,7 +92,7 @@ public class Generator {
                 put("type", device.getValue());
             }};
 
-            sendPostRequest(body, URL_DEVICE);
+            Helpers.sendPostRequest(body, URL_DEVICE);
         }
     }
 
@@ -102,7 +102,7 @@ public class Generator {
                 put("type", failure);
             }};
 
-            sendPostRequest(body, URL_FAILURE);
+            Helpers.sendPostRequest(body, URL_FAILURE);
         }
     }
 
@@ -153,7 +153,7 @@ public class Generator {
                         put("maxRepairTime", finalMaxRepairTime);
                     }};
 
-                    sendPostRequest(body, URL_SKILL);
+                    Helpers.sendPostRequest(body, URL_SKILL);
                 }
             }
 
@@ -196,7 +196,7 @@ public class Generator {
                     put("skills", ownedSkills);
                 }
             }};
-            sendPostRequest(body, userType == UserType.SERVICEMAN ? URL_SERVICEMAN : URL_CUSTOMER);
+            Helpers.sendPostRequest(body, userType == UserType.SERVICEMAN ? URL_SERVICEMAN : URL_CUSTOMER);
         }
     }
 
@@ -226,32 +226,4 @@ public class Generator {
         }
     }
 
-    public static void sendPostRequest(HashMap<String, Object> body, String url) {
-
-        var objectMapper = new ObjectMapper();
-        String requestBody = null;
-        try {
-            requestBody = objectMapper
-                    .writeValueAsString(body);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                .setHeader("Content-Type", "application/json")
-                .build();
-
-        HttpResponse<String> response = null;
-        try {
-            response = client.send(request,
-                    HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 }

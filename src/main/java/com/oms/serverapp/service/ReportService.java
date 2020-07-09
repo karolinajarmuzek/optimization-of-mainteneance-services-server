@@ -34,7 +34,10 @@ public class ReportService {
         List<Report> reports = reportRepository.findAll();
         List<ReportPayload> reportsResponse = new ArrayList<>();
         for (Report report: reports) {
-            reportsResponse.add(new ReportPayload(report.getId(), report.getCustomer().getId(), report.getFailure().getId(), report.getDevice().getId(), report.getDate(), report.getLocation(), report.getDescription(), report.getStatus(), report.getRepair().getId()));
+            if (report.getRepair() != null)
+                reportsResponse.add(new ReportPayload(report.getId(), report.getCustomer().getId(), report.getFailure().getId(), report.getDevice().getId(), report.getDate(), report.getLocation(), report.getDescription(), report.getStatus(), report.getRepair().getId()));
+            else
+                reportsResponse.add(new ReportPayload(report.getId(), report.getCustomer().getId(), report.getFailure().getId(), report.getDevice().getId(), report.getDate(), report.getLocation(), report.getDescription(), report.getStatus()));
         }
         return reportsResponse;
     }
@@ -44,15 +47,24 @@ public class ReportService {
         if (report == null) {
             throw new NotFoundException(String.format("Report with id = %d not found.", id));
         }
-        return new ReportPayload(report.getId(), report.getCustomer().getId(), report.getFailure().getId(), report.getDevice().getId(), report.getDate(), report.getLocation(), report.getDescription(), report.getStatus(), report.getRepair().getId());
+        if (report.getRepair() != null)
+            return new ReportPayload(report.getId(), report.getCustomer().getId(), report.getFailure().getId(), report.getDevice().getId(), report.getDate(), report.getLocation(), report.getDescription(), report.getStatus(), report.getRepair().getId());
+        else
+            return new ReportPayload(report.getId(), report.getCustomer().getId(), report.getFailure().getId(), report.getDevice().getId(), report.getDate(), report.getLocation(), report.getDescription(), report.getStatus());
     }
 
     public ResponseEntity<Report> addReport(ReportPayload reportPayload) {
         Customer customer = customerRepository.findById(reportPayload.getCustomer()).orElse(null);
         Failure failure = failureRepository.findById(reportPayload.getFailure()).orElse(null);
         Device device = deviceRepository.findById(reportPayload.getDevice()).orElse(null);
-        Repair repair = repairRepository.findById(reportPayload.getRepair()).orElse(null);
-        Report savedReport = reportRepository.save(new Report(customer, failure, device, reportPayload.getDate(), reportPayload.getLocation(), reportPayload.getDescription(), reportPayload.getStatus(), repair));
+        Repair repair = null;
+        if (reportPayload.getRepair() != null)
+            repairRepository.findById(reportPayload.getRepair()).orElse(null);
+        Report savedReport;
+        if (repair != null)
+            savedReport = reportRepository.save(new Report(customer, failure, device, reportPayload.getDate(), reportPayload.getLocation(), reportPayload.getDescription(), reportPayload.getStatus(), repair));
+        else
+            savedReport = reportRepository.save(new Report(customer, failure, device, reportPayload.getDate(), reportPayload.getLocation(), reportPayload.getDescription(), reportPayload.getStatus()));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedReport).toUri();
         return ResponseEntity.created(location).build();
     }
@@ -63,7 +75,7 @@ public class ReportService {
 
     public ResponseEntity<Object> updateReport(ReportPayload reportPayload, Long id) {
         Report report = reportRepository.findById(id).orElse(null);
-        if (report == null) {
+        if (report == null) {    
             return ResponseEntity.notFound().build();
         }
         Customer customer = customerRepository.findById(reportPayload.getCustomer()).orElse(null);

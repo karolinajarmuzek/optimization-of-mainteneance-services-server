@@ -36,6 +36,17 @@ public class ReportPayload {
     public ReportPayload() {
     }
 
+    public ReportPayload(Long id, Long customer, Long failure, Long device, Date date, String location, String description, String status) {
+        this.id = id;
+        this.customer = customer;
+        this.failure = failure;
+        this.device = device;
+        this.date = date;
+        this.location = location;
+        this.description = description;
+        this.status = status;
+    }
+
     public ReportPayload(Long id, Long customer, Long failure, Long device, Date date, String location, String description, String status, Long repair) {
         this.id = id;
         this.customer = customer;
