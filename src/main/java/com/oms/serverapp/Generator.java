@@ -1,5 +1,7 @@
 package com.oms.serverapp;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
 import com.oms.serverapp.payload.DevicePayload;
 import com.oms.serverapp.payload.FailurePayload;
@@ -21,8 +23,9 @@ public class Generator {
     private static final String URL_DEVICE = "http://localhost:8080/api/device";
     private static final String URL_FAILURE = "http://localhost:8080/api/failure";
     private static final String URL_SKILL = "http://localhost:8080/api/skill";
+    private static final String URL_AUTHORIZE = "http://localhost:8080/api/auth/signin";
 
-    private enum UserType{SERVICEMAN, CUSTOMER}
+    private enum UserType{SERVICEMAN, CUSTOMER, ADMIN}
 
     private static final Set<String> names = new HashSet<>(Set.of("Adam", "Bartosz", "Cezary", "Damian", "Eryk", "Franciszek", "Grzegorz", "Henryk", "Ignacy", "Jacek", "Karol", "Lech", "Mateusz", "Norbert", "Oliwier", "Piotr", "Rafal", "Sebastian", "Tomasz", "Wojciech", "Zbigniew"));
     private static final Set<String> surnames = new HashSet<>(Set.of("Nowak", "Kowalski", "Wisniewski", "Wojcik", "Kowalczyk", "Kaminski", "Lewandowski", "Zielinski", "Szymanski", "Wozniak", "Dabrowski", "Kozlowski", "Jankowski"));
@@ -45,12 +48,16 @@ public class Generator {
 
     private static final Set<String> failures = new HashSet<>(Set.of("F1", "F2", "F3"));
 
+    private static String token;
+
     public static void generateData(){
         int serviceManCount = 2;
         int customerCount = 2;
 
         System.out.println("---------------------------------------------------------------------------------------------------------------");
         System.out.println("DATA GENERATION STARTED");
+        //generateUser(1, UserType.ADMIN);
+        authorize();
         if (isTableEmpty(URL_DEVICE)) generateDevices();
         if (isTableEmpty(URL_FAILURE)) generateFailures();
         if (isTableEmpty(URL_SKILL)) generateSkills();
@@ -61,14 +68,30 @@ public class Generator {
 
     }
 
+    public static void authorize() {
+        var body = new HashMap<String, Object>() {{
+            put("username", "adminadmin");
+            put("password", "adminadmin");
+        }};
+
+        HttpResponse<String> response = Helpers.sendPostRequest(body, URL_AUTHORIZE, token); //
+        String token = response.body().replaceAll(",", "")
+                .replace("\"tokenType\":\"Bearer\"", "")
+                .replace("\"accessToken\":\"", "")
+                .split("\"")[0]
+                .split("\\{")[1];
+        setToken(token);
+    }
+
     public static boolean isTableEmpty(String url) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()
                 .setHeader("Content-Type", "application/json")
+                .setHeader("Authorization", "Bearer " + token)
                 .build();
-
+ 
         try {
             HttpResponse<String> response = client.send(request,
                     HttpResponse.BodyHandlers.ofString());
@@ -90,8 +113,7 @@ public class Generator {
                 put("name", device.getKey());
                 put("type", device.getValue());
             }};
-
-            Helpers.sendPostRequest(body, URL_DEVICE);
+            Helpers.sendPostRequest(body, URL_DEVICE, token);
         }
     }
 
@@ -101,7 +123,7 @@ public class Generator {
                 put("type", failure);
             }};
 
-            Helpers.sendPostRequest(body, URL_FAILURE);
+            Helpers.sendPostRequest(body, URL_FAILURE, token);
         }
     }
 
@@ -112,12 +134,14 @@ public class Generator {
                 .uri(URI.create(URL_DEVICE))
                 .GET()
                 .setHeader("Content-Type", "application/json")
+                .setHeader("Authorization", "Bearer " + token)
                 .build();
 
         HttpRequest requestFailures = HttpRequest.newBuilder()
                 .uri(URI.create(URL_FAILURE))
                 .GET()
                 .setHeader("Content-Type", "application/json")
+                .setHeader("Authorization", "Bearer " + token)
                 .build();
 
         HttpResponse<String> responseDevices = null;
@@ -152,7 +176,7 @@ public class Generator {
                         put("maxRepairTime", finalMaxRepairTime);
                     }};
 
-                    Helpers.sendPostRequest(body, URL_SKILL);
+                    Helpers.sendPostRequest(body, URL_SKILL, token);
                 }
             }
 
@@ -167,10 +191,16 @@ public class Generator {
         for (int i = 0; i < count; i++) {
             String name, surname;
             Random random = new Random();
-            do {
-                name = new ArrayList<>(names).get(random.nextInt(names.size()));
-                surname = new ArrayList<>(surnames).get(random.nextInt(surnames.size()));
-            } while (users.contains(name + " " + surname));
+            if (userType != UserType.ADMIN) {
+                do {
+                    name = new ArrayList<>(names).get(random.nextInt(names.size()));
+                    surname = new ArrayList<>(surnames).get(random.nextInt(surnames.size()));
+                } while (users.contains(name + " " + surname));
+            }
+            else {
+                name = "Admin";
+                surname = "Admin";
+            }
             users.add(name + " " + surname);
 
             String finalName = name;
@@ -180,22 +210,24 @@ public class Generator {
                 put("firstName", finalName);
                 put("lastName", finalSurname);
                 put("phoneNumber", Integer.toString(random.nextInt(899999999) + 100000000));
-                if (userType == UserType.SERVICEMAN) {
+                if (userType != UserType.CUSTOMER) {
                     put("username", finalName.toLowerCase() + finalSurname.toLowerCase());
                     put("password", finalName.toLowerCase() + finalSurname.toLowerCase());
                     put("startLocalization", "loc");
                     put("experience", random.nextInt(10) + 1);
-                    SkillPayload[] skills = getSkills();
-                    Set<Long> ownedSkills = new HashSet<>();
-                    for (SkillPayload skill: skills) {
-                        if (ThreadLocalRandom.current().nextInt(0, 2) == 0) {
-                            ownedSkills.add(skill.getId());
+                    if (userType != UserType.ADMIN) {
+                        SkillPayload[] skills = getSkills();
+                        Set<Long> ownedSkills = new HashSet<>();
+                        for (SkillPayload skill : skills) {
+                            if (ThreadLocalRandom.current().nextInt(0, 2) == 0) {
+                                ownedSkills.add(skill.getId());
+                            }
                         }
+                        put("skills", ownedSkills);
                     }
-                    put("skills", ownedSkills);
                 }
             }};
-            Helpers.sendPostRequest(body, userType == UserType.SERVICEMAN ? URL_SERVICEMAN : URL_CUSTOMER);
+            Helpers.sendPostRequest(body, userType == UserType.CUSTOMER ? URL_CUSTOMER : URL_SERVICEMAN, token);
         }
     }
 
@@ -205,6 +237,7 @@ public class Generator {
                 .uri(URI.create(URL_SKILL))
                 .GET()
                 .setHeader("Content-Type", "application/json")
+                .setHeader("Authorization", "Bearer " + token)
                 .build();
 
         HttpResponse<String> responseSkills = null;
@@ -225,4 +258,11 @@ public class Generator {
         }
     }
 
+    public static String getToken() {
+        return token;
+    }
+
+    public static void setToken(String token) {
+        Generator.token = token;
+    }
 }

@@ -20,8 +20,13 @@ public class ReportGenerator {
     private static final String URL_DEVICE = "http://localhost:8080/api/device";
     private static final String URL_FAILURE = "http://localhost:8080/api/failure";
     private static final String URL_REPORTS = "http://localhost:8080/api/report";
+    private static final String URL_AUTHORIZE = "http://localhost:8080/api/auth/signin";
+
+    private static String token;
 
     public static void generateReports(int count) {
+
+        authorize();
 
         List<Long> customers = new ArrayList<>(getIds(URL_CUSTOMER));
         List<Long> devices = new ArrayList<>(getIds(URL_DEVICE));
@@ -35,7 +40,18 @@ public class ReportGenerator {
             put("location", "loc");
             put("description", "Description");
         }};
-        Helpers.sendPostRequest(body, URL_REPORTS);
+        Helpers.sendPostRequest(body, URL_REPORTS, token);
+    }
+
+    public static void authorize() {
+        var body = new HashMap<String, Object>() {{
+            put("username", "adminadmin");
+            put("password", "adminadmin");
+        }};
+
+        HttpResponse<String> response = Helpers.sendPostRequest(body, URL_AUTHORIZE, token); //
+        System.out.println("RESP" +  response.body() + response.body().replace("\"accessToken\":\"", "").split("\"")[0]);
+        setToken(response.body().replace("\"accessToken\":\"", "").split("\"")[0]);
     }
 
     public static Set<Long> getIds(String url) {
@@ -44,6 +60,7 @@ public class ReportGenerator {
                 .uri(URI.create(url))
                 .GET()
                 .setHeader("Content-Type", "application/json")
+                .setHeader("Authorization", "Bearer " + token)
                 .build();
 
         try {
@@ -77,5 +94,13 @@ public class ReportGenerator {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static String getToken() {
+        return token;
+    }
+
+    public static void setToken(String token) {
+        ReportGenerator.token = token;
     }
 }

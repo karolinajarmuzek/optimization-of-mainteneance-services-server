@@ -6,6 +6,7 @@ import com.oms.serverapp.repository.ServiceManRepository;
 import com.oms.serverapp.model.ServiceMan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -21,12 +22,14 @@ public class ServiceManService {
     private ServiceManRepository serviceManRepository;
     private SkillService skillService;
     private RepairService repairService;
+    private PasswordEncoder encoder;
 
     @Autowired
-    public ServiceManService(ServiceManRepository serviceManRepository, SkillService skillService, RepairService repairService) {
+    public ServiceManService(ServiceManRepository serviceManRepository, SkillService skillService, RepairService repairService, PasswordEncoder encoder) {
         this.serviceManRepository = serviceManRepository;
         this.skillService = skillService;
         this.repairService = repairService;
+        this.encoder = encoder;
     }
 
     public List<ServiceManPayload> getAllServiceMen() {
@@ -47,7 +50,7 @@ public class ServiceManService {
     }
 
     public ResponseEntity<ServiceMan> addServiceMan(ServiceManPayload serviceManPayload) {
-        ServiceMan savedServiceMan = serviceManRepository.save(new ServiceMan(serviceManPayload.getFirstName(), serviceManPayload.getLastName(), serviceManPayload.getPhoneNumber(), serviceManPayload.getUsername(), serviceManPayload.getPassword(), serviceManPayload.getStartLocalization(), serviceManPayload.getExperience(), skillService.idsToSkills(serviceManPayload.getSkills()), repairService.idsToRepairs(serviceManPayload.getRepairs())));
+        ServiceMan savedServiceMan = serviceManRepository.save(new ServiceMan(serviceManPayload.getFirstName(), serviceManPayload.getLastName(), serviceManPayload.getPhoneNumber(), serviceManPayload.getUsername(), encoder.encode(serviceManPayload.getPassword()), serviceManPayload.getStartLocalization(), serviceManPayload.getExperience(), skillService.idsToSkills(serviceManPayload.getSkills()), repairService.idsToRepairs(serviceManPayload.getRepairs())));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedServiceMan.getId()).toUri();
         return ResponseEntity.created(location).build();
     }

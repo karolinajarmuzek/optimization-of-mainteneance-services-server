@@ -2,6 +2,7 @@ package com.oms.serverapp.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -32,7 +33,7 @@ public class ServiceMan {
     private String username;
 
     @NotBlank()
-    @Size(min = 6, max = 30, message = "Password must be between 6 and 30 characters.")
+    //@Size(min = 6, max = 30, message = "Password must be between 6 and 30 characters.")
     private String password;
 
     @NotBlank(message = "Location cannot be blank.")
@@ -53,6 +54,12 @@ public class ServiceMan {
 
     @OneToMany(mappedBy = "serviceMan", cascade = CascadeType.ALL)
     Set<Repair> repairs;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "serviveman_roles",
+            joinColumns = @JoinColumn(name = "serviceman_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
 
     public ServiceMan() {
@@ -161,5 +168,13 @@ public class ServiceMan {
 
     public void setRepairs(Set<Repair> repairs) {
         this.repairs = repairs;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

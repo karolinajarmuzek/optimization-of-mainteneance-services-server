@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class Helpers {
 
-    public static void sendPostRequest(HashMap<String, Object> body, String url) {
+    public static HttpResponse<String> sendPostRequest(HashMap<String, Object> body, String url, String token) {
 
         var objectMapper = new ObjectMapper();
         String requestBody = null;
@@ -24,11 +24,16 @@ public class Helpers {
         }
 
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                .setHeader("Content-Type", "application/json")
-                .build();
+                .setHeader("Content-Type", "application/json");
+
+        if (!url.split("/")[4].equals("auth")) { //and signin ??
+            requestBuilder.setHeader("Authorization", "Bearer " + token);
+        }
+
+        HttpRequest request = requestBuilder.build();
 
         HttpResponse<String> response = null;
         try {
@@ -39,5 +44,6 @@ public class Helpers {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return response;
     }
 }
