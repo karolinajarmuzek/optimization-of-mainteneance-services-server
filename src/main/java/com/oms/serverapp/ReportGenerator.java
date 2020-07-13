@@ -32,15 +32,17 @@ public class ReportGenerator {
         List<Long> devices = new ArrayList<>(getIds(URL_DEVICE));
         List<Long> failures = new ArrayList<>(getIds(URL_FAILURE));
 
-        var body = new HashMap<String, Object>() {{
-            put("customer", customers.get(ThreadLocalRandom.current().nextInt(customers.size())));
-            put("failure", failures.get(ThreadLocalRandom.current().nextInt(failures.size())));
-            put("device", devices.get(ThreadLocalRandom.current().nextInt(devices.size())));
-            put("date", new Date());
-            put("location", "loc");
-            put("description", "Description");
-        }};
-        Helpers.sendPostRequest(body, URL_REPORTS, token);
+        for (int i = 0; i < count; i++) {
+            var body = new HashMap<String, Object>() {{
+                put("customer", customers.get(ThreadLocalRandom.current().nextInt(customers.size())));
+                put("failure", failures.get(ThreadLocalRandom.current().nextInt(failures.size())));
+                put("device", devices.get(ThreadLocalRandom.current().nextInt(devices.size())));
+                put("date", new Date());
+                put("location", "loc");
+                put("description", "Description");
+            }};
+            Helpers.sendPostRequest(body, URL_REPORTS, token);
+        }
     }
 
     public static void authorize() {
@@ -50,8 +52,12 @@ public class ReportGenerator {
         }};
 
         HttpResponse<String> response = Helpers.sendPostRequest(body, URL_AUTHORIZE, token); //
-        System.out.println("RESP" +  response.body() + response.body().replace("\"accessToken\":\"", "").split("\"")[0]);
-        setToken(response.body().replace("\"accessToken\":\"", "").split("\"")[0]);
+        String token = response.body().replaceAll(",", "")
+                .replace("\"tokenType\":\"Bearer\"", "")
+                .replace("\"accessToken\":\"", "")
+                .split("\"")[0]
+                .split("\\{")[1];
+        setToken(token);
     }
 
     public static Set<Long> getIds(String url) {
