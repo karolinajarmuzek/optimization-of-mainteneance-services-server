@@ -49,6 +49,14 @@ public class ServiceManService {
         return new ServiceManPayload(serviceMan.getId(), serviceMan.getFirstName(), serviceMan.getLastName(), serviceMan.getPhoneNumber(), serviceMan.getUsername(), serviceMan.getPassword(), serviceMan.getStartLocalization(), serviceMan.getExperience(), skillService.skillsToIds(serviceMan.getOwnedSkills()), repairService.repairsToIds(serviceMan.getRepairs()));
     }
 
+    public ServiceManPayload getServiceManByUsername(String username) throws NotFoundException {
+        ServiceMan serviceMan = serviceManRepository.findByUsername(username).orElse(null);
+        if (serviceMan == null) {
+            throw new NotFoundException(String.format("Serviceman with username = %d not found.", username));
+        }
+        return new ServiceManPayload(serviceMan.getId(), serviceMan.getFirstName(), serviceMan.getLastName(), serviceMan.getPhoneNumber(), serviceMan.getUsername(), serviceMan.getPassword(), serviceMan.getStartLocalization(), serviceMan.getExperience(), skillService.skillsToIds(serviceMan.getOwnedSkills()), repairService.repairsToIds(serviceMan.getRepairs()));
+    }
+
     public ResponseEntity<ServiceMan> addServiceMan(ServiceManPayload serviceManPayload) {
         ServiceMan savedServiceMan = serviceManRepository.save(new ServiceMan(serviceManPayload.getFirstName(), serviceManPayload.getLastName(), serviceManPayload.getPhoneNumber(), serviceManPayload.getUsername(), encoder.encode(serviceManPayload.getPassword()), serviceManPayload.getStartLocalization(), serviceManPayload.getExperience(), skillService.idsToSkills(serviceManPayload.getSkills()), repairService.idsToRepairs(serviceManPayload.getRepairs())));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedServiceMan.getId()).toUri();

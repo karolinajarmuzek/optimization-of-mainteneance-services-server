@@ -6,6 +6,7 @@ import com.oms.serverapp.payload.ServiceManPayload;
 import com.oms.serverapp.service.ServiceManService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,6 +31,11 @@ public class ServiceManController {
     @GetMapping(path = "{id}")
     public ServiceManPayload retrieveServiceManById(@PathVariable("id") Long id) throws NotFoundException {
         return serviceManService.getServiceManById(id);
+    }
+
+    @GetMapping(path = "/byToken")
+    public ServiceManPayload retrieveServiceManByToken(Authentication authentication) throws NotFoundException {
+        return serviceManService.getServiceManByUsername(authentication.getName());
     }
 
     @PostMapping
