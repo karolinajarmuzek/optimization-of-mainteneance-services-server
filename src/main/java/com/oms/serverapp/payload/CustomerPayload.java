@@ -1,8 +1,11 @@
 package com.oms.serverapp.payload;
 
+import com.oms.serverapp.model.Customer;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CustomerPayload {
 
@@ -20,17 +23,14 @@ public class CustomerPayload {
     @Size(min = 9, max = 9, message = "Phone number must have 9 digits.")
     private String phoneNumber;
 
-    private Set<Long> reports;
-
     public CustomerPayload() {
     }
 
-    public CustomerPayload(Long id, String firstName, String lastName, String phoneNumber, Set<Long> reports) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.reports = reports;
+    public CustomerPayload(Customer customer) {
+        this.id = customer.getId();
+        this.firstName = customer.getFirstName();
+        this.lastName = customer.getLastName();
+        this.phoneNumber = customer.getPhoneNumber();
     }
 
     public Long getId() {
@@ -63,13 +63,5 @@ public class CustomerPayload {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public Set<Long> getReports() {
-        return reports;
-    }
-
-    public void setReports(Set<Long> reports) {
-        this.reports = reports;
     }
 }

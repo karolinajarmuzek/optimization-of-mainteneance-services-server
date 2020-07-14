@@ -16,21 +16,17 @@ import java.util.*;
 public class FailureService {
 
     private FailureRepository failureRepository;
-    private SkillService skillService;
-    private ReportService reportService;
 
     @Autowired
-    public FailureService(FailureRepository failureRepository, SkillService skillService, ReportService reportService) {
+    public FailureService(FailureRepository failureRepository) {
         this.failureRepository = failureRepository;
-        this.skillService = skillService;
-        this.reportService = reportService;
     }
 
     public List<FailurePayload> getAllFailures() {
         List<Failure> failures = failureRepository.findAll();
         List<FailurePayload> failuresResponse = new ArrayList<>();
         for (Failure failure: failures) {
-            failuresResponse.add(new FailurePayload(failure.getId(), failure.getType(), skillService.skillsToIds(failure.getSkills()), reportService.reportsToIds(failure.getReports())));
+            failuresResponse.add(new FailurePayload(failure));
         }
         return failuresResponse;
     }
@@ -40,11 +36,11 @@ public class FailureService {
         if (failure == null) {
             throw new NotFoundException(String.format("Failure with id = %d not found.", id));
         }
-        return new FailurePayload(failure.getId(), failure.getType(), skillService.skillsToIds(failure.getSkills()), reportService.reportsToIds(failure.getReports()));
+        return new FailurePayload(failure);
     }
 
     public ResponseEntity<Failure> addFailure(FailurePayload failurePayload) {
-        Failure savedFailure = failureRepository.save(new Failure(failurePayload.getType(), skillService.idsToSkills(failurePayload.getSkills()), reportService.idsToReports(failurePayload.getReports())));
+        Failure savedFailure = failureRepository.save(new Failure(failurePayload));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedFailure.getId()).toUri();
         return ResponseEntity.created(location).build();
     }
@@ -58,7 +54,7 @@ public class FailureService {
         if (failure == null) {
             return ResponseEntity.notFound().build();
         }
-        failureRepository.save(new Failure(failure.getId(), failurePayload.getType(), skillService.idsToSkills(failurePayload.getSkills()), reportService.idsToReports(failurePayload.getReports())));
+        failureRepository.save(new Failure(failure, failurePayload));
         return ResponseEntity.ok().build();
     }
 }

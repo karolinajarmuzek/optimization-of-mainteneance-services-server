@@ -2,7 +2,8 @@ package com.oms.serverapp.controller;
 
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Report;
-import com.oms.serverapp.payload.ReportPayload;
+import com.oms.serverapp.payload.ReportRequest;
+import com.oms.serverapp.payload.ReportResponse;
 import com.oms.serverapp.service.ReportService;
 import com.oms.serverapp.util.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,23 +25,23 @@ public class ReportController {
     }
 
     @GetMapping
-    public List<ReportPayload> retrieveAllReports() {
+    public List<ReportResponse> retrieveAllReports() {
         return reportService.getAllReports();
     }
 
     @GetMapping(path = "status={status}")
-    public List<ReportPayload> retrieveAllReportsByStatus(@PathVariable("status") Status status) {
+    public List<ReportResponse> retrieveAllReportsByStatus(@PathVariable("status") Status status) {
         return reportService.getAllReportsByStatus(status);
     }
 
     @GetMapping(path = "{id}")
-    public ReportPayload retrieveReportById(@PathVariable("id") Long id) throws NotFoundException {
+    public ReportResponse retrieveReportById(@PathVariable("id") Long id) throws NotFoundException {
         return reportService.getReportById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Report> createReport(@Valid @RequestBody ReportPayload reportPayload) {
-        return reportService.addReport(reportPayload);
+    public ResponseEntity<Report> createReport(@Valid @RequestBody ReportRequest reportRequest) {
+        return reportService.addReport(reportRequest);
     }
 
     @DeleteMapping(path = "{id}")
@@ -49,7 +50,7 @@ public class ReportController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Object> updateReportById(@Valid @RequestBody ReportPayload reportPayload, @PathVariable("id") Long id) {
-        return reportService.updateReport(reportPayload, id);
+    public ResponseEntity<Object> updateReportById(@Valid @RequestBody ReportRequest reportRequest, @PathVariable("id") Long id) {
+        return reportService.updateReport(reportRequest, id);
     }
 }

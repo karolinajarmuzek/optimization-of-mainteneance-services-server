@@ -1,9 +1,11 @@
 package com.oms.serverapp.payload;
 
+import com.oms.serverapp.model.Repair;
+
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-public class RepairPayload {
+public class RepairRequest {
 
     private Long id;
     private Long serviceMan;
@@ -19,16 +21,18 @@ public class RepairPayload {
 
     private Long report;
 
-    public RepairPayload() {
+    public RepairRequest() {
     }
 
-    public RepairPayload(Long id, Long serviceMan, Date date, String time, String status, Long report) {
-        this.id = id;
-        this.serviceMan = serviceMan;
-        this.date = date;
-        this.time = time;
-        this.status = status;
-        this.report = report;
+    public RepairRequest(Repair repair) {
+        this.id = repair.getId();
+        this.serviceMan = repair.getServiceMan().getId();
+        this.date = repair.getDate();
+        this.time = repair.getTime();
+        this.status = repair.getStatus();
+        if (repair.getReport() != null) { // when throw ex -> remove this
+            this.report = repair.getReport().getId();
+        }
     }
 
     public Long getId() {

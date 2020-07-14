@@ -1,5 +1,7 @@
 package com.oms.serverapp.model;
 
+import com.oms.serverapp.payload.RepairRequest;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -25,28 +27,36 @@ public class Repair {
     @NotNull(message = "Repair status cannot be null.")
     private String status;
 
-    @OneToOne(mappedBy = "repair")
+    @OneToOne
+    @JoinColumn(name = "report_id", referencedColumnName = "id")
     private Report report;
-
 
     public Repair() {
     }
 
-    public Repair(ServiceMan serviceMan, Date date, String time, String status, Report report) {
-        this.serviceMan = serviceMan;
-        this.date = date;
-        this.time = time;
-        this.status = status;
-        this.report = report;
+    public Repair(RepairRequest repairRequest, ServiceMan serviceMan, Report report) {
+        if (serviceMan != null) {
+            this.serviceMan = serviceMan;
+        }
+        this.date = repairRequest.getDate();
+        this.time = repairRequest.getTime();
+        this.status = repairRequest.getStatus(); //Status.REPORTED ??
+        if (report != null) { //report should not be null!
+            this.report = report;
+        }
     }
 
-    public Repair(Long id, ServiceMan serviceMan, Date date, String time,String status, Report report) {
-        this.id = id;
-        this.serviceMan = serviceMan;
-        this.date = date;
-        this.time = time;
-        this.status = status;
-        this.report = report;
+    public Repair(Repair repair, RepairRequest repairRequest, ServiceMan serviceMan, Report report) {
+        this.id = repair.getId();
+        if (serviceMan != null) {
+            this.serviceMan = serviceMan;
+        }
+        this.date = repairRequest.getDate();
+        this.time = repairRequest.getTime();
+        this.status = repairRequest.getStatus(); //Status.REPORTED ??
+        if (report != null) {
+            this.report = report;
+        }
     }
 
     public Long getId() {

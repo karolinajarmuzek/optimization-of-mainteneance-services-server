@@ -1,9 +1,12 @@
 package com.oms.serverapp.payload;
 
+import com.oms.serverapp.model.Skill;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SkillPayload {
 
@@ -33,14 +36,14 @@ public class SkillPayload {
     public SkillPayload() {
     }
 
-    public SkillPayload(Long id, Long device, Long failure, Integer profit, Integer minRepairTime, Integer maxRepairTime, Set<Long> serviceMen) {
-        this.id = id;
-        this.device = device;
-        this.failure = failure;
-        this.profit = profit;
-        this.minRepairTime = minRepairTime;
-        this.maxRepairTime = maxRepairTime;
-        this.serviceMen = serviceMen;
+    public SkillPayload(Skill skill) {
+        this.id = skill.getId();
+        this.device = skill.getDevice().getId();
+        this.failure = skill.getFailure().getId();
+        this.profit = skill.getProfit();
+        this.minRepairTime = skill.getMinRepairTime();
+        this.maxRepairTime = skill.getMaxRepairTime();
+        this.serviceMen = skill.getServiceMen().stream().map(serviceMan -> serviceMan.getId()).collect(Collectors.toSet());
     }
 
     public Long getId() {

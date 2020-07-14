@@ -1,5 +1,6 @@
 package com.oms.serverapp.model;
 
+import com.oms.serverapp.payload.ReportRequest;
 import com.oms.serverapp.util.Status;
 
 import javax.persistence.*;
@@ -45,32 +46,31 @@ public class Report {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToOne
-    @JoinColumn(name = "repair_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "report")
     private Repair repair;
 
     public Report() {
     }
 
-    public Report(Customer customer, Failure failure, Device device, Date date, String location, String description, Status status) {
+    public Report(ReportRequest reportRequest, Customer customer, Failure failure, Device device) {
         this.customer = customer;
         this.failure = failure;
         this.device = device;
-        this.date = date;
-        this.location = location;
-        this.description = description;
-        this.status = status;
+        this.date = reportRequest.getDate();
+        this.location = reportRequest.getLocation();
+        this.description = reportRequest.getDescription();
+        this.status = reportRequest.getStatus();
     }
 
-    public Report(Customer customer, Failure failure, Device device, Date date, String location, String description, Status status, Repair repair) {
+    public Report(Report report, ReportRequest reportRequest, Customer customer, Failure failure, Device device, Repair repair) {
+        this.id = report.getId();
         this.customer = customer;
         this.failure = failure;
         this.device = device;
-        this.date = date;
-        this.location = location;
-        this.description = description;
-        this.status = status;
-        this.repair = repair;
+        this.date = reportRequest.getDate();
+        this.location = reportRequest.getLocation();
+        this.description = reportRequest.getDescription();
+        this.status = reportRequest.getStatus();
     }
 
     public Report(Long id, Customer customer, Failure failure, Device device, Date date, String location, String description, Status status, Repair repair) {

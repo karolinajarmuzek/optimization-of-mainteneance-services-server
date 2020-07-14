@@ -1,5 +1,7 @@
 package com.oms.serverapp.model;
 
+import com.oms.serverapp.payload.FailurePayload;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
@@ -24,17 +26,15 @@ public class Failure {
     public Failure() {
     }
 
-    public Failure(String type, Set<Skill> skills, Set<Report> reports) {
-        this.type = type;
-        this.skills = skills;
-        this.reports = reports;
+    public Failure(FailurePayload failurePayload) {
+        this.type = failurePayload.getType();
     }
 
-    public Failure(Long id, String type, Set<Skill> skills, Set<Report> reports) {
-        this.id = id;
-        this.type = type;
-        this.skills = skills;
-        this.reports = reports;
+    public Failure(Failure failure, FailurePayload failurePayload) {
+        this.id = failure.getId();
+        this.type = failurePayload.getType();
+        this.skills = failure.getSkills();
+        this.reports = failure.getReports();
     }
 
     public Long getId() {

@@ -1,7 +1,10 @@
 package com.oms.serverapp.payload;
 
+import com.oms.serverapp.model.ServiceMan;
+
 import javax.validation.constraints.*;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ServiceManPayload {
 
@@ -41,17 +44,17 @@ public class ServiceManPayload {
     public ServiceManPayload() {
     }
 
-    public ServiceManPayload(Long id, String firstName, String lastName, String phoneNumber, String username, String password, String startLocalization, Integer experience, Set<Long> skills, Set<Long> repairs) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.username = username;
-        this.password = password;
-        this.startLocalization = startLocalization;
-        this.experience = experience;
-        this.skills = skills;
-        this.repairs = repairs;
+    public ServiceManPayload(ServiceMan serviceMan) {
+        this.id = serviceMan.getId();
+        this.firstName = serviceMan.getFirstName();
+        this.lastName = serviceMan.getLastName();
+        this.phoneNumber = serviceMan.getPhoneNumber();
+        this.username = serviceMan.getUsername();
+        this.password = serviceMan.getPassword();
+        this.startLocalization = serviceMan.getStartLocalization();
+        this.experience = serviceMan.getExperience();
+        this.skills = serviceMan.getOwnedSkills().stream().map(skill -> skill.getId()).collect(Collectors.toSet());
+        this.repairs = serviceMan.getRepairs().stream().map(repair -> repair.getId()).collect(Collectors.toSet());
     }
 
     public Long getId() {

@@ -1,5 +1,7 @@
 package com.oms.serverapp.model;
 
+import com.oms.serverapp.payload.CustomerPayload;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -31,19 +33,18 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(String firstName, String lastName, String phoneNumber, Set<Report> reports) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.reports = reports;
+    public Customer(CustomerPayload customerPayload) {
+        this.firstName = customerPayload.getFirstName();
+        this.lastName = customerPayload.getLastName();
+        this.phoneNumber = customerPayload.getPhoneNumber();
     }
 
-    public Customer(Long id, String firstName, String lastName, String phoneNumber, Set<Report> reports) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.reports = reports;
+    public Customer(Customer customer, CustomerPayload customerPayload) {
+        this.id = customer.getId();
+        this.firstName = customerPayload.getFirstName();
+        this.lastName = customerPayload.getLastName();
+        this.phoneNumber = customerPayload.getPhoneNumber();
+        this.reports = customer.getReports();
     }
 
     public Long getId() {

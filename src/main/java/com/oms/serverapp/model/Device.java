@@ -1,5 +1,7 @@
 package com.oms.serverapp.model;
 
+import com.oms.serverapp.payload.DevicePayload;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -30,19 +32,17 @@ public class Device {
     public Device() {
     }
 
-    public Device(String name, String type, Set<Skill> skills, Set<Report> reports) {
-        this.name = name;
-        this.type = type;
-        this.skills = skills;
-        this.reports = reports;
+    public Device(DevicePayload devicePayload) {
+        this.name = devicePayload.getName();
+        this.type = devicePayload.getType();
     }
 
-    public Device(Long id, String name, String type, Set<Skill> skills, Set<Report> reports) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        this.skills = skills;
-        this.reports = reports;
+    public Device(Device device, DevicePayload devicePayload) {
+        this.id = device.getId();
+        this.name = devicePayload.getName();
+        this.type = devicePayload.getType();
+        this.skills = device.getSkills();
+        this.reports = device.getReports();
     }
 
     public Long getId() {

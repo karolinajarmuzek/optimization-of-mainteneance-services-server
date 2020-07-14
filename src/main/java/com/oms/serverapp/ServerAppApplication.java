@@ -8,8 +8,9 @@ public class ServerAppApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ServerAppApplication.class, args);
-        Generator.generateData();
-        //ReportGenerator.generateReports(1);
+        //Generator.generateData();
+        //ReportGenerator.generateReports(5);
+        //RepairOptimization.scheduler();
     }
 
 }

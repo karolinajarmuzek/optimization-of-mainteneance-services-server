@@ -1,8 +1,11 @@
 package com.oms.serverapp.payload;
 
+import com.oms.serverapp.model.Device;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DevicePayload {
 
@@ -16,18 +19,13 @@ public class DevicePayload {
     @Size(min = 3, max = 30, message = "Type must be between 3 and 30 characters.")
     private String type;
 
-    private Set<Long> skills;
-    private Set<Long> reports;
-
     public DevicePayload() {
     }
 
-    public DevicePayload(Long id, String name, String type, Set<Long> skills, Set<Long> reports) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        this.skills = skills;
-        this.reports = reports;
+    public DevicePayload(Device device) {
+        this.id = device.getId();
+        this.name = device.getName();
+        this.type = device.getType();
     }
 
     public Long getId() {
@@ -52,21 +50,5 @@ public class DevicePayload {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public Set<Long> getSkills() {
-        return skills;
-    }
-
-    public void setSkills(Set<Long> skills) {
-        this.skills = skills;
-    }
-
-    public Set<Long> getReports() {
-        return reports;
-    }
-
-    public void setReports(Set<Long> reports) {
-        this.reports = reports;
     }
 }

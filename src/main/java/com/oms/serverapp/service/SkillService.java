@@ -38,7 +38,7 @@ public class SkillService {
         List<Skill> skills = skillRepository.findAll();
         List<SkillPayload> skillsResponse = new ArrayList<>();
         for (Skill skill: skills) {
-            skillsResponse.add(new SkillPayload(skill.getId(), skill.getDevice().getId(), skill.getFailure().getId(), skill.getProfit(), skill.getMinRepairTime(), skill.getMaxRepairTime(), serviceManService.serviceMenToIds(skill.getServiceMen())));
+            skillsResponse.add(new SkillPayload(skill));
         }
         return skillsResponse;
     }
@@ -48,7 +48,7 @@ public class SkillService {
         if (skill == null) {
             throw new NotFoundException(String.format("Skill with id = %d not found.", id));
         }
-        return new SkillPayload(skill.getId(), skill.getDevice().getId(), skill.getFailure().getId(), skill.getProfit(), skill.getMinRepairTime(), skill.getMaxRepairTime(), serviceManService.serviceMenToIds(skill.getServiceMen()));
+        return new SkillPayload(skill);
     }
 
     public ResponseEntity<Skill> addSkill(SkillPayload skillPayload) throws IncorrectRepairTimeException {
@@ -56,7 +56,7 @@ public class SkillService {
             throw new IncorrectRepairTimeException();
         Device device = deviceRepository.findById(skillPayload.getDevice()).orElse(null);
         Failure failure = failureRepository.findById(skillPayload.getFailure()).orElse(null);
-        Skill savedSkill = skillRepository.save(new Skill(device, failure, skillPayload.getProfit(), skillPayload.getMinRepairTime(), skillPayload.getMaxRepairTime(), serviceManService.idsToServiceMen(skillPayload.getServiceMen())));
+        Skill savedSkill = skillRepository.save(new Skill(skillPayload, device, failure, serviceManService.idsToServiceMen(skillPayload.getServiceMen())));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedSkill).toUri();
         return ResponseEntity.created(location).build();
     }
@@ -70,20 +70,10 @@ public class SkillService {
         if (skill == null) {
             return ResponseEntity.notFound().build();
         }
-        Device device = deviceRepository.findById(skillPayload.getDevice()).orElse(null);
-        Failure failure = failureRepository.findById(skillPayload.getFailure()).orElse(null);
-        skillRepository.save(new Skill(skill.getId(), device, failure, skillPayload.getProfit(), skillPayload.getMinRepairTime(), skillPayload.getMaxRepairTime(), serviceManService.idsToServiceMen(skillPayload.getServiceMen())));
+        Device device = deviceRepository.findById(skillPayload.getDevice()).orElse(skill.getDevice());
+        Failure failure = failureRepository.findById(skillPayload.getFailure()).orElse(skill.getFailure());
+        skillRepository.save(new Skill(skill, skillPayload, device, failure, serviceManService.idsToServiceMen(skillPayload.getServiceMen())));
         return ResponseEntity.ok().build();
-    }
-
-    public Set<Long> skillsToIds(Set<Skill> skills) {
-        Set<Long> skillsIds = new HashSet<>();
-        if (skills != null) {
-            for (Skill skill : skills) {
-                skillsIds.add(skill.getId());
-            }
-        }
-        return skillsIds;
     }
 
     public Set<Skill> idsToSkills(Set<Long> skillsIds) {

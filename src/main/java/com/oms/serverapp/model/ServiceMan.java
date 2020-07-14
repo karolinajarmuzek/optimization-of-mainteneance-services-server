@@ -1,8 +1,11 @@
 package com.oms.serverapp.model;
 
+import com.oms.serverapp.payload.ServiceManPayload;
+
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -65,28 +68,28 @@ public class ServiceMan {
     public ServiceMan() {
     }
 
-    public ServiceMan(String firstName, String lastName, String phoneNumber, String username, String password, String startLocalization, Integer experience, Set<Skill> ownedSkills, Set<Repair> repairs) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.username = username;
+    public ServiceMan(ServiceManPayload serviceManPayload, String password, Set<Skill> skills, Set<Repair> repairs) {
+        this.firstName = serviceManPayload.getFirstName();
+        this.lastName = serviceManPayload.getLastName();
+        this.phoneNumber = serviceManPayload.getPhoneNumber();
+        this.username = serviceManPayload.getUsername();
         this.password = password;
-        this.startLocalization = startLocalization;
-        this.experience = experience;
-        this.ownedSkills = ownedSkills;
+        this.startLocalization = serviceManPayload.getStartLocalization();
+        this.experience = serviceManPayload.getExperience();
+        this.ownedSkills = skills;
         this.repairs = repairs;
     }
 
-    public ServiceMan(Long id, String firstName, String lastName, String phoneNumber, String username, String password, String startLocalization, Integer experience, Set<Skill> ownedSkills, Set<Repair> repairs) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.username = username;
+    public ServiceMan( ServiceMan serviceMan, ServiceManPayload serviceManPayload, String password, Set<Skill> skills, Set<Repair> repairs) {
+        this.id = serviceMan.getId();
+        this.firstName = serviceManPayload.getFirstName();
+        this.lastName = serviceManPayload.getLastName();
+        this.phoneNumber = serviceManPayload.getPhoneNumber();
+        this.username = serviceManPayload.getUsername();
         this.password = password;
-        this.startLocalization = startLocalization;
-        this.experience = experience;
-        this.ownedSkills = ownedSkills;
+        this.startLocalization = serviceManPayload.getStartLocalization();
+        this.experience = serviceManPayload.getExperience();
+        this.ownedSkills = skills;
         this.repairs = repairs;
     }
 

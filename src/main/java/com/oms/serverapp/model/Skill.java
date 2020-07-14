@@ -1,5 +1,7 @@
 package com.oms.serverapp.model;
 
+import com.oms.serverapp.payload.SkillPayload;
+
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -41,22 +43,22 @@ public class Skill {
     public Skill() {
     }
 
-    public Skill(Device device, Failure failure, Integer profit, Integer minRepairTime, Integer maxRepairTime, Set<ServiceMan> serviceMen) {
+    public Skill(SkillPayload skillPayload, Device device, Failure failure, Set<ServiceMan> serviceMen) {
         this.device = device;
         this.failure = failure;
-        this.profit = profit;
-        this.minRepairTime = minRepairTime;
-        this.maxRepairTime = maxRepairTime;
+        this.profit = skillPayload.getProfit();
+        this.minRepairTime = skillPayload.getMinRepairTime();
+        this.maxRepairTime = skillPayload.getMaxRepairTime();
         this.serviceMen = serviceMen;
     }
 
-    public Skill(Long id, Device device, Failure failure, Integer profit, Integer minRepairTime, Integer maxRepairTime, Set<ServiceMan> serviceMen) {
-        this.id = id;
+    public Skill(Skill skill, SkillPayload skillPayload, Device device, Failure failure, Set<ServiceMan> serviceMen) {
+        this.id = skill.getId();
         this.device = device;
         this.failure = failure;
-        this.profit = profit;
-        this.minRepairTime = minRepairTime;
-        this.maxRepairTime = maxRepairTime;
+        this.profit = skillPayload.getProfit();
+        this.minRepairTime = skillPayload.getMinRepairTime();
+        this.maxRepairTime = skillPayload.getMaxRepairTime();
         this.serviceMen = serviceMen;
     }
 

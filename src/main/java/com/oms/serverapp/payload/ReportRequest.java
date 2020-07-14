@@ -1,5 +1,6 @@
 package com.oms.serverapp.payload;
 
+import com.oms.serverapp.model.Report;
 import com.oms.serverapp.util.Status;
 
 import javax.persistence.EnumType;
@@ -9,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
-public class ReportPayload {
+public class ReportRequest {
 
     private Long id;
 
@@ -32,36 +33,26 @@ public class ReportPayload {
     @Size(min = 10, max = 200, message = "Description must be between 10 and 200characters.")
     private String description;
 
-    //@NotNull(message = "Status cannot be null")
     @Enumerated(EnumType.STRING)
     private Status status;
 
     private Long repair;
 
-    public ReportPayload() {
+    public ReportRequest() {
     }
 
-    public ReportPayload(Long id, Long customer, Long failure, Long device, Date date, String location, String description, Status status) {
-        this.id = id;
-        this.customer = customer;
-        this.failure = failure;
-        this.device = device;
-        this.date = date;
-        this.location = location;
-        this.description = description;
-        this.status = status;
-    }
-
-    public ReportPayload(Long id, Long customer, Long failure, Long device, Date date, String location, String description, Status status, Long repair) {
-        this.id = id;
-        this.customer = customer;
-        this.failure = failure;
-        this.device = device;
-        this.date = date;
-        this.location = location;
-        this.description = description;
-        this.status = status;
-        this.repair = repair;
+    public ReportRequest(Report report) {
+        this.id = report.getId();
+        this.customer = report.getCustomer().getId();
+        this.failure = report.getFailure().getId();
+        this.device = report.getDevice().getId();
+        this.date = report.getDate();
+        this.location = report.getLocation();
+        this.description = report.getDescription();
+        this.status = report.getStatus();
+        if (report.getRepair() != null) {
+            this.repair = report.getRepair().getId();
+        }
     }
 
     public Long getId() {
