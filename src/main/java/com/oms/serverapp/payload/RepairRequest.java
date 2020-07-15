@@ -1,7 +1,10 @@
 package com.oms.serverapp.payload;
 
 import com.oms.serverapp.model.Repair;
+import com.oms.serverapp.util.RepairStatus;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -16,8 +19,8 @@ public class RepairRequest {
     @NotNull(message = "Repair time cannot be null.")
     private String time;
 
-    @NotNull(message = "Repair status cannot be null.")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private RepairStatus status;
 
     private Long report;
 
@@ -67,11 +70,11 @@ public class RepairRequest {
         this.time = time;
     }
 
-    public String getStatus() {
+    public RepairStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(RepairStatus status) {
         this.status = status;
     }
 

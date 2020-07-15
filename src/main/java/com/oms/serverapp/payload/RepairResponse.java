@@ -1,15 +1,17 @@
 package com.oms.serverapp.payload;
 
 import com.oms.serverapp.model.Repair;
+import com.oms.serverapp.util.RepairStatus;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class RepairResponse {
 
     private Long id;
-    private Date date;
+    private String date;
     private String time;
-    private String status;
+    private RepairStatus status;
     private ReportResponse reportResponse;
 
     public RepairResponse() {
@@ -17,7 +19,7 @@ public class RepairResponse {
 
     public RepairResponse(Repair repair, ReportResponse reportResponse) {
         this.id = repair.getId();
-        this.date = repair.getDate();
+        this.date = new SimpleDateFormat("dd.MM.yyyy").format(repair.getDate());
         this.time = repair.getTime();
         this.status = repair.getStatus();
         this.reportResponse = reportResponse;
@@ -31,11 +33,11 @@ public class RepairResponse {
         this.id = id;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -47,11 +49,11 @@ public class RepairResponse {
         this.time = time;
     }
 
-    public String getStatus() {
+    public RepairStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(RepairStatus status) {
         this.status = status;
     }
 

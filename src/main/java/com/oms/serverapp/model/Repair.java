@@ -1,6 +1,7 @@
 package com.oms.serverapp.model;
 
 import com.oms.serverapp.payload.RepairRequest;
+import com.oms.serverapp.util.RepairStatus;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,8 +25,8 @@ public class Repair {
     @NotNull(message = "Repair time cannot be null.")
     private String time; ///????
 
-    @NotNull(message = "Repair status cannot be null.")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private RepairStatus status;
 
     @OneToOne
     @JoinColumn(name = "report_id", referencedColumnName = "id")
@@ -91,11 +92,11 @@ public class Repair {
         this.time = time;
     }
 
-    public String getStatus() {
+    public RepairStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(RepairStatus status) {
         this.status = status;
     }
 

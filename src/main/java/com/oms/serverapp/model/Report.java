@@ -1,7 +1,7 @@
 package com.oms.serverapp.model;
 
 import com.oms.serverapp.payload.ReportRequest;
-import com.oms.serverapp.util.Status;
+import com.oms.serverapp.util.ReportStatus;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -42,9 +42,9 @@ public class Report {
     @Size(min = 10, max = 200, message = "Description must be between 10 and 200characters.")
     private String description;
 
-    @NotNull(message = "Status cannot be null")
+    //@NotNull(message = "Status cannot be null")
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private ReportStatus status;
 
     @OneToOne(mappedBy = "report")
     private Repair repair;
@@ -73,7 +73,7 @@ public class Report {
         this.status = reportRequest.getStatus();
     }
 
-    public Report(Long id, Customer customer, Failure failure, Device device, Date date, String location, String description, Status status, Repair repair) {
+    public Report(Long id, Customer customer, Failure failure, Device device, Date date, String location, String description, ReportStatus reportStatus, Repair repair) {
         this.id = id;
         this.customer = customer;
         this.failure = failure;
@@ -81,7 +81,7 @@ public class Report {
         this.date = date;
         this.location = location;
         this.description = description;
-        this.status = status;
+        this.status = reportStatus;
         this.repair = repair;
     }
 
@@ -141,11 +141,11 @@ public class Report {
         this.description = description;
     }
 
-    public Status getStatus() {
+    public ReportStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(ReportStatus status) {
         this.status = status;
     }
 

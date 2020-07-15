@@ -1,5 +1,5 @@
 package com.oms.serverapp.util;
 
-public enum Status {
+public enum ReportStatus {
     REPORTED, PENDING, ASSIGNED, REPAIRING, FINISHED
 }

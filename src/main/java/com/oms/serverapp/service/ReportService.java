@@ -4,7 +4,7 @@ import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.*;
 import com.oms.serverapp.payload.*;
 import com.oms.serverapp.repository.*;
-import com.oms.serverapp.util.Status;
+import com.oms.serverapp.util.ReportStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -42,6 +42,7 @@ public class ReportService {
         Customer customer = customerRepository.findById(reportRequest.getCustomer()).orElse(report == null ? null : report.getCustomer());
         Failure failure = failureRepository.findById(reportRequest.getFailure()).orElse(report == null ? null : report.getFailure());
         Device device = deviceRepository.findById(reportRequest.getDevice()).orElse(report == null ? null : report.getDevice());
+        reportRequest.setStatus(ReportStatus.REPORTED);
         if (report == null) {
             return new Report(reportRequest, customer, failure, device);
         } else {
@@ -59,8 +60,8 @@ public class ReportService {
         return reportsResponse;
     }
 
-    public List<ReportResponse> getAllReportsByStatus(Status status) {
-        List<Report> reports = reportRepository.findReportsByStatus(status);
+    public List<ReportResponse> getAllReportsByStatus(ReportStatus reportStatus) {
+        List<Report> reports = reportRepository.findReportsByStatus(reportStatus);
         List<ReportResponse> reportsResponse = new ArrayList<>();
         for (Report report: reports) {
             reportsResponse.add(generateReportResponse(report));

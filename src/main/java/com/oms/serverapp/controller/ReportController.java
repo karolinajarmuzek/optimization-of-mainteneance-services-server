@@ -5,7 +5,7 @@ import com.oms.serverapp.model.Report;
 import com.oms.serverapp.payload.ReportRequest;
 import com.oms.serverapp.payload.ReportResponse;
 import com.oms.serverapp.service.ReportService;
-import com.oms.serverapp.util.Status;
+import com.oms.serverapp.util.ReportStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +30,8 @@ public class ReportController {
     }
 
     @GetMapping(path = "status={status}")
-    public List<ReportResponse> retrieveAllReportsByStatus(@PathVariable("status") Status status) {
-        return reportService.getAllReportsByStatus(status);
+    public List<ReportResponse> retrieveAllReportsByStatus(@PathVariable("status") ReportStatus reportStatus) {
+        return reportService.getAllReportsByStatus(reportStatus);
     }
 
     @GetMapping(path = "{id}")

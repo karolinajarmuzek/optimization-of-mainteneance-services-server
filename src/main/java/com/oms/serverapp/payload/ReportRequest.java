@@ -1,7 +1,7 @@
 package com.oms.serverapp.payload;
 
 import com.oms.serverapp.model.Report;
-import com.oms.serverapp.util.Status;
+import com.oms.serverapp.util.ReportStatus;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -26,7 +26,7 @@ public class ReportRequest {
     @NotNull(message = "Date of submission cannot be null.")
     private Date date;
 
-    @NotBlank(message = "Report cannot be null")
+    @NotBlank(message = "Location cannot be null")
     private String location;
 
     @NotBlank()
@@ -34,7 +34,7 @@ public class ReportRequest {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private ReportStatus status;
 
     private Long repair;
 
@@ -111,11 +111,11 @@ public class ReportRequest {
         this.description = description;
     }
 
-    public Status getStatus() {
+    public ReportStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(ReportStatus status) {
         this.status = status;
     }
 

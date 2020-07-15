@@ -4,9 +4,8 @@ import com.google.gson.Gson;
 import com.oms.serverapp.payload.CustomerPayload;
 import com.oms.serverapp.payload.DevicePayload;
 import com.oms.serverapp.payload.FailurePayload;
-import com.oms.serverapp.payload.SkillPayload;
 import com.oms.serverapp.util.Helpers;
-import com.oms.serverapp.util.Status;
+import com.oms.serverapp.util.ReportStatus;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,7 +13,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class RepairOptimization {
 
@@ -41,7 +39,7 @@ public class RepairOptimization {
                 put("serviceMan", servicemen.get(1));
                 put("date", new Date());
                 put("time", "8:00");
-                put("status", Status.PENDING);
+                put("status", ReportStatus.PENDING);
                 put("report", reports.get(finalI));
             }};
             Helpers.sendPostRequest(body, URL_REPAIR, token);

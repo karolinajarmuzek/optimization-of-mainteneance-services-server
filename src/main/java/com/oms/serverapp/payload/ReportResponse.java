@@ -1,8 +1,9 @@
 package com.oms.serverapp.payload;
 
 import com.oms.serverapp.model.Report;
-import com.oms.serverapp.util.Status;
+import com.oms.serverapp.util.ReportStatus;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ReportResponse {
@@ -10,10 +11,10 @@ public class ReportResponse {
     private CustomerPayload customerPayload;
     private FailurePayload failurePayload;
     private DevicePayload devicePayload;
-    private Date date;
+    private String date;
     private String location;
     private String description;
-    private Status status;
+    private ReportStatus status;
     private Long repair;
 
     public ReportResponse() {
@@ -24,7 +25,7 @@ public class ReportResponse {
         this.customerPayload = customerPayload;
         this.failurePayload = failurePayload;
         this.devicePayload = devicePayload;
-        this.date = report.getDate();
+        this.date = new SimpleDateFormat("dd.MM.yyyy").format(report.getDate());
         this.location = report.getLocation();
         this.description = report.getDescription();
         this.status = report.getStatus();
@@ -66,11 +67,11 @@ public class ReportResponse {
         this.devicePayload = devicePayload;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -90,11 +91,11 @@ public class ReportResponse {
         this.description = description;
     }
 
-    public Status getStatus() {
+    public ReportStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(ReportStatus status) {
         this.status = status;
     }
 
