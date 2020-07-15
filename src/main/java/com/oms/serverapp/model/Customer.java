@@ -15,15 +15,15 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank()
+    @NotBlank(message = "Name must be between 3 and 15 characters.")
     @Size(min = 3, max = 15, message = "Name must be between 3 and 15 characters.")
     private String firstName;
 
-    @NotBlank()
+    @NotBlank(message = "Surname must be between 3 and 15 characters.")
     @Size(min = 3, max = 15, message = "Surname must be between 3 and 15 characters.")
     private String lastName;
 
-    @NotBlank()
+    @NotBlank(message = "Phone number must have 9 digits.")
     @Size(min = 9, max = 9, message = "Phone number must have 9 digits.")
     private String phoneNumber;
 
@@ -41,9 +41,9 @@ public class Customer {
 
     public Customer(Customer customer, CustomerPayload customerPayload) {
         this.id = customer.getId();
-        this.firstName = customerPayload.getFirstName();
-        this.lastName = customerPayload.getLastName();
-        this.phoneNumber = customerPayload.getPhoneNumber();
+        this.firstName = customerPayload.getFirstName() != null ? customerPayload.getFirstName() : customer.getFirstName();
+        this.lastName = customerPayload.getLastName() != null ? customerPayload.getLastName() : customer.getLastName();
+        this.phoneNumber = customerPayload.getPhoneNumber() != null ? customerPayload.getPhoneNumber() : customer.getPhoneNumber();
         this.reports = customer.getReports();
     }
 

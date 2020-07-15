@@ -50,7 +50,7 @@ public class RepairController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Object> updateRepairById(@Valid @RequestBody RepairRequest repairRequest, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> updateRepairById(@RequestBody RepairRequest repairRequest, @PathVariable("id") Long id) {
         return repairService.updateRepair(repairRequest, id);
     }
 }

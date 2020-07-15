@@ -15,11 +15,11 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank()
+    @NotBlank(message = "Name must be between 3 and 30 characters.")
     @Size(min = 3, max = 30, message = "Name must be between 3 and 30 characters.")
     private String name;
 
-    @NotBlank()
+    @NotBlank(message = "Type must be between 3 and 30 characters.")
     @Size(min = 3, max = 30, message = "Type must be between 3 and 30 characters.")
     private String type;
 
@@ -39,8 +39,8 @@ public class Device {
 
     public Device(Device device, DevicePayload devicePayload) {
         this.id = device.getId();
-        this.name = devicePayload.getName();
-        this.type = devicePayload.getType();
+        this.name = devicePayload.getName() != null ? devicePayload.getName() : device.getName();
+        this.type = devicePayload.getType() != null ? devicePayload.getType() : device.getType();
         this.skills = device.getSkills();
         this.reports = device.getReports();
     }

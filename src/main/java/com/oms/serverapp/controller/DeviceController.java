@@ -43,7 +43,7 @@ public class DeviceController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Object> updateDeviceById(@Valid @RequestBody DevicePayload devicePayload, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> updateDeviceById(@RequestBody DevicePayload devicePayload, @PathVariable("id") Long id) {
         return deviceService.updateDevice(devicePayload, id);
     }
 }

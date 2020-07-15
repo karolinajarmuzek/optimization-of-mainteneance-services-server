@@ -40,7 +40,7 @@ public class ReportController {
     }
 
     @PostMapping
-    public ResponseEntity<Report> createReport(@Valid @RequestBody ReportRequest reportRequest) {
+    public ResponseEntity<Report> createReport(@RequestBody ReportRequest reportRequest) {
         return reportService.addReport(reportRequest);
     }
 

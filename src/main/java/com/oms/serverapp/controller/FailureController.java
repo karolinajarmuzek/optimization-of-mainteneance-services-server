@@ -43,7 +43,7 @@ public class FailureController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Object> updateFailureById(@Valid @RequestBody FailurePayload failurePayload, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> updateFailureById(@RequestBody FailurePayload failurePayload, @PathVariable("id") Long id) {
         return failureService.updateFailure(failurePayload, id);
     }
 }

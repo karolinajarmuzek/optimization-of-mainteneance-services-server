@@ -52,18 +52,10 @@ public class Repair {
         if (serviceMan != null) {
             this.serviceMan = serviceMan;
         }
-        this.date = repairRequest.getDate();
-        if (repairRequest.getDate() == null) {
-            this.date = repair.getDate();
-        } else {
-        }
-        if (repairRequest.getTime() == null) {
-            this.time = repair.getTime();
-        } else {
-            this.time = repairRequest.getTime();
-        }
-
-        this.status = repairRequest.getStatus(); //Status.REPORTED ??
+        this.date = repairRequest.getDate() != null ? repairRequest.getDate() : repair.getDate();
+        this.date = repairRequest.getDate() != null ? repairRequest.getDate() : repair.getDate();
+        this.time = repairRequest.getTime() != null ? repairRequest.getTime() : repair.getTime();
+        this.status = repairRequest.getStatus() != null ? repairRequest.getStatus() : repair.getStatus();
         if (report != null) {
             this.report = report;
         }

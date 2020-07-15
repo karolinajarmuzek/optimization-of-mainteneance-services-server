@@ -27,12 +27,12 @@ public class Skill {
     @NotNull(message = "Profit cannot be null.")
     private Integer profit;
 
-    @NotNull()
+    @NotNull(message = "Minimum repair time should be between 15 and 480.")
     @Min(value = 15, message = "Minimum repair time should be between 15 and 480.")
     @Max(value = 480, message = "Minimum repair time should be between 15 and 480.")
     private Integer minRepairTime; //in minutes
 
-    @NotNull()
+    @NotNull(message = "Maximum repair time should be between 15 and 480.")
     @Min(value = 15, message = "Maximum repair time should be between 15 and 480.")
     @Max(value = 480, message = "Maximum repair time should be between 15 and 480.")
     private Integer maxRepairTime; //in minutes
@@ -56,9 +56,9 @@ public class Skill {
         this.id = skill.getId();
         this.device = device;
         this.failure = failure;
-        this.profit = skillPayload.getProfit();
-        this.minRepairTime = skillPayload.getMinRepairTime();
-        this.maxRepairTime = skillPayload.getMaxRepairTime();
+        this.profit = skillPayload.getProfit() != null ? skillPayload.getProfit() : skill.getProfit();
+        this.minRepairTime = skillPayload.getMinRepairTime() != null ? skill.getMinRepairTime() : skill.getMinRepairTime();
+        this.maxRepairTime = skillPayload.getMaxRepairTime() != null ? skill.getMaxRepairTime() : skill.getMaxRepairTime();
         this.serviceMen = serviceMen;
     }
 

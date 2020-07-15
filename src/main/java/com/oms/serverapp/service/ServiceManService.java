@@ -72,7 +72,8 @@ public class ServiceManService {
         if (serviceMan == null) {
             return ResponseEntity.notFound().build();
         }
-        serviceManRepository.save(new ServiceMan(serviceMan, serviceManPayload, encoder.encode(serviceManPayload.getPassword()), skillService.idsToSkills(serviceManPayload.getSkills()), repairService.idsToRepairs(serviceManPayload.getRepairs())));
+        String password = serviceManPayload.getPassword() != null ? encoder.encode(serviceManPayload.getPassword()) : null;
+        serviceManRepository.save(new ServiceMan(serviceMan, serviceManPayload, password, skillService.idsToSkills(serviceManPayload.getSkills()), repairService.idsToRepairs(serviceManPayload.getRepairs())));
         return ResponseEntity.ok().build();
     }
 

@@ -11,15 +11,15 @@ public class CustomerPayload {
 
     private Long id;
 
-    @NotBlank()
+    @NotBlank(message = "Name must be between 3 and 15 characters.")
     @Size(min = 3, max = 15, message = "Name must be between 3 and 15 characters.")
     private String firstName;
 
-    @NotBlank()
+    @NotBlank(message = "Surname must be between 3 and 15 characters.")
     @Size(min = 3, max = 15, message = "Surname must be between 3 and 15 characters.")
     private String lastName;
 
-    @NotBlank()
+    @NotBlank(message = "Phone number must have 9 digits.")
     @Size(min = 9, max = 9, message = "Phone number must have 9 digits.")
     private String phoneNumber;
 

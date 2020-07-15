@@ -11,11 +11,11 @@ public class DevicePayload {
 
     private Long id;
 
-    @NotBlank()
+    @NotBlank(message = "Name must be between 3 and 30 characters.")
     @Size(min = 3, max = 30, message = "Name must be between 3 and 30 characters.")
     private String name;
 
-    @NotBlank()
+    @NotBlank(message = "Type must be between 3 and 30 characters.")
     @Size(min = 3, max = 30, message = "Type must be between 3 and 30 characters.")
     private String type;
 

@@ -44,7 +44,7 @@ public class SkillController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Object> updateSkillById(@Valid @RequestBody SkillPayload skillPayload, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> updateSkillById(@RequestBody SkillPayload skillPayload, @PathVariable("id") Long id) {
         return skillService.updateSkill(skillPayload, id);
     }
 }

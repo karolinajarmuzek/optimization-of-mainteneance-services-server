@@ -49,7 +49,7 @@ public class ServiceManController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Object> updateServiceManById(@Valid @RequestBody ServiceManPayload serviceManPayload, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> updateServiceManById(@RequestBody ServiceManPayload serviceManPayload, @PathVariable("id") Long id) {
         return serviceManService.updateServiceMan(serviceManPayload, id);
     }
 

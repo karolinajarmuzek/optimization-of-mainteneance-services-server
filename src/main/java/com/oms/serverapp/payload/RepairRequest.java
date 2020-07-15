@@ -12,7 +12,11 @@ public class RepairRequest {
 
     private Long id;
     private Long serviceMan;
+
+    @NotNull(message = "Repair date cannot be null.")
     private Date date;
+
+    @NotNull(message = "Repair time cannot be null.")
     private String time;
 
     @Enumerated(EnumType.STRING)

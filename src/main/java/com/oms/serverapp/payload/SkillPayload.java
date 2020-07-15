@@ -21,14 +21,15 @@ public class SkillPayload {
     @NotNull(message = "Profit cannot be null.")
     private Integer profit;
 
-    @NotNull()
-    @Min(value = 15, message = "Minimum repair time should be between 15 and 480." )
-    @Max(value = 480, message = "Minimum repair time should be between 15 and 480." )
+    @NotNull(message = "Minimum repair time should be between 15 and 480.")
+    @Min(value = 15, message = "Minimum repair time should be between 15 and 480.")
+    @Max(value = 480, message = "Minimum repair time should be between 15 and 480.")
     private Integer minRepairTime;
 
-    @NotNull()
+    @NotNull(message = "Maximum repair time should be between 15 and 480.")
     @Min(value = 15, message = "Maximum repair time should be between 15 and 480.")
     @Max(value = 480, message = "Maximum repair time should be between 15 and 480.")
+
     private Integer maxRepairTime;
 
     private Set<Long> serviceMen;

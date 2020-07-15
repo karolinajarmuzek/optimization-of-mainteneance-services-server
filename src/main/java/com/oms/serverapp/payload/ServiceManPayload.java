@@ -10,30 +10,30 @@ public class ServiceManPayload {
 
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "Name must be between 3 and 15 characters.")
     @Size(min = 3, max = 15, message = "Name must be between 3 and 15 characters.")
     private String firstName;
 
-    @NotBlank
+    @NotBlank(message = "Surname must be between 3 and 15 characters.")
     @Size(min = 3, max = 15, message = "Surname must be between 3 and 15 characters.")
     private String lastName;
 
-    @NotBlank
+    @NotBlank(message = "Phone number must have 9 digits.")
     @Size(min = 9, max = 9, message = "Phone number must have 9 digits.")
     private String phoneNumber;
 
-    @NotBlank
+    @NotBlank(message = "Username must be between 6 and 30 characters.")
     @Size(min = 6, max = 30, message = "Username must be between 6 and 30 characters.")
+
     private String username;
 
-    @NotBlank
-    //@Size(min = 6, max = 30, message = "Password must be between 6 and 30 characters.")
+    @NotBlank(message = "Password cannot be blank.")
     private String password;
 
     @NotBlank(message = "Location cannot be blank.")
     private String startLocalization;
 
-    @NotNull()
+    @NotNull(message = "Experience must be between 1 and 10.")
     @Min(value = 1, message = "Experience must be between 1 and 10.")
     @Max(value = 10, message = "Experience must be between 1 and 10.")
     private Integer experience;

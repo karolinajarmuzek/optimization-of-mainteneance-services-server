@@ -29,8 +29,8 @@ public class ReportRequest {
     @NotBlank(message = "Location cannot be null")
     private String location;
 
-    @NotBlank()
-    @Size(min = 10, max = 200, message = "Description must be between 10 and 200characters.")
+    @NotBlank(message = "Description must be between 10 and 200c haracters.")
+    @Size(min = 10, max = 200, message = "Description must be between 10 and 200 characters.")
     private String description;
 
     @Enumerated(EnumType.STRING)

@@ -35,11 +35,11 @@ public class Report {
     @NotNull(message = "Date of submission cannot be null.")
     private Date date;
 
-    @NotBlank(message = "Report cannot be null")
+    @NotBlank(message = "Location cannot be null")
     private String location;
 
-    @NotBlank()
-    @Size(min = 10, max = 200, message = "Description must be between 10 and 200characters.")
+    @NotBlank(message = "Description must be between 10 and 200c haracters.")
+    @Size(min = 10, max = 200, message = "Description must be between 10 and 200 characters.")
     private String description;
 
     //@NotNull(message = "Status cannot be null")
@@ -67,10 +67,10 @@ public class Report {
         this.customer = customer;
         this.failure = failure;
         this.device = device;
-        this.date = reportRequest.getDate();
-        this.location = reportRequest.getLocation();
-        this.description = reportRequest.getDescription();
-        this.status = reportRequest.getStatus();
+        this.date = reportRequest.getDate() != null ? reportRequest.getDate() : report.getDate();
+        this.location = reportRequest.getLocation() != null ? reportRequest.getLocation() : report.getLocation();
+        this.description = reportRequest.getDescription() != null ? reportRequest.getDescription() : report.getDescription();
+        this.status = reportRequest.getStatus() != null ? reportRequest.getStatus() : report.getStatus();
     }
 
     public Report(Long id, Customer customer, Failure failure, Device device, Date date, String location, String description, ReportStatus reportStatus, Repair repair) {
