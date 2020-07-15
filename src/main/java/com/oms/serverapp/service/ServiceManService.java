@@ -1,20 +1,24 @@
 package com.oms.serverapp.service;
 
 import com.oms.serverapp.exception.NotFoundException;
+import com.oms.serverapp.model.Repair;
+import com.oms.serverapp.payload.RepairResponse;
+import com.oms.serverapp.payload.ReportResponse;
 import com.oms.serverapp.payload.ServiceManPayload;
 import com.oms.serverapp.repository.ServiceManRepository;
 import com.oms.serverapp.model.ServiceMan;
+import com.oms.serverapp.util.RepairStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class ServiceManService {
@@ -23,13 +27,15 @@ public class ServiceManService {
     private SkillService skillService;
     private RepairService repairService;
     private PasswordEncoder encoder;
+    private ReportService reportService;
 
     @Autowired
-    public ServiceManService(ServiceManRepository serviceManRepository, SkillService skillService, RepairService repairService, PasswordEncoder encoder) {
+    public ServiceManService(ServiceManRepository serviceManRepository, SkillService skillService, RepairService repairService, PasswordEncoder encoder, ReportService reportService) {
         this.serviceManRepository = serviceManRepository;
         this.skillService = skillService;
         this.repairService = repairService;
         this.encoder = encoder;
+        this.reportService = reportService;
     }
 
     public List<ServiceManPayload> getAllServiceMen() {
@@ -55,6 +61,28 @@ public class ServiceManService {
             throw new NotFoundException(String.format("Serviceman with username = %d not found.", username));
         }
         return new ServiceManPayload(serviceMan);
+    }
+
+    public List<RepairResponse> getRepairsByServiceManUsername(String username, RepairStatus repairStatus, String date) throws NotFoundException, ParseException {
+        ServiceMan serviceMan = serviceManRepository.findByUsername(username).orElse(null);
+        if (serviceMan == null) {
+            throw new NotFoundException(String.format("Serviceman with username = %d not found.", username));
+        }
+
+        List<RepairResponse> repairResponses = new ArrayList<>();
+        for (Repair repair : serviceMan.getRepairs()) {
+            if (repairStatus != null && date != null) {
+                String newDate = new SimpleDateFormat("dd.MM.yyyy").format(repair.getDate());
+                if (repair.getStatus() == repairStatus && newDate.equals(date)) {
+                    repairResponses.add(new RepairResponse(repair, reportService.generateReportResponse(repair.getReport())));
+                }
+            } else if (repairStatus != null && date == null && repair.getStatus() == repairStatus) {
+                repairResponses.add(new RepairResponse(repair, reportService.generateReportResponse(repair.getReport())));
+            } else if (repairStatus == null && date == null) {
+                repairResponses.add(new RepairResponse(repair, reportService.generateReportResponse(repair.getReport())));
+            }
+        }
+        return repairResponses;
     }
 
     public ResponseEntity<ServiceMan> addServiceMan(ServiceManPayload serviceManPayload) {

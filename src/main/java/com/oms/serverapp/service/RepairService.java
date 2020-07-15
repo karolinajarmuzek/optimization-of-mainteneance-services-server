@@ -43,16 +43,6 @@ public class RepairService {
         return repairsResponse;
     }
 
-    public List<RepairResponse> getRepairsByUsername(String username) throws NotFoundException {
-        List<Repair> repairs = repairRepository.findByUsername(username);
-        List<RepairResponse> repairsResponse = new ArrayList<>();
-        for (Repair repair: repairs) {
-            ReportResponse reportResponse = reportService.getReportById(repair.getReport().getId());
-            repairsResponse.add(new RepairResponse(repair, reportResponse));
-        }
-        return repairsResponse;
-    }
-
     public RepairResponse getRepairById(Long id) throws NotFoundException {
         Repair repair = repairRepository.findById(id).orElse(null);
         if (repair == null) {

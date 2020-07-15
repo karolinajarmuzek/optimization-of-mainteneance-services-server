@@ -10,9 +10,4 @@ import java.util.List;
 @Repository
 public interface RepairRepository extends JpaRepository<Repair, Long> {
 
-    @Query(
-            value = " select * from repairs where serviceman_id = (select id from servicemen where username=?1)",
-            nativeQuery = true)
-    List<Repair> findByUsername(String username);
-
 }

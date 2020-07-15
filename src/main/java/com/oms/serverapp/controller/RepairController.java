@@ -29,11 +29,6 @@ public class RepairController {
         return repairService.getAllRepairs();
     }
 
-    @GetMapping(path = "/byToken")
-    public List<RepairResponse> retrieveRepairByToken(Authentication authentication) throws NotFoundException {
-        return repairService.getRepairsByUsername(authentication.getName());
-    }
-
     @GetMapping(path = "{id}")
     public RepairResponse retrieveRepairById(@PathVariable("id") Long id) throws NotFoundException {
         return repairService.getRepairById(id);
