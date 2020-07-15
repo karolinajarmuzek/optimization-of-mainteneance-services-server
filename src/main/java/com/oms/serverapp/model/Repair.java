@@ -53,7 +53,16 @@ public class Repair {
             this.serviceMan = serviceMan;
         }
         this.date = repairRequest.getDate();
-        this.time = repairRequest.getTime();
+        if (repairRequest.getDate() == null) {
+            this.date = repair.getDate();
+        } else {
+        }
+        if (repairRequest.getTime() == null) {
+            this.time = repair.getTime();
+        } else {
+            this.time = repairRequest.getTime();
+        }
+
         this.status = repairRequest.getStatus(); //Status.REPORTED ??
         if (report != null) {
             this.report = report;

@@ -79,8 +79,14 @@ public class RepairService {
         if (repair == null) {
             return ResponseEntity.notFound().build();
         }
-        ServiceMan serviceMan = serviceManRepository.findById(repairRequest.getServiceMan()).orElse(repair.getServiceMan());
-        Report report = reportRepository.findById(repairRequest.getReport()).orElse(repair.getReport()); //throw Exception -> report must be not null
+        ServiceMan serviceMan = repair.getServiceMan();
+        if (repairRequest.getServiceMan() != null) {
+            serviceMan = serviceManRepository.findById(repairRequest.getServiceMan()).orElse(repair.getServiceMan());
+        }
+        Report report = repair.getReport();
+        if (repairRequest.getReport() != null) {
+            report = reportRepository.findById(repairRequest.getReport()).orElse(repair.getReport()); //throw Exception -> report must be not null
+        }
         repairRepository.save(new Repair(repair, repairRequest, serviceMan, report));
         return ResponseEntity.noContent().build();
     }
