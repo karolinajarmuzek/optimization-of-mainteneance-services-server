@@ -39,15 +39,18 @@ public class ReportService {
     }
 
     public Report generateReport(Report report, ReportRequest reportRequest) {
-        Customer customer = customerRepository.findById(reportRequest.getCustomer()).orElse(report == null ? null : report.getCustomer());
-        Failure failure = failureRepository.findById(reportRequest.getFailure()).orElse(report == null ? null : report.getFailure());
-        Device device = deviceRepository.findById(reportRequest.getDevice()).orElse(report == null ? null : report.getDevice());
+        Customer customer = customerRepository.findById(reportRequest.getCustomer() != null ? reportRequest.getCustomer() : report.getCustomer().getId()).orElse(null);
+        Failure failure = failureRepository.findById(reportRequest.getFailure() != null ? reportRequest.getFailure() : report.getFailure().getId()).orElse(null);
+        Device device = deviceRepository.findById(reportRequest.getDevice() != null ? reportRequest.getDevice() : report.getDevice().getId()).orElse(null);
         reportRequest.setStatus(ReportStatus.REPORTED);
         if (report == null) {
             return new Report(reportRequest, customer, failure, device);
         } else {
-            Repair repair = repairRepository.findById(reportRequest.getRepair()).orElse(report.getRepair());
-             return new Report(report, reportRequest, customer, failure, device, repair);
+            Repair repair = null;
+            if (reportRequest.getRepair() != null && report.getRepair() != null) {
+                repair = repairRepository.findById(reportRequest.getRepair() != null ? reportRequest.getRepair() : report.getRepair().getId()).orElse(null);
+            }
+            return new Report(report, reportRequest, customer, failure, device, repair);
         }
     }
 

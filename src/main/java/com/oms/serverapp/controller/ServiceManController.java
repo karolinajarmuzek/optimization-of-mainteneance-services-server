@@ -3,6 +3,7 @@ package com.oms.serverapp.controller;
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.ServiceMan;
 import com.oms.serverapp.payload.RepairResponse;
+import com.oms.serverapp.payload.ReportResponse;
 import com.oms.serverapp.payload.ServiceManPayload;
 import com.oms.serverapp.service.ServiceManService;
 import com.oms.serverapp.util.RepairStatus;
@@ -44,6 +45,11 @@ public class ServiceManController {
     @GetMapping(path = "byToken/repair")
     public List<RepairResponse> retrieveRepairsByServiceManToken(Authentication authentication) throws NotFoundException, ParseException {
         return serviceManService.getRepairsByServiceManUsername(authentication.getName(), null, null);
+    }
+
+    @GetMapping(path = "byToken/repair/actual")
+    public List<RepairResponse> retrieveAllActualReportsByServiceManToken(Authentication authentication) throws NotFoundException {
+        return serviceManService.getAllActualReportsByServiceManUsername(authentication.getName());
     }
 
     @GetMapping(path = "byToken/repair/status={status}")

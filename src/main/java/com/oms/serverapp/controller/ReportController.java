@@ -28,7 +28,7 @@ public class ReportController {
     public List<ReportResponse> retrieveAllReports() {
         return reportService.getAllReports();
     }
-
+    
     @GetMapping(path = "status={status}")
     public List<ReportResponse> retrieveAllReportsByStatus(@PathVariable("status") ReportStatus reportStatus) {
         return reportService.getAllReportsByStatus(reportStatus);
@@ -50,7 +50,7 @@ public class ReportController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Object> updateReportById(@Valid @RequestBody ReportRequest reportRequest, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> updateReportById(@RequestBody ReportRequest reportRequest, @PathVariable("id") Long id) {
         return reportService.updateReport(reportRequest, id);
     }
 }

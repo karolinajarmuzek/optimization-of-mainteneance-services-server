@@ -38,8 +38,8 @@ public class Report {
     @NotBlank(message = "Location cannot be null")
     private String location;
 
-    @NotBlank(message = "Description must be between 10 and 200c haracters.")
-    @Size(min = 10, max = 200, message = "Description must be between 10 and 200 characters.")
+    @NotBlank(message = "Description must be between 10 and 115 characters.")
+    @Size(min = 10, max = 115, message = "Description must be between 10 and 200 characters.")
     private String description;
 
     //@NotNull(message = "Status cannot be null")

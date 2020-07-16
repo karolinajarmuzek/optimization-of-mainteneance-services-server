@@ -2,6 +2,7 @@ package com.oms.serverapp.service;
 
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Repair;
+import com.oms.serverapp.model.Report;
 import com.oms.serverapp.payload.RepairResponse;
 import com.oms.serverapp.payload.ReportResponse;
 import com.oms.serverapp.payload.ServiceManPayload;
@@ -61,6 +62,22 @@ public class ServiceManService {
             throw new NotFoundException(String.format("Serviceman with username = %d not found.", username));
         }
         return new ServiceManPayload(serviceMan);
+    }
+
+
+    public List<RepairResponse> getAllActualReportsByServiceManUsername(String username) throws NotFoundException {
+        ServiceMan serviceMan = serviceManRepository.findByUsername(username).orElse(null);
+        if (serviceMan == null) {
+            throw new NotFoundException(String.format("Serviceman with username = %d not found.", username));
+        }
+
+        List<RepairResponse> repairResponses = new ArrayList<>();
+        for (Repair repair : serviceMan.getRepairs()) {
+            if (repair.getStatus() != RepairStatus.FINISHED) {
+                repairResponses.add(new RepairResponse(repair, reportService.generateReportResponse(repair.getReport())));
+            }
+        }
+        return  repairResponses;
     }
 
     public List<RepairResponse> getRepairsByServiceManUsername(String username, RepairStatus repairStatus, String date) throws NotFoundException, ParseException {
