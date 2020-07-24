@@ -26,11 +26,17 @@ public class ReportRequest {
     @NotNull(message = "Date of submission cannot be null.")
     private Date date;
 
-    @NotBlank(message = "Location cannot be null")
-    private String location;
+    @NotBlank(message = "Address cannot be null")
+    private String address;
+
+    @NotBlank(message = "Longitude cannot be null")
+    private String longitude;
+
+    @NotBlank(message = "Latitude cannot be null")
+    private String latitude;
 
     @NotBlank(message = "Description must be between 10 and 115 characters.")
-    @Size(min = 10, max = 115, message = "Description must be between 10 and 200 characters.")
+    @Size(min = 10, max = 115, message = "Description must be between 10 and 115 characters.")
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -47,7 +53,9 @@ public class ReportRequest {
         this.failure = report.getFailure().getId();
         this.device = report.getDevice().getId();
         this.date = report.getDate();
-        this.location = report.getLocation();
+        this.address = report.getAddress();
+        this.longitude = report.getLongitude();
+        this.latitude = report.getLatitude();
         this.description = report.getDescription();
         this.status = report.getStatus();
         if (report.getRepair() != null) {
@@ -95,12 +103,28 @@ public class ReportRequest {
         this.date = date;
     }
 
-    public String getLocation() {
-        return location;
+    public String getAddress() {
+        return address;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public String getDescription() {

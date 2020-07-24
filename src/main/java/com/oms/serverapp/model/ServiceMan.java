@@ -38,8 +38,14 @@ public class ServiceMan {
     @NotBlank(message = "Password cannot be blank.")
     private String password;
 
-    @NotBlank(message = "Location cannot be blank.")
+    @NotBlank(message = "Address cannot be null")
     private String startLocalization;
+
+    @NotBlank(message = "Longitude cannot be null")
+    private String longitude;
+
+    @NotBlank(message = "Latitude cannot be null")
+    private String latitude;
 
     @NotNull(message = "Experience must be between 1 and 10.")
     @Min(value = 1, message = "Experience must be between 1 and 10.")
@@ -74,6 +80,8 @@ public class ServiceMan {
         this.username = serviceManPayload.getUsername();
         this.password = password;
         this.startLocalization = serviceManPayload.getStartLocalization();
+        this.longitude = serviceManPayload.getLongitude();
+        this.latitude = serviceManPayload.getLatitude();
         this.experience = serviceManPayload.getExperience();
         this.ownedSkills = skills;
         this.repairs = repairs;
@@ -87,6 +95,8 @@ public class ServiceMan {
         this.username = serviceManPayload.getUsername() != null ? serviceManPayload.getUsername() : serviceMan.getUsername();
         this.password = password != null ? password : serviceMan.getPassword();
         this.startLocalization = serviceManPayload.getStartLocalization() != null ? serviceManPayload.getStartLocalization() : serviceMan.getStartLocalization();
+        this.longitude = serviceManPayload.getLongitude() != null ? serviceManPayload.getLongitude() : serviceMan.getLongitude();
+        this.latitude = serviceManPayload.getLatitude() != null ? serviceManPayload.getLatitude() : serviceMan.getLatitude();
         this.experience = serviceManPayload.getExperience() != null ? serviceManPayload.getExperience() : serviceMan.getExperience();
         this.ownedSkills = skills;
         this.repairs = repairs;
@@ -146,6 +156,22 @@ public class ServiceMan {
 
     public void setStartLocalization(String startLocalization) {
         this.startLocalization = startLocalization;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public Integer getExperience() {

@@ -30,8 +30,14 @@ public class ServiceManPayload {
     @NotBlank(message = "Password cannot be blank.")
     private String password;
 
-    @NotBlank(message = "Location cannot be blank.")
+    @NotBlank(message = "Address cannot be null")
     private String startLocalization;
+
+    @NotBlank(message = "Longitude cannot be null")
+    private String longitude;
+
+    @NotBlank(message = "Latitude cannot be null")
+    private String latitude;
 
     @NotNull(message = "Experience must be between 1 and 10.")
     @Min(value = 1, message = "Experience must be between 1 and 10.")
@@ -52,6 +58,8 @@ public class ServiceManPayload {
         this.username = serviceMan.getUsername();
         this.password = serviceMan.getPassword();
         this.startLocalization = serviceMan.getStartLocalization();
+        this.longitude = serviceMan.getLongitude();
+        this.latitude =  serviceMan.getLatitude();
         this.experience = serviceMan.getExperience();
         this.skills = serviceMan.getOwnedSkills().stream().map(skill -> skill.getId()).collect(Collectors.toSet());
         this.repairs = serviceMan.getRepairs().stream().map(repair -> repair.getId()).collect(Collectors.toSet());
@@ -111,6 +119,22 @@ public class ServiceManPayload {
 
     public void setStartLocalization(String startLocalization) {
         this.startLocalization = startLocalization;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public Integer getExperience() {

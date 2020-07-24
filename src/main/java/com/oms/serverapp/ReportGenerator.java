@@ -32,14 +32,19 @@ public class ReportGenerator {
         List<Long> devices = new ArrayList<>(getIds(URL_DEVICE));
         List<Long> failures = new ArrayList<>(getIds(URL_FAILURE));
 
+        StreetsCreator streetsCreator = new StreetsCreator();
+
         for (int i = 0; i < count; i++) {
+            String[] address = streetsCreator.generateAddress();
             var body = new HashMap<String, Object>() {{
                 put("customer", customers.get(ThreadLocalRandom.current().nextInt(customers.size())));
                 put("failure", failures.get(ThreadLocalRandom.current().nextInt(failures.size())));
                 put("device", devices.get(ThreadLocalRandom.current().nextInt(devices.size())));
                 put("date", new Date());
-                put("location", "loc");
-                put("description", "Description");
+                put("address", address[0]);
+                put("longitude", address[1]);
+                put("latitude", address[2]);
+                put("description", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin cursus egestas est non lacinia.");
             }};
             Helpers.sendPostRequest(body, URL_REPORTS, token);
         }

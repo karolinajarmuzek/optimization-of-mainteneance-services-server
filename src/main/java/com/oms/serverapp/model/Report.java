@@ -35,11 +35,17 @@ public class Report {
     @NotNull(message = "Date of submission cannot be null.")
     private Date date;
 
-    @NotBlank(message = "Location cannot be null")
-    private String location;
+    @NotBlank(message = "Address cannot be null")
+    private String address;
+
+    @NotBlank(message = "Longitude cannot be null")
+    private String longitude;
+
+    @NotBlank(message = "Latitude cannot be null")
+    private String latitude;
 
     @NotBlank(message = "Description must be between 10 and 115 characters.")
-    @Size(min = 10, max = 115, message = "Description must be between 10 and 200 characters.")
+    @Size(min = 10, max = 115, message = "Description must be between 10 and 115 characters.")
     private String description;
 
     //@NotNull(message = "Status cannot be null")
@@ -57,7 +63,9 @@ public class Report {
         this.failure = failure;
         this.device = device;
         this.date = reportRequest.getDate();
-        this.location = reportRequest.getLocation();
+        this.address = reportRequest.getAddress();
+        this.longitude = reportRequest.getLongitude();
+        this.latitude = reportRequest.getLatitude();
         this.description = reportRequest.getDescription();
         this.status = reportRequest.getStatus();
     }
@@ -68,18 +76,22 @@ public class Report {
         this.failure = failure;
         this.device = device;
         this.date = reportRequest.getDate() != null ? reportRequest.getDate() : report.getDate();
-        this.location = reportRequest.getLocation() != null ? reportRequest.getLocation() : report.getLocation();
+        this.address = reportRequest.getAddress() != null ? reportRequest.getAddress() : report.getAddress();
+        this.longitude = reportRequest.getLongitude() != null ? reportRequest.getLongitude() : report.getLongitude();
+        this.latitude = reportRequest.getLatitude() != null ? reportRequest.getLatitude() : report.getLatitude();
         this.description = reportRequest.getDescription() != null ? reportRequest.getDescription() : report.getDescription();
         this.status = reportRequest.getStatus() != null ? reportRequest.getStatus() : report.getStatus();
     }
 
-    public Report(Long id, Customer customer, Failure failure, Device device, Date date, String location, String description, ReportStatus reportStatus, Repair repair) {
+    public Report(Long id, Customer customer, Failure failure, Device device, Date date, String address, String longitude, String latitude, String description, ReportStatus reportStatus, Repair repair) {
         this.id = id;
         this.customer = customer;
         this.failure = failure;
         this.device = device;
         this.date = date;
-        this.location = location;
+        this.address = address;
+        this.longitude = longitude;
+        this.latitude = latitude;
         this.description = description;
         this.status = reportStatus;
         this.repair = repair;
@@ -125,12 +137,28 @@ public class Report {
         this.date = date;
     }
 
-    public String getLocation() {
-        return location;
+    public String getAddress() {
+        return address;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public String getDescription() {

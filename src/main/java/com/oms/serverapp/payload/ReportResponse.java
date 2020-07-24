@@ -3,8 +3,8 @@ package com.oms.serverapp.payload;
 import com.oms.serverapp.model.Report;
 import com.oms.serverapp.util.ReportStatus;
 
+import javax.validation.constraints.NotBlank;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class ReportResponse {
     private Long id;
@@ -12,7 +12,9 @@ public class ReportResponse {
     private FailurePayload failurePayload;
     private DevicePayload devicePayload;
     private String date;
-    private String location;
+    private String address;
+    private String longitude;
+    private String latitude;
     private String description;
     private ReportStatus status;
     private Long repair;
@@ -26,7 +28,9 @@ public class ReportResponse {
         this.failurePayload = failurePayload;
         this.devicePayload = devicePayload;
         this.date = new SimpleDateFormat("dd.MM.yyyy").format(report.getDate());
-        this.location = report.getLocation();
+        this.address = report.getAddress();
+        this.longitude = report.getLongitude();
+        this.latitude = report.getLatitude();
         this.description = report.getDescription();
         this.status = report.getStatus();
         if (report.getRepair() != null) {
@@ -75,12 +79,28 @@ public class ReportResponse {
         this.date = date;
     }
 
-    public String getLocation() {
-        return location;
+    public String getAddress() {
+        return address;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public String getDescription() {
