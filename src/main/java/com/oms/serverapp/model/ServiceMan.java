@@ -52,7 +52,7 @@ public class ServiceMan {
     @Max(value = 10, message = "Experience must be between 1 and 10.")
     private Integer experience;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "skills_owned",
             joinColumns = @JoinColumn(name = "serviceman_id"),

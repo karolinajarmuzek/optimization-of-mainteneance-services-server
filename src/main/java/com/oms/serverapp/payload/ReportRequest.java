@@ -8,6 +8,7 @@ import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.sql.Time;
 import java.util.Date;
 
 public class ReportRequest {
@@ -24,7 +25,10 @@ public class ReportRequest {
     private Long device;
 
     @NotNull(message = "Date of submission cannot be null.")
-    private Date date;
+    private Date reportDate;
+
+    @NotNull(message = "Time of submission cannot be null.")
+    private Time reportTime;
 
     @NotBlank(message = "Address cannot be null")
     private String address;
@@ -52,7 +56,8 @@ public class ReportRequest {
         this.customer = report.getCustomer().getId();
         this.failure = report.getFailure().getId();
         this.device = report.getDevice().getId();
-        this.date = report.getDate();
+        this.reportDate = report.getReportDate();
+        this.reportTime = report.getReportTime();
         this.address = report.getAddress();
         this.longitude = report.getLongitude();
         this.latitude = report.getLatitude();
@@ -95,12 +100,20 @@ public class ReportRequest {
         this.device = device;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getReportDate() {
+        return reportDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setReportDate(Date reportDate) {
+        this.reportDate = reportDate;
+    }
+
+    public Time getReportTime() {
+        return reportTime;
+    }
+
+    public void setReportTime(Time reportTime) {
+        this.reportTime = reportTime;
     }
 
     public String getAddress() {

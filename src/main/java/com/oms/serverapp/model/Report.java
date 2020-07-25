@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.sql.Time;
 import java.util.Date;
 
 @Entity
@@ -33,7 +34,10 @@ public class Report {
     private Device device;
 
     @NotNull(message = "Date of submission cannot be null.")
-    private Date date;
+    private Date reportDate;
+
+    @NotNull(message = "Time of submission cannot be null.")
+    private Time reportTime;
 
     @NotBlank(message = "Address cannot be null")
     private String address;
@@ -62,7 +66,8 @@ public class Report {
         this.customer = customer;
         this.failure = failure;
         this.device = device;
-        this.date = reportRequest.getDate();
+        this.reportDate = reportRequest.getReportDate();
+        this.reportTime = reportRequest.getReportTime();
         this.address = reportRequest.getAddress();
         this.longitude = reportRequest.getLongitude();
         this.latitude = reportRequest.getLatitude();
@@ -75,7 +80,8 @@ public class Report {
         this.customer = customer;
         this.failure = failure;
         this.device = device;
-        this.date = reportRequest.getDate() != null ? reportRequest.getDate() : report.getDate();
+        this.reportDate = reportRequest.getReportDate() != null ? reportRequest.getReportDate() : report.getReportDate();
+        this.reportTime = reportRequest.getReportTime() != null ? reportRequest.getReportTime() : report.getReportTime();
         this.address = reportRequest.getAddress() != null ? reportRequest.getAddress() : report.getAddress();
         this.longitude = reportRequest.getLongitude() != null ? reportRequest.getLongitude() : report.getLongitude();
         this.latitude = reportRequest.getLatitude() != null ? reportRequest.getLatitude() : report.getLatitude();
@@ -83,12 +89,13 @@ public class Report {
         this.status = reportRequest.getStatus() != null ? reportRequest.getStatus() : report.getStatus();
     }
 
-    public Report(Long id, Customer customer, Failure failure, Device device, Date date, String address, String longitude, String latitude, String description, ReportStatus reportStatus, Repair repair) {
+    public Report(Long id, Customer customer, Failure failure, Device device, Date date, Time time, String address, String longitude, String latitude, String description, ReportStatus reportStatus, Repair repair) {
         this.id = id;
         this.customer = customer;
         this.failure = failure;
         this.device = device;
-        this.date = date;
+        this.reportDate = date;
+        this.reportTime = time;
         this.address = address;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -129,12 +136,20 @@ public class Report {
         this.device = device;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getReportDate() {
+        return reportDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setReportDate(Date reportDate) {
+        this.reportDate = reportDate;
+    }
+
+    public Time getReportTime() {
+        return reportTime;
+    }
+
+    public void setReportTime(Time reportTime) {
+        this.reportTime = reportTime;
     }
 
     public String getAddress() {

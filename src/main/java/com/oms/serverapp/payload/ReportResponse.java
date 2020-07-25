@@ -4,14 +4,18 @@ import com.oms.serverapp.model.Report;
 import com.oms.serverapp.util.ReportStatus;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ReportResponse {
     private Long id;
     private CustomerPayload customerPayload;
     private FailurePayload failurePayload;
     private DevicePayload devicePayload;
-    private String date;
+    private String reportDate;
+    private String reportTime;
     private String address;
     private String longitude;
     private String latitude;
@@ -27,7 +31,8 @@ public class ReportResponse {
         this.customerPayload = customerPayload;
         this.failurePayload = failurePayload;
         this.devicePayload = devicePayload;
-        this.date = new SimpleDateFormat("dd.MM.yyyy").format(report.getDate());
+        this.reportDate = new SimpleDateFormat("dd.MM.yyyy").format(report.getReportDate());
+        this.reportTime = report.getReportTime().toString();
         this.address = report.getAddress();
         this.longitude = report.getLongitude();
         this.latitude = report.getLatitude();
@@ -71,12 +76,20 @@ public class ReportResponse {
         this.devicePayload = devicePayload;
     }
 
-    public String getDate() {
-        return date;
+    public String getReportDate() {
+        return reportDate;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setReportDate(String reportDate) {
+        this.reportDate = reportDate;
+    }
+
+    public String getReportTime() {
+        return reportTime;
+    }
+
+    public void setReportTime(String reportTime) {
+        this.reportTime = reportTime;
     }
 
     public String getAddress() {

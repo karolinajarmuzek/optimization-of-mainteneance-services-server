@@ -51,8 +51,8 @@ public class Generator {
     private static String token;
 
     public static void generateData(){
-        int serviceManCount = 2;
-        int customerCount = 2;
+        int serviceManCount = 5;
+        int customerCount = 5;
 
         System.out.println("---------------------------------------------------------------------------------------------------------------");
         System.out.println("DATA GENERATION STARTED");
@@ -61,7 +61,8 @@ public class Generator {
         if (isTableEmpty(URL_DEVICE)) generateDevices();
         if (isTableEmpty(URL_FAILURE)) generateFailures();
         if (isTableEmpty(URL_SKILL)) generateSkills();
-        if (isTableEmpty(URL_SERVICEMAN)) generateUser(serviceManCount, UserType.SERVICEMAN);
+        //if (isTableEmpty(URL_SERVICEMAN))
+        generateUser(serviceManCount, UserType.SERVICEMAN);
         if (isTableEmpty(URL_CUSTOMER)) generateUser(customerCount, UserType.CUSTOMER);
         System.out.println("DATA GENERATION FINISHED");
         System.out.println("---------------------------------------------------------------------------------------------------------------");
@@ -73,6 +74,7 @@ public class Generator {
             put("username", "adminadmin");
             put("password", "adminadmin");
         }};
+
 
         HttpResponse<String> response = Helpers.sendPostRequest(body, URL_AUTHORIZE, token); //
         String token = response.body().replaceAll(",", "")
@@ -159,10 +161,10 @@ public class Generator {
             for (int i = 0; i < devices.length; i++) {
                 for (int j = 0; j < failures.length; j++) {
                     Integer profit = ThreadLocalRandom.current().nextInt(5, 51) * 10; // 50-500
-                    Integer minRepairTime = ThreadLocalRandom.current().nextInt(3, 48) * 10; //30 - 480 [min]
+                    Integer minRepairTime = ThreadLocalRandom.current().nextInt(3, 24) * 10; //30 - 240 [min]
                     Integer maxRepairTime;
                     do {
-                        maxRepairTime = ThreadLocalRandom.current().nextInt(3, 48) * 10; //30 - 480 [min]
+                        maxRepairTime = ThreadLocalRandom.current().nextInt(3, 24) * 10; //30 - 240 [min]
                     } while (maxRepairTime < minRepairTime);
 
                     Integer finalMaxRepairTime = maxRepairTime;
@@ -188,6 +190,8 @@ public class Generator {
     }
 
     public static void generateUser(int count, UserType userType) {
+        StreetsCreator streetsCreator = new StreetsCreator();
+
         for (int i = 0; i < count; i++) {
             String name, surname;
             Random random = new Random();
@@ -211,9 +215,12 @@ public class Generator {
                 put("lastName", finalSurname);
                 put("phoneNumber", Integer.toString(random.nextInt(899999999) + 100000000));
                 if (userType != UserType.CUSTOMER) {
+                    String[] address = streetsCreator.generateAddress();
                     put("username", finalName.toLowerCase() + finalSurname.toLowerCase());
                     put("password", finalName.toLowerCase() + finalSurname.toLowerCase());
-                    put("startLocalization", "loc");
+                    put("startLocalization", address[0]);
+                    put("longitude", address[1]);
+                    put("latitude", address[2]);
                     put("experience", random.nextInt(10) + 1);
                     if (userType != UserType.ADMIN) {
                         SkillPayload[] skills = getSkills();
