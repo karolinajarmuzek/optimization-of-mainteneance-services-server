@@ -37,7 +37,7 @@ public class Skill {
     @Max(value = 480, message = "Maximum repair time should be between 15 and 480.")
     private Integer maxRepairTime; //in minutes
 
-    @ManyToMany(mappedBy = "ownedSkills", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "ownedSkills", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     Set<ServiceMan> serviceMen;
 
     public Skill() {
