@@ -4,7 +4,6 @@ import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -23,10 +22,10 @@ public class JwtProvider {
 
     public String generateJwtToken(Authentication authentication) {
 
-        ServiceManPrinciple serviceManPrinciple = (ServiceManPrinciple) authentication.getPrincipal();
+        ServiceTechnicianPrinciple serviceTechnicianPrinciple = (ServiceTechnicianPrinciple) authentication.getPrincipal();
 
         return Jwts.builder()
-                .setSubject((serviceManPrinciple.getUsername()))
+                .setSubject((serviceTechnicianPrinciple.getUsername()))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)

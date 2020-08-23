@@ -46,9 +46,13 @@ public class StreetsCreator {
 
     public String[] generateAddress() {
         Random rand = new Random();
-        String randomAddress = streets.get(rand.nextInt(streets.size())) + " " + (rand.nextInt(99) + 1) + " Poznań";
-        System.out.println("Selected street " + randomAddress);
-        String coordinates = getCoordinates(randomAddress);
+        String coordinates = "";
+        String randomAddress = "";
+        do {
+            randomAddress = streets.get(rand.nextInt(streets.size())) + " " + (rand.nextInt(99) + 1) + " Poznań";
+            System.out.println("Selected street " + randomAddress);
+            coordinates = getCoordinates(randomAddress);
+        } while (coordinates == "");
         String longitude = coordinates.split(",")[0];
         String latitude = coordinates.split(",")[1];
         return new String[]{randomAddress, longitude, latitude};
@@ -79,8 +83,19 @@ public class StreetsCreator {
         System.out.println("status: " + response.statusCode());
         //System.out.println("headers: " + response.headers());
         System.out.println("body:" + response.body());
-        Pattern p = Pattern.compile("\\\"coordinates\\\":\\[[0-9]*\\.[0-9]*,[0-9]*\\.[0-9]*\\]");
+
+        Pattern p = Pattern.compile("\"confidence\":[0-9]\\.[0-9]");
         Matcher m = p.matcher(response.body());
+        if (m.find())
+        {
+            String theGroup = m.group(0);
+            theGroup = theGroup.replace("\"confidence\":", "");
+            float confidence = Float.parseFloat(theGroup);
+            if (confidence < 0.8) return "";
+        }
+
+        p = Pattern.compile("\\\"coordinates\\\":\\[[0-9]*\\.[0-9]*,[0-9]*\\.[0-9]*\\]");
+        m = p.matcher(response.body());
         if (m.find())
         {
             String theGroup = m.group(0);

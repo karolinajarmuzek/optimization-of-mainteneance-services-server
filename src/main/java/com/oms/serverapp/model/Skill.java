@@ -38,28 +38,28 @@ public class Skill {
     private Integer maxRepairTime; //in minutes
 
     @ManyToMany(mappedBy = "ownedSkills", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    Set<ServiceMan> serviceMen;
+    Set<ServiceTechnician> serviceTechnician;
 
     public Skill() {
     }
 
-    public Skill(SkillPayload skillPayload, Device device, Failure failure, Set<ServiceMan> serviceMen) {
+    public Skill(SkillPayload skillPayload, Device device, Failure failure, Set<ServiceTechnician> serviceTechnician) {
         this.device = device;
         this.failure = failure;
         this.profit = skillPayload.getProfit();
         this.minRepairTime = skillPayload.getMinRepairTime();
         this.maxRepairTime = skillPayload.getMaxRepairTime();
-        this.serviceMen = serviceMen;
+        this.serviceTechnician = serviceTechnician;
     }
 
-    public Skill(Skill skill, SkillPayload skillPayload, Device device, Failure failure, Set<ServiceMan> serviceMen) {
+    public Skill(Skill skill, SkillPayload skillPayload, Device device, Failure failure, Set<ServiceTechnician> serviceTechnician) {
         this.id = skill.getId();
         this.device = device;
         this.failure = failure;
         this.profit = skillPayload.getProfit() != null ? skillPayload.getProfit() : skill.getProfit();
         this.minRepairTime = skillPayload.getMinRepairTime() != null ? skill.getMinRepairTime() : skill.getMinRepairTime();
         this.maxRepairTime = skillPayload.getMaxRepairTime() != null ? skill.getMaxRepairTime() : skill.getMaxRepairTime();
-        this.serviceMen = serviceMen;
+        this.serviceTechnician = serviceTechnician;
     }
 
     public Long getId() {
@@ -110,11 +110,11 @@ public class Skill {
         this.maxRepairTime = maxRepairTime;
     }
 
-    public Set<ServiceMan> getServiceMen() {
-        return serviceMen;
+    public Set<ServiceTechnician> getServiceTechnician() {
+        return serviceTechnician;
     }
 
-    public void setServiceMen(Set<ServiceMan> serviceMen) {
-        this.serviceMen = serviceMen;
+    public void setServiceTechnician(Set<ServiceTechnician> serviceTechnician) {
+        this.serviceTechnician = serviceTechnician;
     }
 }

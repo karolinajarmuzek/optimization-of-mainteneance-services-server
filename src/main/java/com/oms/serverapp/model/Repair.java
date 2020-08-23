@@ -16,8 +16,8 @@ public class Repair {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "serviceman_id")
-    ServiceMan serviceMan;
+    @JoinColumn(name = "servicetechnician_id")
+    ServiceTechnician serviceTechnician;
 
     @NotNull(message = "Repair date cannot be null.")
     private Date date;
@@ -35,9 +35,9 @@ public class Repair {
     public Repair() {
     }
 
-    public Repair(RepairRequest repairRequest, ServiceMan serviceMan, Report report) {
-        if (serviceMan != null) {
-            this.serviceMan = serviceMan;
+    public Repair(RepairRequest repairRequest, ServiceTechnician serviceTechnician, Report report) {
+        if (serviceTechnician != null) {
+            this.serviceTechnician = serviceTechnician;
         }
         this.date = repairRequest.getDate();
         this.time = repairRequest.getTime();
@@ -47,10 +47,10 @@ public class Repair {
         }
     }
 
-    public Repair(Repair repair, RepairRequest repairRequest, ServiceMan serviceMan, Report report) {
+    public Repair(Repair repair, RepairRequest repairRequest, ServiceTechnician serviceTechnician, Report report) {
         this.id = repair.getId();
-        if (serviceMan != null) {
-            this.serviceMan = serviceMan;
+        if (serviceTechnician != null) {
+            this.serviceTechnician = serviceTechnician;
         }
         this.date = repairRequest.getDate() != null ? repairRequest.getDate() : repair.getDate();
         this.date = repairRequest.getDate() != null ? repairRequest.getDate() : repair.getDate();
@@ -69,12 +69,12 @@ public class Repair {
         this.id = id;
     }
 
-    public ServiceMan getServiceMan() {
-        return serviceMan;
+    public ServiceTechnician getServiceTechnician() {
+        return serviceTechnician;
     }
 
-    public void setServiceMan(ServiceMan serviceMan) {
-        this.serviceMan = serviceMan;
+    public void setServiceTechnician(ServiceTechnician serviceTechnician) {
+        this.serviceTechnician = serviceTechnician;
     }
 
     public Date getDate() {

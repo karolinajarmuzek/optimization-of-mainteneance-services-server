@@ -1,7 +1,7 @@
 package com.oms.serverapp.security;
 
-import com.oms.serverapp.model.ServiceMan;
-import com.oms.serverapp.repository.ServiceManRepository;
+import com.oms.serverapp.model.ServiceTechnician;
+import com.oms.serverapp.repository.ServiceTechnicianRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,20 +10,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ServiceManDetails implements UserDetailsService {
+public class ServiceTechnicianDetails implements UserDetailsService {
     @Autowired
-    ServiceManRepository serviceManRepository;
+    ServiceTechnicianRepository serviceTechnicianRepository;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
-        ServiceMan serviceMan = serviceManRepository.findByUsername(username)
+        ServiceTechnician serviceTechnician = serviceTechnicianRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("Serviceman Not Found with -> username." + username)
+                        new UsernameNotFoundException("Service technician Not Found with -> username." + username)
                 );
 
-        return ServiceManPrinciple.build(serviceMan);
+        return ServiceTechnicianPrinciple.build(serviceTechnician);
     }
 }

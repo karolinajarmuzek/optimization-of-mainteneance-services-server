@@ -4,7 +4,6 @@ import com.oms.serverapp.model.Repair;
 import com.oms.serverapp.util.RepairStatus;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class RepairResponse {
 

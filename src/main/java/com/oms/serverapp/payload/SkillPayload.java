@@ -32,7 +32,7 @@ public class SkillPayload {
 
     private Integer maxRepairTime;
 
-    private Set<Long> serviceMen;
+    private Set<Long> serviceTechnicians;
 
     public SkillPayload() {
     }
@@ -44,7 +44,7 @@ public class SkillPayload {
         this.profit = skill.getProfit();
         this.minRepairTime = skill.getMinRepairTime();
         this.maxRepairTime = skill.getMaxRepairTime();
-        this.serviceMen = skill.getServiceMen().stream().map(serviceMan -> serviceMan.getId()).collect(Collectors.toSet());
+        this.serviceTechnicians = skill.getServiceTechnician().stream().map(serviceTechnician -> serviceTechnician.getId()).collect(Collectors.toSet());
     }
 
     public Long getId() {
@@ -95,11 +95,11 @@ public class SkillPayload {
         this.maxRepairTime = maxRepairTime;
     }
 
-    public Set<Long> getServiceMen() {
-        return serviceMen;
+    public Set<Long> getServiceTechnicians() {
+        return serviceTechnicians;
     }
 
-    public void setServiceMen(Set<Long> serviceMen) {
-        this.serviceMen = serviceMen;
+    public void setServiceTechnicians(Set<Long> serviceTechnicians) {
+        this.serviceTechnicians = serviceTechnicians;
     }
 }

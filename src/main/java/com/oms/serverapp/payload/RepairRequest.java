@@ -11,7 +11,7 @@ import java.util.Date;
 public class RepairRequest {
 
     private Long id;
-    private Long serviceMan;
+    private Long serviceTechnician;
 
     @NotNull(message = "Repair date cannot be null.")
     private Date date;
@@ -29,7 +29,7 @@ public class RepairRequest {
 
     public RepairRequest(Repair repair) {
         this.id = repair.getId();
-        this.serviceMan = repair.getServiceMan().getId();
+        this.serviceTechnician = repair.getServiceTechnician().getId();
         this.date = repair.getDate();
         this.time = repair.getTime();
         this.status = repair.getStatus();
@@ -46,12 +46,12 @@ public class RepairRequest {
         this.id = id;
     }
 
-    public Long getServiceMan() {
-        return serviceMan;
+    public Long getServiceTechnician() {
+        return serviceTechnician;
     }
 
-    public void setServiceMan(Long serviceMan) {
-        this.serviceMan = serviceMan;
+    public void setServiceTechnician(Long serviceTechnician) {
+        this.serviceTechnician = serviceTechnician;
     }
 
     public Date getDate() {

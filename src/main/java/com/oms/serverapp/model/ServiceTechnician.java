@@ -1,6 +1,6 @@
 package com.oms.serverapp.model;
 
-import com.oms.serverapp.payload.ServiceManPayload;
+import com.oms.serverapp.payload.ServiceTechnicianPayload;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -8,11 +8,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "servicemen", uniqueConstraints = {
+@Table(name = "servicetechnician", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"firstName", "lastName"}),
         @UniqueConstraint(columnNames = "username")
 })
-public class ServiceMan {
+public class ServiceTechnician {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,49 +54,49 @@ public class ServiceMan {
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "skills_owned",
-            joinColumns = @JoinColumn(name = "serviceman_id"),
+            joinColumns = @JoinColumn(name = "servicetechnician_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
     Set<Skill> ownedSkills;
 
-    @OneToMany(mappedBy = "serviceMan", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "serviceTechnician", cascade = CascadeType.ALL)
     Set<Repair> repairs;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "serviveman_roles",
-            joinColumns = @JoinColumn(name = "serviceman_id"),
+    @JoinTable(name = "servicetechnician_roles",
+            joinColumns = @JoinColumn(name = "servicetechnician_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
 
-    public ServiceMan() {
+    public ServiceTechnician() {
     }
 
-    public ServiceMan(ServiceManPayload serviceManPayload, String password, Set<Skill> skills, Set<Repair> repairs) {
-        this.firstName = serviceManPayload.getFirstName();
-        this.lastName = serviceManPayload.getLastName();
-        this.phoneNumber = serviceManPayload.getPhoneNumber();
-        this.username = serviceManPayload.getUsername();
+    public ServiceTechnician(ServiceTechnicianPayload serviceTechnicianPayload, String password, Set<Skill> skills, Set<Repair> repairs) {
+        this.firstName = serviceTechnicianPayload.getFirstName();
+        this.lastName = serviceTechnicianPayload.getLastName();
+        this.phoneNumber = serviceTechnicianPayload.getPhoneNumber();
+        this.username = serviceTechnicianPayload.getUsername();
         this.password = password;
-        this.startLocalization = serviceManPayload.getStartLocalization();
-        this.longitude = serviceManPayload.getLongitude();
-        this.latitude = serviceManPayload.getLatitude();
-        this.experience = serviceManPayload.getExperience();
+        this.startLocalization = serviceTechnicianPayload.getStartLocalization();
+        this.longitude = serviceTechnicianPayload.getLongitude();
+        this.latitude = serviceTechnicianPayload.getLatitude();
+        this.experience = serviceTechnicianPayload.getExperience();
         this.ownedSkills = skills;
         this.repairs = repairs;
     }
 
-    public ServiceMan( ServiceMan serviceMan, ServiceManPayload serviceManPayload, String password, Set<Skill> skills, Set<Repair> repairs) {
-        this.id = serviceMan.getId();
-        this.firstName = serviceManPayload.getFirstName() != null ? serviceManPayload.getFirstName() : serviceMan.getFirstName();
-        this.lastName = serviceManPayload.getLastName() != null ? serviceManPayload.getLastName() : serviceMan.getLastName();
-        this.phoneNumber = serviceManPayload.getPhoneNumber() != null ? serviceManPayload.getPhoneNumber() : serviceMan.getPhoneNumber();
-        this.username = serviceManPayload.getUsername() != null ? serviceManPayload.getUsername() : serviceMan.getUsername();
-        this.password = password != null ? password : serviceMan.getPassword();
-        this.startLocalization = serviceManPayload.getStartLocalization() != null ? serviceManPayload.getStartLocalization() : serviceMan.getStartLocalization();
-        this.longitude = serviceManPayload.getLongitude() != null ? serviceManPayload.getLongitude() : serviceMan.getLongitude();
-        this.latitude = serviceManPayload.getLatitude() != null ? serviceManPayload.getLatitude() : serviceMan.getLatitude();
-        this.experience = serviceManPayload.getExperience() != null ? serviceManPayload.getExperience() : serviceMan.getExperience();
+    public ServiceTechnician(ServiceTechnician serviceTechnician, ServiceTechnicianPayload serviceTechnicianPayload, String password, Set<Skill> skills, Set<Repair> repairs) {
+        this.id = serviceTechnician.getId();
+        this.firstName = serviceTechnicianPayload.getFirstName() != null ? serviceTechnicianPayload.getFirstName() : serviceTechnician.getFirstName();
+        this.lastName = serviceTechnicianPayload.getLastName() != null ? serviceTechnicianPayload.getLastName() : serviceTechnician.getLastName();
+        this.phoneNumber = serviceTechnicianPayload.getPhoneNumber() != null ? serviceTechnicianPayload.getPhoneNumber() : serviceTechnician.getPhoneNumber();
+        this.username = serviceTechnicianPayload.getUsername() != null ? serviceTechnicianPayload.getUsername() : serviceTechnician.getUsername();
+        this.password = password != null ? password : serviceTechnician.getPassword();
+        this.startLocalization = serviceTechnicianPayload.getStartLocalization() != null ? serviceTechnicianPayload.getStartLocalization() : serviceTechnician.getStartLocalization();
+        this.longitude = serviceTechnicianPayload.getLongitude() != null ? serviceTechnicianPayload.getLongitude() : serviceTechnician.getLongitude();
+        this.latitude = serviceTechnicianPayload.getLatitude() != null ? serviceTechnicianPayload.getLatitude() : serviceTechnician.getLatitude();
+        this.experience = serviceTechnicianPayload.getExperience() != null ? serviceTechnicianPayload.getExperience() : serviceTechnician.getExperience();
         this.ownedSkills = skills;
         this.repairs = repairs;
     }

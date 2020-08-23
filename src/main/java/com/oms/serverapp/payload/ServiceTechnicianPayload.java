@@ -1,12 +1,12 @@
 package com.oms.serverapp.payload;
 
-import com.oms.serverapp.model.ServiceMan;
+import com.oms.serverapp.model.ServiceTechnician;
 
 import javax.validation.constraints.*;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ServiceManPayload {
+public class ServiceTechnicianPayload {
 
     private Long id;
 
@@ -47,22 +47,22 @@ public class ServiceManPayload {
     private Set<Long> skills;
     private Set<Long> repairs;
 
-    public ServiceManPayload() {
+    public ServiceTechnicianPayload() {
     }
 
-    public ServiceManPayload(ServiceMan serviceMan) {
-        this.id = serviceMan.getId();
-        this.firstName = serviceMan.getFirstName();
-        this.lastName = serviceMan.getLastName();
-        this.phoneNumber = serviceMan.getPhoneNumber();
-        this.username = serviceMan.getUsername();
-        this.password = serviceMan.getPassword();
-        this.startLocalization = serviceMan.getStartLocalization();
-        this.longitude = serviceMan.getLongitude();
-        this.latitude =  serviceMan.getLatitude();
-        this.experience = serviceMan.getExperience();
-        this.skills = serviceMan.getOwnedSkills().stream().map(skill -> skill.getId()).collect(Collectors.toSet());
-        this.repairs = serviceMan.getRepairs().stream().map(repair -> repair.getId()).collect(Collectors.toSet());
+    public ServiceTechnicianPayload(ServiceTechnician serviceTechnician) {
+        this.id = serviceTechnician.getId();
+        this.firstName = serviceTechnician.getFirstName();
+        this.lastName = serviceTechnician.getLastName();
+        this.phoneNumber = serviceTechnician.getPhoneNumber();
+        this.username = serviceTechnician.getUsername();
+        this.password = serviceTechnician.getPassword();
+        this.startLocalization = serviceTechnician.getStartLocalization();
+        this.longitude = serviceTechnician.getLongitude();
+        this.latitude =  serviceTechnician.getLatitude();
+        this.experience = serviceTechnician.getExperience();
+        this.skills = serviceTechnician.getOwnedSkills().stream().map(skill -> skill.getId()).collect(Collectors.toSet());
+        this.repairs = serviceTechnician.getRepairs().stream().map(repair -> repair.getId()).collect(Collectors.toSet());
     }
 
     public Long getId() {

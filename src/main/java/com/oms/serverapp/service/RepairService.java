@@ -4,11 +4,10 @@ import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.*;
 import com.oms.serverapp.payload.RepairRequest;
 import com.oms.serverapp.payload.RepairResponse;
-import com.oms.serverapp.payload.ReportRequest;
 import com.oms.serverapp.payload.ReportResponse;
 import com.oms.serverapp.repository.RepairRepository;
 import com.oms.serverapp.repository.ReportRepository;
-import com.oms.serverapp.repository.ServiceManRepository;
+import com.oms.serverapp.repository.ServiceTechnicianRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,14 +20,14 @@ import java.util.*;
 public class RepairService {
 
     private RepairRepository repairRepository;
-    private ServiceManRepository serviceManRepository;
+    private ServiceTechnicianRepository serviceTechnicianRepository;
     private ReportRepository reportRepository;
     private ReportService reportService;
 
     @Autowired
-    public RepairService(RepairRepository repairRepository, ServiceManRepository serviceManRepository, ReportRepository reportRepository, ReportService reportService) {
+    public RepairService(RepairRepository repairRepository, ServiceTechnicianRepository serviceTechnicianRepository, ReportRepository reportRepository, ReportService reportService) {
         this.repairRepository = repairRepository;
-        this.serviceManRepository = serviceManRepository;
+        this.serviceTechnicianRepository = serviceTechnicianRepository;
         this.reportRepository = reportRepository;
         this.reportService = reportService;
     }
@@ -53,9 +52,9 @@ public class RepairService {
     }
 
     public ResponseEntity<Repair> addRepair(RepairRequest repairRequest) {
-        ServiceMan serviceMan = serviceManRepository.findById(repairRequest.getServiceMan()).orElse(null);
+        ServiceTechnician serviceTechnician = serviceTechnicianRepository.findById(repairRequest.getServiceTechnician()).orElse(null);
         Report report = reportRepository.findById(repairRequest.getReport()).orElse(null);
-        Repair savedRepair = repairRepository.save(new Repair(repairRequest, serviceMan, report));
+        Repair savedRepair = repairRepository.save(new Repair(repairRequest, serviceTechnician, report));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedRepair).toUri();
         return ResponseEntity.created(location).build();
     }
@@ -69,15 +68,15 @@ public class RepairService {
         if (repair == null) {
             return ResponseEntity.notFound().build();
         }
-        ServiceMan serviceMan = repair.getServiceMan();
-        if (repairRequest.getServiceMan() != null) {
-            serviceMan = serviceManRepository.findById(repairRequest.getServiceMan()).orElse(repair.getServiceMan());
+        ServiceTechnician serviceTechnician = repair.getServiceTechnician();
+        if (repairRequest.getServiceTechnician() != null) {
+            serviceTechnician = serviceTechnicianRepository.findById(repairRequest.getServiceTechnician()).orElse(repair.getServiceTechnician());
         }
         Report report = repair.getReport();
         if (repairRequest.getReport() != null) {
             report = reportRepository.findById(repairRequest.getReport()).orElse(repair.getReport()); //throw Exception -> report must be not null
         }
-        repairRepository.save(new Repair(repair, repairRequest, serviceMan, report));
+        repairRepository.save(new Repair(repair, repairRequest, serviceTechnician, report));
         return ResponseEntity.noContent().build();
     }
 

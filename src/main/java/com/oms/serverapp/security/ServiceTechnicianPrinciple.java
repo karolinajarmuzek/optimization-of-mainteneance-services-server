@@ -1,7 +1,7 @@
 package com.oms.serverapp.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.oms.serverapp.model.ServiceMan;
+import com.oms.serverapp.model.ServiceTechnician;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ServiceManPrinciple implements UserDetails {
+public class ServiceTechnicianPrinciple implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -27,9 +27,9 @@ public class ServiceManPrinciple implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public ServiceManPrinciple(Long id, String firstName, String lastName,
-                         String username, String password,
-                         Collection<? extends GrantedAuthority> authorities) {
+    public ServiceTechnicianPrinciple(Long id, String firstName, String lastName,
+                                      String username, String password,
+                                      Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -38,17 +38,17 @@ public class ServiceManPrinciple implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static ServiceManPrinciple build(ServiceMan serviceMan) {
-        List<GrantedAuthority> authorities = serviceMan.getRoles().stream().map(role ->
+    public static ServiceTechnicianPrinciple build(ServiceTechnician serviceTechnician) {
+        List<GrantedAuthority> authorities = serviceTechnician.getRoles().stream().map(role ->
                 new SimpleGrantedAuthority(role.getName().name())
         ).collect(Collectors.toList());
 
-        return new ServiceManPrinciple(
-                serviceMan.getId(),
-                serviceMan.getFirstName(),
-                serviceMan.getLastName(),
-                serviceMan.getUsername(),
-                serviceMan.getPassword(),
+        return new ServiceTechnicianPrinciple(
+                serviceTechnician.getId(),
+                serviceTechnician.getFirstName(),
+                serviceTechnician.getLastName(),
+                serviceTechnician.getUsername(),
+                serviceTechnician.getPassword(),
                 authorities
         );
     }
@@ -113,7 +113,7 @@ public class ServiceManPrinciple implements UserDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ServiceManPrinciple user = (ServiceManPrinciple) o;
+        ServiceTechnicianPrinciple user = (ServiceTechnicianPrinciple) o;
         return Objects.equals(id, user.id);
     }
 }

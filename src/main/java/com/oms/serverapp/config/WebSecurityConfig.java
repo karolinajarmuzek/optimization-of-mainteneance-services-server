@@ -2,8 +2,7 @@ package com.oms.serverapp.config;
 
 import com.oms.serverapp.security.JwtAuthEntryPoint;
 import com.oms.serverapp.security.JwtAuthTokenFilter;
-import com.oms.serverapp.security.ServiceManDetails;
-import com.oms.serverapp.security.ServiceManPrinciple;
+import com.oms.serverapp.security.ServiceTechnicianDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 )
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    ServiceManDetails serviceManDetails;
+    ServiceTechnicianDetails serviceTechnicianDetails;
 
     @Autowired
     private JwtAuthEntryPoint unauthorizedHandler;
@@ -39,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder
-                .userDetailsService(serviceManDetails)
+                .userDetailsService(serviceTechnicianDetails)
                 .passwordEncoder(passwordEncoder());
     }
 
@@ -61,7 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/device/**", "/api/failure/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/report/**").permitAll()
-                //.antMatchers(HttpMethod.POST, "/api/serviceman/**").permitAll()
+                //.antMatchers(HttpMethod.POST, "/api/serviceTechnicians/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()

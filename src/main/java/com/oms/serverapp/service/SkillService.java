@@ -24,14 +24,14 @@ public class SkillService {
     private SkillRepository skillRepository;
     private DeviceRepository deviceRepository;
     private FailureRepository failureRepository;
-    private ServiceManService serviceManService;
+    private ServiceTechnicianService serviceTechnicianService;
 
     @Autowired
-    public SkillService(SkillRepository skillRepository, DeviceRepository deviceRepository, FailureRepository failureRepository, @Lazy ServiceManService serviceManService) {
+    public SkillService(SkillRepository skillRepository, DeviceRepository deviceRepository, FailureRepository failureRepository, @Lazy ServiceTechnicianService serviceTechnicianService) {
         this.skillRepository = skillRepository;
         this.deviceRepository = deviceRepository;
         this.failureRepository = failureRepository;
-        this.serviceManService = serviceManService;
+        this.serviceTechnicianService = serviceTechnicianService;
     }
 
     public List<SkillPayload> getAllSkills() {
@@ -56,7 +56,7 @@ public class SkillService {
             throw new IncorrectRepairTimeException();
         Device device = deviceRepository.findById(skillPayload.getDevice()).orElse(null);
         Failure failure = failureRepository.findById(skillPayload.getFailure()).orElse(null);
-        Skill savedSkill = skillRepository.save(new Skill(skillPayload, device, failure, serviceManService.idsToServiceMen(skillPayload.getServiceMen())));
+        Skill savedSkill = skillRepository.save(new Skill(skillPayload, device, failure, serviceTechnicianService.idsToServiceTechnician(skillPayload.getServiceTechnicians())));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedSkill).toUri();
         return ResponseEntity.created(location).build();
     }
@@ -72,7 +72,7 @@ public class SkillService {
         }
         Device device = deviceRepository.findById(skillPayload.getDevice()).orElse(skill.getDevice());
         Failure failure = failureRepository.findById(skillPayload.getFailure()).orElse(skill.getFailure());
-        skillRepository.save(new Skill(skill, skillPayload, device, failure, serviceManService.idsToServiceMen(skillPayload.getServiceMen())));
+        skillRepository.save(new Skill(skill, skillPayload, device, failure, serviceTechnicianService.idsToServiceTechnician(skillPayload.getServiceTechnicians())));
         return ResponseEntity.ok().build();
     }
 

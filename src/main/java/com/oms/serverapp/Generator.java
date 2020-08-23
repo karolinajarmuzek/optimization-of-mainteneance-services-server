@@ -18,14 +18,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Generator {
 
-    private static final String URL_SERVICEMAN = "http://localhost:8080/api/serviceman";
+    private static final String URL_SERVICETECHNICIAN = "http://localhost:8080/api/serviceTechnician";
     private static final String URL_CUSTOMER = "http://localhost:8080/api/customer";
     private static final String URL_DEVICE = "http://localhost:8080/api/device";
     private static final String URL_FAILURE = "http://localhost:8080/api/failure";
     private static final String URL_SKILL = "http://localhost:8080/api/skill";
     private static final String URL_AUTHORIZE = "http://localhost:8080/api/auth/signin";
 
-    private enum UserType{SERVICEMAN, CUSTOMER, ADMIN}
+    private enum UserType{SERVICETECHNICIAN, CUSTOMER, ADMIN}
 
     private static final Set<String> names = new HashSet<>(Set.of("Adam", "Bartosz", "Cezary", "Damian", "Eryk", "Franciszek", "Grzegorz", "Henryk", "Ignacy", "Jacek", "Karol", "Lech", "Mateusz", "Norbert", "Oliwier", "Piotr", "Rafal", "Sebastian", "Tomasz", "Wojciech", "Zbigniew"));
     private static final Set<String> surnames = new HashSet<>(Set.of("Nowak", "Kowalski", "Wisniewski", "Wojcik", "Kowalczyk", "Kaminski", "Lewandowski", "Zielinski", "Szymanski", "Wozniak", "Dabrowski", "Kozlowski", "Jankowski"));
@@ -51,7 +51,7 @@ public class Generator {
     private static String token;
 
     public static void generateData(){
-        int serviceManCount = 5;
+        int serviceTechniciansCount = 2;
         int customerCount = 5;
 
         System.out.println("---------------------------------------------------------------------------------------------------------------");
@@ -61,8 +61,8 @@ public class Generator {
         if (isTableEmpty(URL_DEVICE)) generateDevices();
         if (isTableEmpty(URL_FAILURE)) generateFailures();
         if (isTableEmpty(URL_SKILL)) generateSkills();
-        //if (isTableEmpty(URL_SERVICEMAN))
-        generateUser(serviceManCount, UserType.SERVICEMAN);
+        //if (isTableEmpty(URL_SERVICETECHNICIAN))
+        generateUser(serviceTechniciansCount, UserType.SERVICETECHNICIAN);
         if (isTableEmpty(URL_CUSTOMER)) generateUser(customerCount, UserType.CUSTOMER);
         System.out.println("DATA GENERATION FINISHED");
         System.out.println("---------------------------------------------------------------------------------------------------------------");
@@ -226,7 +226,7 @@ public class Generator {
                         SkillPayload[] skills = getSkills();
                         Set<Long> ownedSkills = new HashSet<>();
                         for (SkillPayload skill : skills) {
-                            if (ThreadLocalRandom.current().nextInt(0, 2) == 0) {
+                            if (ThreadLocalRandom.current().nextInt(0, 3) <= 1) {
                                 ownedSkills.add(skill.getId());
                             }
                         }
@@ -234,7 +234,7 @@ public class Generator {
                     }
                 }
             }};
-            Helpers.sendPostRequest(body, userType == UserType.CUSTOMER ? URL_CUSTOMER : URL_SERVICEMAN, token);
+            Helpers.sendPostRequest(body, userType == UserType.CUSTOMER ? URL_CUSTOMER : URL_SERVICETECHNICIAN, token);
         }
     }
 

@@ -2,15 +2,15 @@ package com.oms.serverapp.util;
 
 import com.oms.serverapp.model.Report;
 
-public class ServiceManRepairInfos {
+public class ServiceTechnicianRepairInfos {
     private int repairsTime;
     private Report lastReport = null; //if null - begins from start localization
 
-    public ServiceManRepairInfos() {
+    public ServiceTechnicianRepairInfos() {
         this.repairsTime = 0;
     }
 
-    public ServiceManRepairInfos(int repairsTime, Report lastReport) {
+    public ServiceTechnicianRepairInfos(int repairsTime, Report lastReport) {
         this.repairsTime = repairsTime;
         this.lastReport = lastReport;
     }
