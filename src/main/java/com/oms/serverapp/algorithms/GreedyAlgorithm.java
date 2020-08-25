@@ -5,8 +5,6 @@ import com.oms.serverapp.model.ServiceTechnician;
 import com.oms.serverapp.model.Skill;
 import com.oms.serverapp.util.RepairInfos;
 import com.oms.serverapp.util.ReportStatus;
-import com.oms.serverapp.util.ServiceTechnicianRepairInfos;
-
 import java.util.*;
 
 public class GreedyAlgorithm extends Algorithm {
@@ -23,12 +21,18 @@ public class GreedyAlgorithm extends Algorithm {
     @Override
     void schedule() {
         int profitFromInterval = 0;
+        Map<Long, Boolean> firstAssigment = new HashMap<>();
+
+        for (ServiceTechnician serviceTechnician: getServiceTechnicians()) {
+            if (!serviceTechnician.getFirstName().equals("Admin"))
+                firstAssigment.put(serviceTechnician.getId(), true);
+        }
 
         sortReports();
         mapServiceTechnicians();
 
         for (Integer reportIdx: reportsSortedIds) {
-            Report report = reportsWithId.get(reportIdx);
+            Report report = getReportsWithId().get(reportIdx);
             Skill skillNeeded = getReportsLoader().getReportSkillMap().get(report);
 
             List<ServiceTechnician> serviceTechniciansSorted = new ArrayList<>(skillNeeded.getServiceTechnician());
@@ -50,11 +54,20 @@ public class GreedyAlgorithm extends Algorithm {
                     int destinationLocationIdx = reportIdx + getNumberOfServiceTechnicians();
                     int actualLocationIdx;
                     Report lastReport = getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getLastReport();
-                    if (lastReport == null ||  reportIdx == -1) {
+                    if (lastReport == null ||  firstAssigment.get(serviceTechnician.getId())) {
                         actualLocationIdx = serviceTechnicianIdToIntegerMap.get(serviceTechnician.getId());
                     } else {
-                        actualLocationIdx = reportIdx + getNumberOfServiceTechnicians();
+                        int previousReportIdx = -1;
+                        for (Map.Entry<Integer, Report> entry : getReportsWithId().entrySet()) {
+                            if (entry.getValue().getId() == getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getLastReport().getId()) {
+                                previousReportIdx = entry.getKey();
+                                break;
+                            }
+                        }
+
+                        actualLocationIdx =  previousReportIdx + getNumberOfServiceTechnicians();
                     }
+
                     int travelTime = (int) getDurationsInS()[actualLocationIdx][destinationLocationIdx] / 60;
 
                     // Time needed for repair and travel
@@ -68,11 +81,15 @@ public class GreedyAlgorithm extends Algorithm {
                         maxTime = getMaxRepairTime() + getShiftTime();
                     }
 
+
                     //check if fixing report will not exceed max time for current schedule
                     if (previousRepairsTime + totalTime <= maxTime) {
-                        getServiceTechniciansRepairInfos().put(serviceTechnician.getId(), new ServiceTechnicianRepairInfos(previousRepairsTime + totalTime, report));
+                        getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).setRepairsTime(previousRepairsTime + totalTime);
+                        getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).setLastReport(report);
+                        getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getAssignedReports().add(report);
                         report.setStatus(ReportStatus.ASSIGNED);
                         updateReport(report);
+                        firstAssigment.put(serviceTechnician.getId(), false);
 
                         // TO DO
                         // if (!isTesting()) -> create repair
@@ -102,7 +119,7 @@ public class GreedyAlgorithm extends Algorithm {
 
         reportsSortedIds = new ArrayList<>();
         for (Report report : reportsSorted) {
-            for (Map.Entry<Integer, Report> entry : reportsWithId.entrySet()) {
+            for (Map.Entry<Integer, Report> entry : getReportsWithId().entrySet()) {
                 if (entry.getValue().getId() == report.getId()) {
                     int reportIdxOnInitialList = entry.getKey();
                     reportsSortedIds.add(reportIdxOnInitialList);

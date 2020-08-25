@@ -1,27 +1,15 @@
 package com.oms.serverapp.algorithms;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oms.serverapp.OptimizationServices;
 import com.oms.serverapp.model.Report;
 import com.oms.serverapp.model.ServiceTechnician;
 import com.oms.serverapp.model.Skill;
-import com.oms.serverapp.util.RepairInfos;
-import com.oms.serverapp.util.ReportStatus;
-import com.oms.serverapp.util.ReportsLoader;
-import com.oms.serverapp.util.ServiceTechnicianRepairInfos;
+import com.oms.serverapp.util.*;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public abstract class Algorithm {
 
@@ -41,8 +29,7 @@ public abstract class Algorithm {
     private static int numberOfServiceTechnicians;                                                              // number of serviceTechnicians
     private static int numberOfReports;                                                                         // number of all reports
 
-    Map<Integer, Report> reportsWithId = new HashMap<>();                                                       // cast each report to index (idx) for easy identification
-
+    private static Map<Integer, Report> reportsWithId = new HashMap<>();                                        // cast each report to index (idx) for easy identification
 
     public Algorithm(int scheduleInterval, int maxRepairTime) {
         this.scheduleInterval = scheduleInterval;
@@ -66,6 +53,7 @@ public abstract class Algorithm {
             schedule();
         }
         System.out.println("Total profit " + getTotalProfit());
+        checkSolution();
     }
 
     public static void prepare(String firstSchedule) {
@@ -129,73 +117,11 @@ public abstract class Algorithm {
             locations[i + serviceTechnicians.size()][1] = Double.parseDouble(reportsLoader.getReportsToSchedule().get(i).getLatitude());
         }
         // Get the time needed to travel between two points
-        double[][] durationsInS = getDurationsInS(locations, reportsLoader, interval);
-        setDurationsInS(durationsInS);
+        DurationsMatrix durationsMatrix = new DurationsMatrix(serviceTechnicians.size() + reportsLoader.getReportsToSchedule().size(), locations);
+        setDurationsInS(durationsMatrix.getDurations());
     }
 
-    public static double[][] getDurationsInS(double[][] locations, ReportsLoader reportsLoader, int interval) {
-        // Get the time needed to travel between two points
-        String durationMatrix = loadDurationMatrixFromAPI(locations);
-        //String durationMatrix = "[[0.0,920.99,784.93,556.52,1505.31,776.42,1044.89],[1036.86,0.0,393.01,579.95,927.8,384.51,780.89],[796.56,367.63,0.0,306.22,908.66,90.56,868.72],[618.98,498.6,327.63,0.0,1039.16,319.12,932.76],[1688.28,1043.35,1045.72,1162.18,0.0,1002.39,1315.71],[851.05,422.11,117.08,335.32,858.62,0.0,923.21],[1055.21,688.27,869.17,908.97,1335.18,860.66,0.0]]";
-        // Parse times to matrix
-        double[][] durationsInS = new double[reportsLoader.getReportsToSchedule().size() + serviceTechnicians.size()][reportsLoader.getReportsToSchedule().size() + serviceTechnicians.size()];
-        String[] durationMatrixStringSplit = durationMatrix.split("\\],\\[");
-        for (int i = 0; i < durationMatrixStringSplit.length; i++) {
-            String[] durations = durationMatrixStringSplit[i].replaceAll("\\[", "").replaceAll("\\]", "").split(",");
-            for (int j = 0; j < durations.length; j++) {
-                durationsInS[i][j] = Double.parseDouble(durations[j]);
-            }
-        }
-        return durationsInS;
-    }
 
-    public static String loadDurationMatrixFromAPI(double[][] locations){
-        var body = new HashMap<String, Object>() {{
-            put("locations", locations);
-            put("metrics", new String[] {"duration"});
-            put("resolve_locations", "false");
-        }};
-
-        var objectMapper = new ObjectMapper();
-        String requestBody = null;
-        try {
-            requestBody = objectMapper
-                    .writeValueAsString(body);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.openrouteservice.org/v2/matrix/driving-car"))
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                .setHeader("Authorization", "5b3ce3597851110001cf6248655e1d2b2ab94d7caabb6d4171889110")
-                .setHeader("Accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8")
-                .setHeader("Content-Type", "application/json; charset=utf-8")
-                .build();
-
-        HttpResponse<String> response = null;
-        try {
-            response = client.send(request,
-                    HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        //System.out.println("body:" + response.body());
-
-        Pattern p = Pattern.compile("\\[(\\[([0-9]+\\.[0-9]+.)+.)+");
-        Matcher m = p.matcher(response.body());
-        if (m.find())
-        {
-            return m.group(0);
-        }
-
-        return "";
-
-    }
 
     //get profit and repair time
     public static RepairInfos getRepairInfos(Report report, int experienceOrServiceTechnicianIdx, boolean isExperience) {
@@ -221,6 +147,24 @@ public abstract class Algorithm {
 
     public static void updateReport(Report report) {
         OptimizationServices.updateReport(report);
+    }
+
+    public void checkSolution() {
+        Map<ServiceTechnician, List<Report>> serviceTechnicianListMap = new HashMap<>();
+        Map<Long, Integer> repairTimes = new HashMap<>();
+        for (ServiceTechnician serviceTechnician : serviceTechnicians) {
+            if (!serviceTechnician.getFirstName().equals("Admin")) {
+                serviceTechnicianListMap.put(serviceTechnician, getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getAssignedReports());
+                repairTimes.put(serviceTechnician.getId(), getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getRepairsTime());
+            }
+
+        }
+        // TO DO change scheduleMinTime
+        SolutionVerification solutionVerification = new SolutionVerification(scheduleInterval * 3, getMaxRepairTime() + getShiftTime(), serviceTechnicianListMap, getTotalProfit(), repairTimes);
+        boolean isSolutionCorrect = solutionVerification.isSolutionCorrect();
+        System.out.println("Is solution correct: " + isSolutionCorrect);
+        if (!isSolutionCorrect) System.out.println(solutionVerification.getMessage());
+
     }
 
     abstract void schedule();
@@ -309,4 +253,7 @@ public abstract class Algorithm {
         return numberOfReports;
     }
 
+    public static Map<Integer, Report> getReportsWithId() {
+        return reportsWithId;
+    }
 }
