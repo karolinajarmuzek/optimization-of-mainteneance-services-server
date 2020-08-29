@@ -53,6 +53,12 @@ public abstract class Algorithm {
             schedule();
         }
         System.out.println("Total profit " + getTotalProfit());
+        for (Map.Entry<Long, ServiceTechnicianRepairInfos> entry : getServiceTechniciansRepairInfos().entrySet()) {
+            System.out.println("ServiceTechnician Id " + entry.getKey());
+            for (Report report : entry.getValue().getAssignedReports()) {
+                System.out.println("reportId " + report.getId());
+            }
+        }
         checkSolution();
     }
 
@@ -160,7 +166,7 @@ public abstract class Algorithm {
 
         }
         // TO DO change scheduleMinTime
-        SolutionVerification solutionVerification = new SolutionVerification(scheduleInterval * 3, getMaxRepairTime() + getShiftTime(), serviceTechnicianListMap, getTotalProfit(), repairTimes);
+        SolutionVerification solutionVerification = new SolutionVerification(getMaxRepairTime() - scheduleInterval, getMaxRepairTime() + getShiftTime(), serviceTechnicianListMap, getTotalProfit(), repairTimes);
         boolean isSolutionCorrect = solutionVerification.isSolutionCorrect();
         System.out.println("Is solution correct: " + isSolutionCorrect);
         if (!isSolutionCorrect) System.out.println(solutionVerification.getMessage());

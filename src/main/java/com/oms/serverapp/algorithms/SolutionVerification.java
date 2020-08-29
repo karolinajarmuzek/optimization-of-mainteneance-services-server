@@ -63,7 +63,7 @@ public class SolutionVerification {
                 break;
             }  else if (repairTimeProvided < scheduleMinTime) {
                 isCorrect = false;
-                message = "The minimum time was not met. Minimal time: " + scheduleMaxTime + ", actual time: " + repairTimeCalculated ;
+                message = "The minimum time was not met. Minimal time: " + scheduleMinTime + ", actual time: " + repairTimeCalculated ;
                 System.out.println(message);
                 break;
             } else if (repairTimeProvided > scheduleMaxTime) {

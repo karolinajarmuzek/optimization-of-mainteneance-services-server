@@ -83,7 +83,7 @@ public class GreedyAlgorithm extends Algorithm {
 
 
                     //check if fixing report will not exceed max time for current schedule
-                    if (previousRepairsTime + totalTime <= maxTime) {
+                    if ((previousRepairsTime + totalTime <= maxTime) || (firstAssigment.get(serviceTechnician.getId()) && (previousRepairsTime + totalTime <= getMaxRepairTime() + getShiftTime()))) {
                         getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).setRepairsTime(previousRepairsTime + totalTime);
                         getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).setLastReport(report);
                         getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getAssignedReports().add(report);
@@ -113,7 +113,9 @@ public class GreedyAlgorithm extends Algorithm {
             public int compare(Report r1, Report r2) {
                 Skill s1 = getReportsLoader().getReportSkillMap().get(r1);
                 Skill s2 = getReportsLoader().getReportSkillMap().get(r2);
-                return s2.getProfit().compareTo(s1.getProfit());
+                Integer v1 = s1.getProfit() / (s1.getMaxRepairTime() / 60  + 1);
+                Integer v2 = s2.getProfit() / (s2.getMaxRepairTime() / 60 + 1);
+                return v2.compareTo(v1);
             }
         });
 

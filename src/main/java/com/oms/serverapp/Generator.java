@@ -131,6 +131,9 @@ public class Generator {
 
     public static void generateSkills() {
 
+        int[][] timeIntervals = {{30, 60}, {50, 130}, {100, 200}, {150, 240}};
+        int[][] profits = {{50, 200}, {100, 300}, {200, 400}, {300, 500}};
+
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest requestDevices = HttpRequest.newBuilder()
                 .uri(URI.create(URL_DEVICE))
@@ -158,13 +161,15 @@ public class Generator {
             DevicePayload[] devices = gson.fromJson(responseDevices.body(), DevicePayload[].class);
             FailurePayload[] failures = gson.fromJson(responseFailures.body(), FailurePayload[].class);
 
+            Random random = new Random();
             for (int i = 0; i < devices.length; i++) {
                 for (int j = 0; j < failures.length; j++) {
-                    Integer profit = ThreadLocalRandom.current().nextInt(5, 51) * 10; // 50-500
-                    Integer minRepairTime = ThreadLocalRandom.current().nextInt(3, 24) * 10; //30 - 240 [min]
+                    int rand = random.nextInt(timeIntervals.length);
+                    Integer profit = ThreadLocalRandom.current().nextInt(profits[rand][0], profits[rand][1]);
+                    Integer minRepairTime = ThreadLocalRandom.current().nextInt(timeIntervals[rand][0] / 10, timeIntervals[rand][1] / 10) * 10; // min
                     Integer maxRepairTime;
                     do {
-                        maxRepairTime = ThreadLocalRandom.current().nextInt(3, 24) * 10; //30 - 240 [min]
+                        maxRepairTime = ThreadLocalRandom.current().nextInt(timeIntervals[rand][0] / 10, timeIntervals[rand][1] / 10) * 10; // min
                     } while (maxRepairTime < minRepairTime);
 
                     Integer finalMaxRepairTime = maxRepairTime;
