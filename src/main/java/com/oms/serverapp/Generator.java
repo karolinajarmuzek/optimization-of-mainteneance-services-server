@@ -3,9 +3,9 @@ package com.oms.serverapp;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
-import com.oms.serverapp.payload.DevicePayload;
-import com.oms.serverapp.payload.FailurePayload;
-import com.oms.serverapp.payload.SkillPayload;
+import com.oms.serverapp.model.Skill;
+import com.oms.serverapp.model.SparePart;
+import com.oms.serverapp.payload.*;
 import com.oms.serverapp.util.Helpers;
 
 import java.io.IOException;
@@ -24,6 +24,8 @@ public class Generator {
     private static final String URL_FAILURE = "http://localhost:8080/api/failure";
     private static final String URL_SKILL = "http://localhost:8080/api/skill";
     private static final String URL_AUTHORIZE = "http://localhost:8080/api/auth/signin";
+    private static final String URL_SPAREPART = "http://localhost:8080/api/sparepart";
+    private static final String URL_SPAREPARTNEEDED = "http://localhost:8080/api/sparepartneeded";
 
     private enum UserType{SERVICETECHNICIAN, CUSTOMER, ADMIN}
 
@@ -48,11 +50,18 @@ public class Generator {
 
     private static final Set<String> failures = new HashSet<>(Set.of("F1", "F2", "F3"));
 
+    private static final Integer sparePartMaxQuantity = 100;
+    private static final Integer sparePartMinPrice = 20;
+    private static final Integer sparePartMaxPrice = 200;
+
     private static String token;
 
     public static void generateData(){
         int serviceTechniciansCount = 2;
         int customerCount = 5;
+        int sparePartsCount = 30;
+        int maxSparePartsTypes = 3;
+        int maxSparePartCount = 3;
 
         System.out.println("---------------------------------------------------------------------------------------------------------------");
         System.out.println("DATA GENERATION STARTED");
@@ -60,7 +69,9 @@ public class Generator {
         authorize();
         if (isTableEmpty(URL_DEVICE)) generateDevices();
         if (isTableEmpty(URL_FAILURE)) generateFailures();
+        if (isTableEmpty(URL_SPAREPART)) generateSpareParts(sparePartsCount);
         if (isTableEmpty(URL_SKILL)) generateSkills();
+        if (isTableEmpty(URL_SPAREPARTNEEDED)) generateSparePartsNeeded(maxSparePartsTypes, maxSparePartCount);
         //if (isTableEmpty(URL_SERVICETECHNICIAN))
         generateUser(serviceTechniciansCount, UserType.SERVICETECHNICIAN);
         if (isTableEmpty(URL_CUSTOMER)) generateUser(customerCount, UserType.CUSTOMER);
@@ -129,6 +140,19 @@ public class Generator {
         }
     }
 
+    public static void generateSpareParts(int count) {
+        Random random = new Random();
+        for (int i = 0; i < count; i++) {
+            int finalI = i;
+            var body = new HashMap<String, Object>() {{
+                put("name", "SprarePart" + (finalI + 1));
+                put("quantity", random.nextInt(sparePartMaxQuantity));
+                put("price", random.nextInt(sparePartMaxPrice - sparePartMinPrice) + sparePartMinPrice);
+            }};
+            Helpers.sendPostRequest(body, URL_SPAREPART, token);
+        }
+    }
+
     public static void generateSkills() {
 
         int[][] timeIntervals = {{30, 60}, {50, 130}, {100, 200}, {150, 240}};
@@ -184,6 +208,64 @@ public class Generator {
                     }};
 
                     Helpers.sendPostRequest(body, URL_SKILL, token);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void generateSparePartsNeeded(int maxSparePartsTypes, int maxSparePartCount) {
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest requestSkills = HttpRequest.newBuilder()
+                .uri(URI.create(URL_SKILL))
+                .GET()
+                .setHeader("Content-Type", "application/json")
+                .setHeader("Authorization", "Bearer " + token)
+                .build();
+
+        HttpRequest requestSpareParts = HttpRequest.newBuilder()
+                .uri(URI.create(URL_SPAREPART))
+                .GET()
+                .setHeader("Content-Type", "application/json")
+                .setHeader("Authorization", "Bearer " + token)
+                .build();
+
+        HttpResponse<String> responseSkills = null;
+        HttpResponse<String> responseSpareParts = null;
+        try {
+            responseSkills = client.send(requestSkills,
+                    HttpResponse.BodyHandlers.ofString());
+            responseSpareParts = client.send(requestSpareParts,
+                    HttpResponse.BodyHandlers.ofString());
+
+            Gson gson = new Gson();
+            SkillPayload[] skills = gson.fromJson(responseSkills.body(), SkillPayload[].class);
+            SparePartPayload[] spareParts = gson.fromJson(responseSpareParts.body(), SparePartPayload[].class);
+
+            Random random = new Random();
+            for (int i = 0; i < skills.length; i++) {
+                int numberOfSpareParts = random.nextInt(maxSparePartsTypes);
+                List<SparePart> parts = new ArrayList<>();
+                for (int j = 0; j < numberOfSpareParts; j++) {
+                    int sparePartIdx;
+                    do {
+                        sparePartIdx = random.nextInt(spareParts.length);
+                    } while (parts.contains(spareParts[sparePartIdx]));
+                    int sparePartCount = random.nextInt(maxSparePartCount - 1) + 1;
+
+                    int finalI = i;
+                    int finalSparePartIdx = sparePartIdx;
+                    var body = new HashMap<String, Object>() {{
+                        put("skill", skills[finalI].getId());
+                        put("sparePart", spareParts[finalSparePartIdx].getId());
+                        put("quantity", sparePartCount);
+                    }};
+                    Helpers.sendPostRequest(body, URL_SPAREPARTNEEDED, token);
                 }
             }
 

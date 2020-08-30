@@ -25,6 +25,7 @@ public class Skill {
     private Failure failure;
 
     @NotNull(message = "Profit cannot be null.")
+    @Min(0)
     private Integer profit;
 
     @NotNull(message = "Minimum repair time should be between 15 and 480.")
@@ -39,6 +40,9 @@ public class Skill {
 
     @ManyToMany(mappedBy = "ownedSkills", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     Set<ServiceTechnician> serviceTechnician;
+
+    @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<SparePartNeeded> sparePartsNeeded;
 
     public Skill() {
     }
@@ -116,5 +120,13 @@ public class Skill {
 
     public void setServiceTechnician(Set<ServiceTechnician> serviceTechnician) {
         this.serviceTechnician = serviceTechnician;
+    }
+
+    public Set<SparePartNeeded> getSparePartsNeeded() {
+        return sparePartsNeeded;
+    }
+
+    public void setSparePartsNeeded(Set<SparePartNeeded> sparePartsNeeded) {
+        this.sparePartsNeeded = sparePartsNeeded;
     }
 }
