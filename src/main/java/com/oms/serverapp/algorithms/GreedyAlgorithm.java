@@ -1,8 +1,6 @@
 package com.oms.serverapp.algorithms;
 
-import com.oms.serverapp.model.Report;
-import com.oms.serverapp.model.ServiceTechnician;
-import com.oms.serverapp.model.Skill;
+import com.oms.serverapp.model.*;
 import com.oms.serverapp.util.RepairInfos;
 import com.oms.serverapp.util.ReportStatus;
 import java.util.*;
@@ -12,7 +10,6 @@ public class GreedyAlgorithm extends Algorithm {
     private List<Report> reportsSorted;
     private List<Integer> reportsSortedIds;
     private Map<Long, Integer> serviceTechnicianIdToIntegerMap;
-
 
     public GreedyAlgorithm(int scheduleInterval, int maxRepairTime) {
         super(scheduleInterval, maxRepairTime);
@@ -34,69 +31,87 @@ public class GreedyAlgorithm extends Algorithm {
         for (Integer reportIdx: reportsSortedIds) {
             Report report = getReportsWithId().get(reportIdx);
             Skill skillNeeded = getReportsLoader().getReportSkillMap().get(report);
+            Set<SparePartNeeded> sparePartsNeeded = skillNeeded.getSparePartsNeeded();
 
-            List<ServiceTechnician> serviceTechniciansSorted = new ArrayList<>(skillNeeded.getServiceTechnician());
-            // list of serviceTechnicians sorted based on serviceTechnician experience
-            serviceTechniciansSorted.sort(new Comparator<ServiceTechnician>() {
-                @Override
-                public int compare(ServiceTechnician s1, ServiceTechnician s2) {
-                    return s2.getExperience().compareTo(s1.getExperience());
+            boolean areSparePartsAvailable = true;
+            if (sparePartsNeeded != null) {
+                for (SparePartNeeded sparePartNeeded : sparePartsNeeded) {
+                    int sparePartCount = getSparePartCountMap().get(sparePartNeeded.getSparePart().getId());
+                    if (sparePartCount == -1 || sparePartCount < sparePartNeeded.getQuantity()) {
+                        areSparePartsAvailable = false;
+                        break;
+                    }
                 }
-            });
+            }
+            if (areSparePartsAvailable) {
+                List<ServiceTechnician> serviceTechniciansSorted = new ArrayList<>(skillNeeded.getServiceTechnician());
+                // list of serviceTechnicians sorted based on serviceTechnician experience
+                serviceTechniciansSorted.sort(new Comparator<ServiceTechnician>() {
+                    @Override
+                    public int compare(ServiceTechnician s1, ServiceTechnician s2) {
+                        return s2.getExperience().compareTo(s1.getExperience());
+                    }
+                });
 
-            for (ServiceTechnician serviceTechnician : serviceTechniciansSorted) {
-                int previousRepairsTime = getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getRepairsTime();
-                if (previousRepairsTime < (getScheduleInterval() * (getInterval() + 1))) {
-                    // get repair infos
-                    RepairInfos repairInfos = getRepairInfos(report, serviceTechnician.getExperience(), true);
+                for (ServiceTechnician serviceTechnician : serviceTechniciansSorted) {
+                    int previousRepairsTime = getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getRepairsTime();
+                    if (previousRepairsTime < (getScheduleInterval() * (getInterval() + 1))) {
+                        // get repair infos
+                        RepairInfos repairInfos = getRepairInfos(report, serviceTechnician.getExperience(), true);
 
-                    // Get time needed to travel between two locations based on report or serviceTechnician location
-                    int destinationLocationIdx = reportIdx + getNumberOfServiceTechnicians();
-                    int actualLocationIdx;
-                    Report lastReport = getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getLastReport();
-                    if (lastReport == null ||  firstAssigment.get(serviceTechnician.getId())) {
-                        actualLocationIdx = serviceTechnicianIdToIntegerMap.get(serviceTechnician.getId());
-                    } else {
-                        int previousReportIdx = -1;
-                        for (Map.Entry<Integer, Report> entry : getReportsWithId().entrySet()) {
-                            if (entry.getValue().getId() == getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getLastReport().getId()) {
-                                previousReportIdx = entry.getKey();
-                                break;
+                        // Get time needed to travel between two locations based on report or serviceTechnician location
+                        int destinationLocationIdx = reportIdx + getNumberOfServiceTechnicians();
+                        int actualLocationIdx;
+                        Report lastReport = getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getLastReport();
+                        if (lastReport == null || firstAssigment.get(serviceTechnician.getId())) {
+                            actualLocationIdx = serviceTechnicianIdToIntegerMap.get(serviceTechnician.getId());
+                        } else {
+                            int previousReportIdx = -1;
+                            for (Map.Entry<Integer, Report> entry : getReportsWithId().entrySet()) {
+                                if (entry.getValue().getId() == getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getLastReport().getId()) {
+                                    previousReportIdx = entry.getKey();
+                                    break;
+                                }
                             }
+
+                            actualLocationIdx = previousReportIdx + getNumberOfServiceTechnicians();
                         }
 
-                        actualLocationIdx =  previousReportIdx + getNumberOfServiceTechnicians();
-                    }
+                        int travelTime = (int) getDurationsInS()[actualLocationIdx][destinationLocationIdx] / 60;
 
-                    int travelTime = (int) getDurationsInS()[actualLocationIdx][destinationLocationIdx] / 60;
+                        // Time needed for repair and travel
+                        int totalTime = repairInfos.getRepairTime() + travelTime;
 
-                    // Time needed for repair and travel
-                    int totalTime = repairInfos.getRepairTime() + travelTime;
-
-                    // Check if serviceTechnician can handle the repair
-                    int maxTime;
-                    if ((getScheduleInterval() * (getInterval() + 1) * 1.3) < 480) {
-                        maxTime = (int) (getScheduleInterval() * (getInterval() + 1) * 1.3);
-                    } else {
-                        maxTime = getMaxRepairTime() + getShiftTime();
-                    }
+                        // Check if serviceTechnician can handle the repair
+                        int maxTime;
+                        if ((getScheduleInterval() * (getInterval() + 1) * 1.3) < 480) {
+                            maxTime = (int) (getScheduleInterval() * (getInterval() + 1) * 1.3);
+                        } else {
+                            maxTime = getMaxRepairTime() + getShiftTime();
+                        }
 
 
-                    //check if fixing report will not exceed max time for current schedule
-                    if ((previousRepairsTime + totalTime <= maxTime) || (firstAssigment.get(serviceTechnician.getId()) && (previousRepairsTime + totalTime <= getMaxRepairTime() + getShiftTime()))) {
-                        getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).setRepairsTime(previousRepairsTime + totalTime);
-                        getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).setLastReport(report);
-                        getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getAssignedReports().add(report);
-                        report.setStatus(ReportStatus.ASSIGNED);
-                        updateReport(report);
-                        firstAssigment.put(serviceTechnician.getId(), false);
+                        //check if fixing report will not exceed max time for current schedule
+                        if ((previousRepairsTime + totalTime <= maxTime) || (firstAssigment.get(serviceTechnician.getId()) && (previousRepairsTime + totalTime <= getMaxRepairTime() + getShiftTime()))) {
+                            getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).setRepairsTime(previousRepairsTime + totalTime);
+                            getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).setLastReport(report);
+                            getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getAssignedReports().add(report);
+                            report.setStatus(ReportStatus.ASSIGNED);
+                            for (SparePartNeeded sparePartNeeded : sparePartsNeeded) {
+                                SparePart sparePart = sparePartNeeded.getSparePart();
+                                getSparePartCountMap().put(sparePart.getId(), getSparePartCountMap().get(sparePart.getId()) - sparePartNeeded.getQuantity());
+                            }
+                            updateReport(report);
+                            firstAssigment.put(serviceTechnician.getId(), false);
 
-                        // TO DO
-                        // if (!isTesting()) -> create repair
+                            // TO DO
+                            // if (!isTesting()) -> create repair
 
-                        profitFromInterval += skillNeeded.getProfit();
-                        if (isShowMessages()) System.out.println("Service technician " + serviceTechnician.getId() + " new rep " +  report.getId() + " total time " + totalTime);
-                        break;
+                            profitFromInterval += skillNeeded.getProfit();
+                            if (isShowMessages())
+                                System.out.println("Service technician " + serviceTechnician.getId() + " new rep " + report.getId() + " total time " + totalTime);
+                            break;
+                        }
                     }
                 }
             }

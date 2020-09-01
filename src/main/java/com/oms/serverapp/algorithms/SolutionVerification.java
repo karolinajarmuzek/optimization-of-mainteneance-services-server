@@ -1,15 +1,10 @@
 package com.oms.serverapp.algorithms;
 
 import com.oms.serverapp.OptimizationServices;
-import com.oms.serverapp.model.Report;
-import com.oms.serverapp.model.ServiceTechnician;
-import com.oms.serverapp.model.Skill;
+import com.oms.serverapp.model.*;
 import com.oms.serverapp.util.DurationsMatrix;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SolutionVerification {
     private static int scheduleMinTime;
@@ -18,24 +13,33 @@ public class SolutionVerification {
     private static int totalProfit;
     private static Map<Integer, Object> indexToObjectMap;
     private static double[][] durationsInS;
+    private static Map<Long, Integer> sparePartCountMap;
 
     private static Map<ServiceTechnician, List<Integer>> serviceTechnicianReportIdxMap = new HashMap<>();
     private static Map<Long, Integer> serviceTechnicianIdToIdxMap = new HashMap<>();
     private static Map<Long, Integer> repairTimes;
     private static String message;
 
-    public SolutionVerification(int scheduleMinTime, int scheduleMaxTime, Map<ServiceTechnician, List<Report>> serviceTechnicianReportsMap, int totalProfit, Map<Long, Integer> repairTimes) {
+    public SolutionVerification(int scheduleMinTime, int scheduleMaxTime, Map<ServiceTechnician, List<Report>> serviceTechnicianReportsMap, int totalProfit, Map<Long, Integer> repairTimes, Map<Long, Integer> sparePartCountMap) {
         this.scheduleMinTime = scheduleMinTime;
         this.scheduleMaxTime = scheduleMaxTime;
         this.serviceTechnicianReportsMap = serviceTechnicianReportsMap;
         this.totalProfit = totalProfit;
         this.repairTimes = repairTimes;
         this.indexToObjectMap = new HashMap<>();
+        this.sparePartCountMap = sparePartCountMap;
     }
 
     public static boolean isSolutionCorrect() {
         boolean isCorrect = true;
         int profit = 0;
+        Map<Long, Integer> sparePartUsedMap = new HashMap<>();
+
+        List<SparePart> spareParts = OptimizationServices.loadSpareParts();
+        for (SparePart sparePart : spareParts) {
+            sparePartUsedMap.put(sparePart.getId(), sparePart.getQuantity());
+        }
+
         prepareDurations();
 
         for (ServiceTechnician serviceTechnician : serviceTechnicianReportsMap.keySet()) {
@@ -54,6 +58,10 @@ public class SolutionVerification {
                 int totalTime = repairTime + travelTime;
                 profit += skill.getProfit();
                 repairTimeCalculated += totalTime;
+                for (SparePartNeeded sparePartNeeded : skill.getSparePartsNeeded()) {
+                    Long sparePartId = sparePartNeeded.getSparePart().getId();
+                    sparePartUsedMap.put(sparePartId, sparePartUsedMap.get(sparePartId) - sparePartNeeded.getQuantity());
+                }
             }
             int repairTimeProvided = repairTimes.get(serviceTechnician.getId());
             if (repairTimeProvided != repairTimeCalculated) {
@@ -77,6 +85,13 @@ public class SolutionVerification {
         if (isCorrect && (profit != totalProfit)) {
             isCorrect = false;
             message = "Total profit is not correct. Expected total profit: " + profit + ", given profit: " + totalProfit;
+        }
+
+        for (Map.Entry<Long, Integer> entry : sparePartUsedMap.entrySet()) {
+            if (entry.getValue() != sparePartCountMap.get(entry.getKey())) {
+                isCorrect = false;
+                message = "Spare part " + entry.getKey() + " quantity does not match. Expected quantity: " + entry.getValue() + ", given quantity " + sparePartCountMap.get(entry.getKey());
+            }
         }
 
         return isCorrect;

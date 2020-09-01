@@ -4,6 +4,7 @@ import com.oms.serverapp.OptimizationServices;
 import com.oms.serverapp.model.Report;
 import com.oms.serverapp.model.ServiceTechnician;
 import com.oms.serverapp.model.Skill;
+import com.oms.serverapp.model.SparePart;
 import com.oms.serverapp.util.*;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public abstract class Algorithm {
     private static int scheduleInterval;                                                                        // size of one schedule interval [in min]
     private static int maxRepairTime;                                                                           // max work time [in min]
     private static int totalProfit;                                                                             // total profit from all intervals
+    private static Map<Long, Integer> sparePartCountMap;                                                        // the number of available spare parts of a given type (spare part id)
 
     private static int numberOfServiceTechnicians;                                                              // number of serviceTechnicians
     private static int numberOfReports;                                                                         // number of all reports
@@ -40,6 +42,7 @@ public abstract class Algorithm {
     public void exec(String firstSchedule) {
         int intervals = maxRepairTime / scheduleInterval;
         if (testing) resetReportsStatuses();
+        loadSpareParts();
         for (int i = 0; i < intervals; i++ ) {
             setInterval(i);
             prepare(firstSchedule);
@@ -54,7 +57,7 @@ public abstract class Algorithm {
         }
         System.out.println("Total profit " + getTotalProfit());
         for (Map.Entry<Long, ServiceTechnicianRepairInfos> entry : getServiceTechniciansRepairInfos().entrySet()) {
-            System.out.println("ServiceTechnician Id " + entry.getKey());
+            System.out.println("ServiceTechnician Id " + entry.getKey() + " time " + getServiceTechniciansRepairInfos().get(entry.getKey()).getRepairsTime());
             for (Report report : entry.getValue().getAssignedReports()) {
                 System.out.println("reportId " + report.getId());
             }
@@ -100,6 +103,14 @@ public abstract class Algorithm {
         }
         setReportsLoader(new ReportsLoader(reportsToSchedule, reportSkillMap));
         numberOfReports = reportsToSchedule.size();
+    }
+
+    public static void loadSpareParts() {
+        List<SparePart> spareParts = OptimizationServices.loadSpareParts();
+        sparePartCountMap = new HashMap<>();
+        for (SparePart sparePart : spareParts) {
+            sparePartCountMap.put(sparePart.getId(), sparePart.getQuantity());
+        }
     }
 
     public static void prepareTravelDurations() {
@@ -155,6 +166,10 @@ public abstract class Algorithm {
         OptimizationServices.updateReport(report);
     }
 
+    public static void updateSparePart(SparePart sparePart) {
+        OptimizationServices.updateSparePart(sparePart);
+    }
+
     public void checkSolution() {
         Map<ServiceTechnician, List<Report>> serviceTechnicianListMap = new HashMap<>();
         Map<Long, Integer> repairTimes = new HashMap<>();
@@ -166,7 +181,7 @@ public abstract class Algorithm {
 
         }
         // TO DO change scheduleMinTime
-        SolutionVerification solutionVerification = new SolutionVerification(getMaxRepairTime() - scheduleInterval, getMaxRepairTime() + getShiftTime(), serviceTechnicianListMap, getTotalProfit(), repairTimes);
+        SolutionVerification solutionVerification = new SolutionVerification(getMaxRepairTime() - scheduleInterval, getMaxRepairTime() + getShiftTime(), serviceTechnicianListMap, getTotalProfit(), repairTimes, getSparePartCountMap());
         boolean isSolutionCorrect = solutionVerification.isSolutionCorrect();
         System.out.println("Is solution correct: " + isSolutionCorrect);
         if (!isSolutionCorrect) System.out.println(solutionVerification.getMessage());
@@ -261,5 +276,13 @@ public abstract class Algorithm {
 
     public static Map<Integer, Report> getReportsWithId() {
         return reportsWithId;
+    }
+
+    public static Map<Long, Integer> getSparePartCountMap() {
+        return sparePartCountMap;
+    }
+
+    public static void setSparePartCountMap(Map<Long, Integer> sparePartCountMap) {
+        Algorithm.sparePartCountMap = sparePartCountMap;
     }
 }

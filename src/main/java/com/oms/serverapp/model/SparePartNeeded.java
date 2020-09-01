@@ -20,7 +20,7 @@ public class SparePartNeeded {
     private Skill skill;
 
     @NotNull(message = "Sparepart cannot be null.")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private SparePart sparePart;
 
     @NotNull(message = "Quantity cannot be null.")

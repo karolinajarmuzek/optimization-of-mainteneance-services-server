@@ -1,6 +1,6 @@
 package com.oms.serverapp.algorithms;
 
-import com.oms.serverapp.model.Report;
+import com.oms.serverapp.model.*;
 import com.oms.serverapp.util.RepairInfos;
 import com.oms.serverapp.util.ReportStatus;
 
@@ -24,7 +24,9 @@ public class AntColony extends Algorithm {
     private Map<Integer, List<Integer>> reportsAvailable = new HashMap<>();     // list of reports idx that each serviceTechnician can fix (has skill)
 
     private Ant bestSolution;                                                   // best found solution
+    private Map<Long, Integer> sparePartsForBestSolution;                       // id and quantity of spare parts after best assignment
     private int[][] currentIndex;                                               // array of index of last scheduled report for each serviceTechnician
+    private Map<Integer, Map<Long, Integer>> sparePartsForEachAntInColony;      // id and quantity of spare parts for each ant
 
     public AntColony(int scheduleInterval, int maxRepairTime) {
         super(scheduleInterval, maxRepairTime);
@@ -36,6 +38,8 @@ public class AntColony extends Algorithm {
         trails = new double[getNumberOfServiceTechnicians()][getNumberOfReports() + 1][getNumberOfReports() + 1];
         probabilities = new double[getNumberOfReports()];
         currentIndex = new int[numberOfAnts][getNumberOfServiceTechnicians()];
+        sparePartsForEachAntInColony = new HashMap<>();
+        sparePartsForBestSolution = new HashMap<>();
 
         ants = new ArrayList<>();
         for (int i = 0; i < numberOfAnts; i++) {
@@ -80,6 +84,7 @@ public class AntColony extends Algorithm {
             }
             setTotalProfit(getTotalProfit() + bestSolution.profit);
             updateServiceTechnicianRepairInfos(bestSolution);
+            updateSparePartCountMap();
         } else {
             System.out.println("No correct solution found");
         }
@@ -88,6 +93,7 @@ public class AntColony extends Algorithm {
     private void solve() {
         setUpAnts();
         clearTrails();
+        prepareSpareParts();
         for (int i = 0; i < maxIterations; i++) {
             if (isShowMessages()) System.out.println("Iteration #" + i);
             moveAnts(i);
@@ -130,20 +136,41 @@ public class AntColony extends Algorithm {
                 int totalRepairsTime = ant.getRepairTimes()[serviceTechnician] + repairTimePreviously;  // in previous schedule and in actual schedule
                 if (totalRepairsTime < (getScheduleInterval() * (getInterval() + 1))) { // check if serviceTechnician can handle more repairs
                     try {
+                        boolean areSparePartsAvailable = true;
                         int report = selectNextReport(ant, serviceTechnician);
 
-                        RepairInfos repairInfos = getRepairInfos(getReportsWithId().get(report - getNumberOfServiceTechnicians()), serviceTechnician, false);
-                        int travelTime = (int) getDurationsInS()[ant.trail[serviceTechnician][currentIndex[antId][serviceTechnician]]][report] / 60;
-                        int maxTime;
-                        if ((getScheduleInterval() * (getInterval() + 1) * 1.3) < 480) {
-                            maxTime = (int) (getScheduleInterval() * (getInterval() + 1) * 1.3);
-                        } else {
-                            maxTime = getMaxRepairTime() + getShiftTime();
+                        Skill skillNeeded = getReportsLoader().getReportSkillMap().get(getReportsWithId().get(report - getNumberOfServiceTechnicians()));
+                        Set<SparePartNeeded> sparePartsNeeded = new HashSet<>();
+                        if (!skillNeeded.getSparePartsNeeded().isEmpty()){
+                            sparePartsNeeded = skillNeeded.getSparePartsNeeded();
+                            for (SparePartNeeded sparePartNeeded : sparePartsNeeded) {
+                                int sparePartCount = sparePartsForEachAntInColony.get(antId).get(sparePartNeeded.getSparePart().getId());
+                                if (sparePartCount == -1 || sparePartCount < sparePartNeeded.getQuantity()) {
+                                    areSparePartsAvailable = false;
+                                    break;
+                                }
+                            }
                         }
+                        if (areSparePartsAvailable) {
+                            RepairInfos repairInfos = getRepairInfos(getReportsWithId().get(report - getNumberOfServiceTechnicians()), serviceTechnician, false);
+                            int travelTime = (int) getDurationsInS()[ant.trail[serviceTechnician][currentIndex[antId][serviceTechnician]]][report] / 60;
+                            int maxTime;
+                            if ((getScheduleInterval() * (getInterval() + 1) * 1.3) < 480) {
+                                maxTime = (int) (getScheduleInterval() * (getInterval() + 1) * 1.3);
+                            } else {
+                                maxTime = getMaxRepairTime() + getShiftTime();
+                            }
 
-                        if (((totalRepairsTime + repairInfos.getRepairTime() + travelTime) <= maxTime) || ((currentIndex[antId][serviceTechnician] == 0) && ((totalRepairsTime + repairInfos.getRepairTime() + travelTime) <= (getMaxRepairTime() + getShiftTime())))) { //check if fixing report will not exceed max time for current schedule
-                            ant.visitRepair(serviceTechnician, currentIndex[antId][serviceTechnician], report, repairInfos.getRepairTime() + travelTime, repairInfos.getProfit());
-                            currentIndex[antId][serviceTechnician] += 1;
+                            if (((totalRepairsTime + repairInfos.getRepairTime() + travelTime) <= maxTime) || ((currentIndex[antId][serviceTechnician] == 0) && ((totalRepairsTime + repairInfos.getRepairTime() + travelTime) <= (getMaxRepairTime() + getShiftTime())))) { //check if fixing report will not exceed max time for current schedule
+                                ant.visitRepair(serviceTechnician, currentIndex[antId][serviceTechnician], report, repairInfos.getRepairTime() + travelTime, repairInfos.getProfit());
+                                currentIndex[antId][serviceTechnician] += 1;
+                                Map<Long, Integer> spareParts = new HashMap<>(sparePartsForEachAntInColony.get(antId));
+                                for (SparePartNeeded sparePartNeeded : sparePartsNeeded) {
+                                    SparePart sparePart = sparePartNeeded.getSparePart();
+                                    spareParts.put(sparePart.getId(), sparePartsForEachAntInColony.get(antId).get(sparePart.getId()) - sparePartNeeded.getQuantity());
+                                }
+                                sparePartsForEachAntInColony.put(antId, spareParts);
+                            }
                         }
                     } catch (RuntimeException ex) {
                         System.out.println("err " + ex.getMessage());
@@ -256,6 +283,10 @@ public class AntColony extends Algorithm {
             }
 
             if (isCorrect && (bestSolution == null || ant.profit > bestSolution.profit)) {
+                //potrzeba id serwisanta
+                for (Map.Entry<Long, Integer> entry : sparePartsForEachAntInColony.get(ants.indexOf(ant)).entrySet()) {
+                    sparePartsForBestSolution.put(entry.getKey(), entry.getValue());
+                }
                 if (isShowMessages()) System.out.println("New best solution with profit " + ant.profit);
                 try {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -310,6 +341,22 @@ public class AntColony extends Algorithm {
                 ant.profit = 0;
                 currentIndex[ants.indexOf(ant)][serviceTechnician] = 0;
             }
+        }
+    }
+
+    private void prepareSpareParts() {
+        Map<Long, Integer> spareParts = new HashMap<>();
+        for (Map.Entry<Long, Integer> entry : getSparePartCountMap().entrySet()) {
+            spareParts.put(entry.getKey(), entry.getValue());
+        }
+        for (int i = 0; i < getNumberOfAnts(); i++) {
+            sparePartsForEachAntInColony.put(i, spareParts);
+        }
+    }
+
+    private void updateSparePartCountMap() {
+        for (Map.Entry<Long, Integer> entry : sparePartsForBestSolution.entrySet()) {
+            getSparePartCountMap().put(entry.getKey(), entry.getValue());
         }
     }
 

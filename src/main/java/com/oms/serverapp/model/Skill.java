@@ -41,7 +41,7 @@ public class Skill {
     @ManyToMany(mappedBy = "ownedSkills", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     Set<ServiceTechnician> serviceTechnician;
 
-    @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     Set<SparePartNeeded> sparePartsNeeded;
 
     public Skill() {
