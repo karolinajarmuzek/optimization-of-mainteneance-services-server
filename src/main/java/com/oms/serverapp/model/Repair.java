@@ -35,6 +35,14 @@ public class Repair {
     public Repair() {
     }
 
+    public Repair(ServiceTechnician serviceTechnician, Date date, String time, Report report, RepairStatus repairStatus) {
+        this.serviceTechnician = serviceTechnician;
+        this.date = date;
+        this.time = time;
+        this.report = report;
+        this.status = repairStatus;
+    }
+
     public Repair(RepairRequest repairRequest, ServiceTechnician serviceTechnician, Report report) {
         if (serviceTechnician != null) {
             this.serviceTechnician = serviceTechnician;

@@ -11,8 +11,8 @@ public class GreedyAlgorithm extends Algorithm {
     private List<Integer> reportsSortedIds;
     private Map<Long, Integer> serviceTechnicianIdToIntegerMap;
 
-    public GreedyAlgorithm(int scheduleInterval, int maxRepairTime) {
-        super(scheduleInterval, maxRepairTime);
+    public GreedyAlgorithm(int scheduleInterval, int maxRepairTime, boolean isTesting, String firstSchedule, String startTimeOfWork) {
+        super(scheduleInterval, maxRepairTime, isTesting, firstSchedule, startTimeOfWork);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class GreedyAlgorithm extends Algorithm {
                     int previousRepairsTime = getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getRepairsTime();
                     if (previousRepairsTime < (getScheduleInterval() * (getInterval() + 1))) {
                         // get repair infos
-                        RepairInfos repairInfos = getRepairInfos(report, serviceTechnician.getExperience(), true);
+                        RepairInfos repairInfos = getRepairInfos(skillNeeded, serviceTechnician.getExperience(), true);
 
                         // Get time needed to travel between two locations based on report or serviceTechnician location
                         int destinationLocationIdx = reportIdx + getNumberOfServiceTechnicians();
@@ -93,6 +93,11 @@ public class GreedyAlgorithm extends Algorithm {
 
                         //check if fixing report will not exceed max time for current schedule
                         if ((previousRepairsTime + totalTime <= maxTime) || (firstAssigment.get(serviceTechnician.getId()) && (previousRepairsTime + totalTime <= getMaxRepairTime() + getShiftTime()))) {
+
+                            if (!isTesting()) {
+                                addReport(previousRepairsTime, serviceTechnician, report);
+                            }
+
                             getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).setRepairsTime(previousRepairsTime + totalTime);
                             getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).setLastReport(report);
                             getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).getAssignedReports().add(report);
@@ -103,9 +108,6 @@ public class GreedyAlgorithm extends Algorithm {
                             }
                             updateReport(report);
                             firstAssigment.put(serviceTechnician.getId(), false);
-
-                            // TO DO
-                            // if (!isTesting()) -> create repair
 
                             profitFromInterval += skillNeeded.getProfit();
                             if (isShowMessages())

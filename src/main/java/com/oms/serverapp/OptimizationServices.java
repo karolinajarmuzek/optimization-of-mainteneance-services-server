@@ -1,10 +1,8 @@
 package com.oms.serverapp;
 
 import com.oms.serverapp.model.*;
-import com.oms.serverapp.repository.ReportRepository;
-import com.oms.serverapp.repository.ServiceTechnicianRepository;
-import com.oms.serverapp.repository.SkillRepository;
-import com.oms.serverapp.repository.SparePartRepository;
+import com.oms.serverapp.repository.*;
+import com.oms.serverapp.util.RepairStatus;
 import com.oms.serverapp.util.ReportStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,13 +16,15 @@ public class OptimizationServices {
     private static ServiceTechnicianRepository serviceTechnicianRepository;
     private static SkillRepository skillRepository;
     private static SparePartRepository sparePartRepository;
+    private static RepairRepository repairRepository;
 
     @Autowired
-    public OptimizationServices(ReportRepository reportRepository, ServiceTechnicianRepository serviceTechnicianRepository, SkillRepository skillRepository, SparePartRepository sparePartRepository) {
+    public OptimizationServices(ReportRepository reportRepository, ServiceTechnicianRepository serviceTechnicianRepository, SkillRepository skillRepository, SparePartRepository sparePartRepository, RepairRepository repairRepository) {
         this.reportRepository = reportRepository;
         this.serviceTechnicianRepository = serviceTechnicianRepository;
         this.skillRepository = skillRepository;
         this.sparePartRepository = sparePartRepository;
+        this.repairRepository = repairRepository;
     }
 
     public static List<ServiceTechnician> loadServiceTechnicians() {
@@ -59,4 +59,19 @@ public class OptimizationServices {
         return sparePartRepository.findById(id).orElse(null);
     }
 
+    public static Repair getRepairByServiceTechnician(Long serviceTechnicianId) {
+        return repairRepository.findFirstByServiceTechnicianIdOrderByDateDesc(serviceTechnicianId);
+    }
+
+    public static List<Repair> getRepairsNotFinished(ServiceTechnician serviceTechnician) {
+        return repairRepository.findByServiceTechnicianAndStatusNot(serviceTechnician, RepairStatus.FINISHED);
+    }
+
+    public static void addRepair(Repair repair) {
+        repairRepository.save(repair);
+    }
+
+    public static void updateRepair(Repair repair) {
+        repairRepository.save(repair);
+    }
 }

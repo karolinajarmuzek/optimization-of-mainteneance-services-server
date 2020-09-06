@@ -19,8 +19,9 @@ public class SolutionVerification {
     private static Map<Long, Integer> serviceTechnicianIdToIdxMap = new HashMap<>();
     private static Map<Long, Integer> repairTimes;
     private static String message;
+    private static Boolean testing;
 
-    public SolutionVerification(int scheduleMinTime, int scheduleMaxTime, Map<ServiceTechnician, List<Report>> serviceTechnicianReportsMap, int totalProfit, Map<Long, Integer> repairTimes, Map<Long, Integer> sparePartCountMap) {
+    public SolutionVerification(int scheduleMinTime, int scheduleMaxTime, Map<ServiceTechnician, List<Report>> serviceTechnicianReportsMap, int totalProfit, Map<Long, Integer> repairTimes, Map<Long, Integer> sparePartCountMap, Boolean testing) {
         this.scheduleMinTime = scheduleMinTime;
         this.scheduleMaxTime = scheduleMaxTime;
         this.serviceTechnicianReportsMap = serviceTechnicianReportsMap;
@@ -28,6 +29,7 @@ public class SolutionVerification {
         this.repairTimes = repairTimes;
         this.indexToObjectMap = new HashMap<>();
         this.sparePartCountMap = sparePartCountMap;
+        this.testing = testing;
     }
 
     public static boolean isSolutionCorrect() {
@@ -58,9 +60,11 @@ public class SolutionVerification {
                 int totalTime = repairTime + travelTime;
                 profit += skill.getProfit();
                 repairTimeCalculated += totalTime;
-                for (SparePartNeeded sparePartNeeded : skill.getSparePartsNeeded()) {
-                    Long sparePartId = sparePartNeeded.getSparePart().getId();
-                    sparePartUsedMap.put(sparePartId, sparePartUsedMap.get(sparePartId) - sparePartNeeded.getQuantity());
+                if (testing) {
+                    for (SparePartNeeded sparePartNeeded : skill.getSparePartsNeeded()) {
+                        Long sparePartId = sparePartNeeded.getSparePart().getId();
+                        sparePartUsedMap.put(sparePartId, sparePartUsedMap.get(sparePartId) - sparePartNeeded.getQuantity());
+                    }
                 }
             }
             int repairTimeProvided = repairTimes.get(serviceTechnician.getId());

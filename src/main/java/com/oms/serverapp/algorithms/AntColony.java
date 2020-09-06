@@ -28,8 +28,8 @@ public class AntColony extends Algorithm {
     private int[][] currentIndex;                                               // array of index of last scheduled report for each serviceTechnician
     private Map<Integer, Map<Long, Integer>> sparePartsForEachAntInColony;      // id and quantity of spare parts for each ant
 
-    public AntColony(int scheduleInterval, int maxRepairTime) {
-        super(scheduleInterval, maxRepairTime);
+    public AntColony(int scheduleInterval, int maxRepairTime, boolean isTesting, String firstSchedule, String startTimeOfWork) {
+        super(scheduleInterval, maxRepairTime, isTesting, firstSchedule, startTimeOfWork);
     }
 
     @Override
@@ -66,24 +66,22 @@ public class AntColony extends Algorithm {
         if (bestSolution != null) {
             System.out.println("Best found solution profit " + bestSolution.profit);
             for (int serviceTechnician = 0; serviceTechnician < getNumberOfServiceTechnicians(); serviceTechnician++) {
-                System.out.println("Service technician " + serviceTechnician + " total time " + bestSolution.repairTimes[serviceTechnician]);
                 for (int report = 1; report < getNumberOfReports(); report++) {
                     if (bestSolution.trail[serviceTechnician][report] != -1) {
                         Report report1 = getReportsWithId().get(bestSolution.trail[serviceTechnician][report] - getNumberOfServiceTechnicians());
-                        // update report status and create repair
                         report1.setStatus(ReportStatus.ASSIGNED);
                         updateReport(report1);
-
-                        // TO DO
-                        // if (!isTesting()) -> create repair
-                        
                     } else {
                         break;
                     }
                 }
             }
             setTotalProfit(getTotalProfit() + bestSolution.profit);
-            updateServiceTechnicianRepairInfos(bestSolution);
+            if (isTesting()) {
+                updateServiceTechnicianRepairInfos(bestSolution);
+            } else {
+                addReports(bestSolution);
+            }
             updateSparePartCountMap();
         } else {
             System.out.println("No correct solution found");
@@ -96,7 +94,7 @@ public class AntColony extends Algorithm {
         prepareSpareParts();
         for (int i = 0; i < maxIterations; i++) {
             if (isShowMessages()) System.out.println("Iteration #" + i);
-            moveAnts(i);
+            moveAnts();
             updateTrails();
             updateBest();
         }
@@ -126,14 +124,13 @@ public class AntColony extends Algorithm {
         }
     }
 
-    private void moveAnts(int i) {
-        //int intervalMinTime = 120; // change to getScheduleInterval
+    private void moveAnts() {
         for (Ant ant : ants) {
             int antId = ants.indexOf(ant);
             for (int serviceTechnician = 0; serviceTechnician < getNumberOfServiceTechnicians(); serviceTechnician++) {
                 Long serviceTechnicianId = getServiceTechnicians().get(serviceTechnician).getId();
                 int repairTimePreviously = getServiceTechniciansRepairInfos().get(serviceTechnicianId).getRepairsTime(); // in previous schedules
-                int totalRepairsTime = ant.getRepairTimes()[serviceTechnician] + repairTimePreviously;  // in previous schedule and in actual schedule
+                int totalRepairsTime = Arrays.stream(ant.getRepairTimes()[serviceTechnician]).sum() + repairTimePreviously;
                 if (totalRepairsTime < (getScheduleInterval() * (getInterval() + 1))) { // check if serviceTechnician can handle more repairs
                     try {
                         boolean areSparePartsAvailable = true;
@@ -152,7 +149,7 @@ public class AntColony extends Algorithm {
                             }
                         }
                         if (areSparePartsAvailable) {
-                            RepairInfos repairInfos = getRepairInfos(getReportsWithId().get(report - getNumberOfServiceTechnicians()), serviceTechnician, false);
+                            RepairInfos repairInfos = getRepairInfos(skillNeeded, serviceTechnician, false);
                             int travelTime = (int) getDurationsInS()[ant.trail[serviceTechnician][currentIndex[antId][serviceTechnician]]][report] / 60;
                             int maxTime;
                             if ((getScheduleInterval() * (getInterval() + 1) * 1.3) < 480) {
@@ -224,7 +221,8 @@ public class AntColony extends Algorithm {
         for (int i = 0; i < availableReports.size(); i++) {
             int idx = reportsAvailable.get(serviceTechnician).get(i);
             if (!ant.isVisited(idx + getNumberOfServiceTechnicians()) && globalIndex != (idx + getNumberOfServiceTechnicians())) {
-                RepairInfos repairInfos = getRepairInfos(getReportsWithId().get(idx), serviceTechnician, false);
+                Skill skillNeeded = getReportsLoader().getReportSkillMap().get(getReportsWithId().get(idx));
+                RepairInfos repairInfos = getRepairInfos(skillNeeded, serviceTechnician, false);
                 pheromone += Math.pow(trails[serviceTechnician][antIndex][idx + 1], alpha) * Math.pow(repairInfos.getProfit() / (repairInfos.getRepairTime() + (1.0 * 60.0 / getDurationsInS()[globalIndex][idx + getNumberOfServiceTechnicians()])), beta);
             }
         }
@@ -235,7 +233,8 @@ public class AntColony extends Algorithm {
         for (int j = 0; j < availableReports.size(); j++) {
             int idx = reportsAvailable.get(serviceTechnician).get(j);
             if (!ant.isVisited(idx + getNumberOfServiceTechnicians()) && (globalIndex != (idx + getNumberOfServiceTechnicians()))) {
-                RepairInfos repairInfos = getRepairInfos(getReportsWithId().get(idx), serviceTechnician, false);
+                Skill skillNeeded = getReportsLoader().getReportSkillMap().get(getReportsWithId().get(idx));
+                RepairInfos repairInfos = getRepairInfos(skillNeeded, serviceTechnician, false);
                 double numerator = Math.pow(trails[serviceTechnician][antIndex][idx + 1], alpha) * Math.pow(repairInfos.getProfit() / (repairInfos.getRepairTime() + (1.0 * 60.0 / getDurationsInS()[globalIndex][idx + getNumberOfServiceTechnicians()])), beta);
                 probabilities[idx] = numerator / pheromone;
             }
@@ -273,7 +272,7 @@ public class AntColony extends Algorithm {
             //for (int time : ant.repairTimes) {
             for (int serviceTechnician = 0; serviceTechnician < ant.repairTimes.length; serviceTechnician++){
                 Long serviceTechnicianId = getServiceTechnicians().get(serviceTechnician).getId();
-                int totalTime = ant.repairTimes[serviceTechnician] + getServiceTechniciansRepairInfos().get(serviceTechnicianId).getRepairsTime();
+                int totalTime = Arrays.stream(ant.repairTimes[serviceTechnician]).sum() + getServiceTechniciansRepairInfos().get(serviceTechnicianId).getRepairsTime();
                 int maxTime = getScheduleInterval() * (getInterval() + 1);
                 if (maxTime == getMaxRepairTime()) maxTime = getMaxRepairTime() - getScheduleInterval();
                 if (totalTime < maxTime) {
@@ -325,10 +324,22 @@ public class AntColony extends Algorithm {
 
             }
             Report lastReport = getReportsWithId().get(lastReportIndex - getNumberOfServiceTechnicians());
-            int totalTime = getServiceTechniciansRepairInfos().get(serviceTechnicianId).getRepairsTime() + bestAnt.getRepairTimes()[serviceTechnician];
+            int totalTime = getServiceTechniciansRepairInfos().get(serviceTechnicianId).getRepairsTime() + Arrays.stream(bestAnt.getRepairTimes()[serviceTechnician]).sum();
             getServiceTechniciansRepairInfos().get(serviceTechnicianId).setRepairsTime(totalTime);
             if (lastReportIndex != 0) getServiceTechniciansRepairInfos().get(serviceTechnicianId).setLastReport(lastReport);
          }
+    }
+
+    private void addReports(Ant bestAnt) {
+        for (int serviceTechnician = 0; serviceTechnician < getNumberOfServiceTechnicians(); serviceTechnician++) {
+            ServiceTechnician serviceTechnician1 = getServiceTechnicians().get(serviceTechnician);
+            int previousRepairsTime = getServiceTechniciansRepairInfos().get(serviceTechnician1.getId()).getRepairsTime();
+            for (int i = 1; i < getNumberOfReports(); i++) {
+                if (bestAnt.trail[serviceTechnician][i] == -1) break;
+                addReport(previousRepairsTime, serviceTechnician1, getReportsWithId().get(bestAnt.trail[serviceTechnician][i]));
+                previousRepairsTime += bestAnt.getRepairTimes()[serviceTechnician][i];
+            }
+        }
     }
 
     private void clearAnts() {
@@ -336,7 +347,9 @@ public class AntColony extends Algorithm {
             Arrays.fill(ant.visited, false);
             for (int serviceTechnician = 0; serviceTechnician < getNumberOfServiceTechnicians(); serviceTechnician++) {
                 Arrays.fill(ant.trail[serviceTechnician], -1);
-                Arrays.fill(ant.repairTimes, 0);
+                for (int[] repairTime : ant.repairTimes) {
+                    Arrays.fill(repairTime, 0);
+                }
                 ant.visitRepair(serviceTechnician, -1, serviceTechnician, 0, 0);
                 ant.profit = 0;
                 currentIndex[ants.indexOf(ant)][serviceTechnician] = 0;

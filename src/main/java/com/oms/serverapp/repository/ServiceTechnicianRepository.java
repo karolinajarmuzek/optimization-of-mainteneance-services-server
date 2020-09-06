@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface ServiceTechnicianRepository extends JpaRepository<ServiceTechnician, Long> {
     Optional<ServiceTechnician> findByUsername(String username);
+    Optional<ServiceTechnician> findById(Long id);
     Boolean existsByUsername(String username);
 }

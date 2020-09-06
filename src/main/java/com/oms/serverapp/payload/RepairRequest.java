@@ -11,6 +11,8 @@ import java.util.Date;
 public class RepairRequest {
 
     private Long id;
+
+    @NotNull(message = "ServiceTechnician cannot be null.")
     private Long serviceTechnician;
 
     @NotNull(message = "Repair date cannot be null.")
@@ -19,9 +21,11 @@ public class RepairRequest {
     @NotNull(message = "Repair time cannot be null.")
     private String time;
 
+    @NotNull(message = "Status cannot be null.")
     @Enumerated(EnumType.STRING)
     private RepairStatus status;
 
+    @NotNull(message = "Report cannot be null.")
     private Long report;
 
     public RepairRequest() {
