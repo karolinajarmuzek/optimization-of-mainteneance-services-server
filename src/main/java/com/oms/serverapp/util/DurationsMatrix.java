@@ -72,8 +72,6 @@ public class DurationsMatrix {
             e.printStackTrace();
         }
 
-        //System.out.println("body:" + response.body());
-
         Pattern p = Pattern.compile("\\[(\\[([0-9]+\\.[0-9]+.)+.)+");
         Matcher m = p.matcher(response.body());
         if (m.find())

@@ -50,12 +50,7 @@ public class ReportGenerator {
             }else if ( count*3/4 <= i && i < count) {
                 delta = (4*60+50)*60*1000 ; //13:50 - 15:50 // 7:50??
             }
-            Time time = new Time((long)(random.nextInt(2*60*60*1000) + delta));
-            System.out.println("time " + time);
-            /*Time time2 = new Time((long)(delta));
-            Time time3 = new Time((long)((7*60+50)*60*1000));
-            System.out.println("time2 " + time2 );
-            System.out.println("time3 " + time3 );*/
+            Time time = new Time((random.nextInt(2*60*60*1000) + delta));
             var body = new HashMap<String, Object>() {{
                 put("customer", customers.get(ThreadLocalRandom.current().nextInt(customers.size())));
                 put("failure", failures.get(ThreadLocalRandom.current().nextInt(failures.size())));

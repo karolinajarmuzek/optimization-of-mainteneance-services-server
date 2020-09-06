@@ -50,7 +50,6 @@ public class StreetsCreator {
         String randomAddress = "";
         do {
             randomAddress = streets.get(rand.nextInt(streets.size())) + " " + (rand.nextInt(99) + 1) + " Poznań";
-            System.out.println("Selected street " + randomAddress);
             coordinates = getCoordinates(randomAddress);
         } while (coordinates == "");
         String longitude = coordinates.split(",")[0];
@@ -80,9 +79,6 @@ public class StreetsCreator {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("status: " + response.statusCode());
-        //System.out.println("headers: " + response.headers());
-        System.out.println("body:" + response.body());
 
         Pattern p = Pattern.compile("\"confidence\":[0-9]\\.[0-9]");
         Matcher m = p.matcher(response.body());

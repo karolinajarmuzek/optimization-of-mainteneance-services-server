@@ -67,16 +67,11 @@ public class ServiceTechnicianService {
         if (serviceTechnician == null) {
             throw new NotFoundException(String.format("ServiceTechnician with username = %d not found.", username));
         }
-        String todayDate = new SimpleDateFormat("dd.MM.yyyy").format(new Date());
         String repairDate;
-        System.out.println("1 " + todayDate);
 
         List<RepairResponse> repairResponses = new ArrayList<>();
         for (Repair repair : serviceTechnician.getRepairs()) {
             repairDate = new SimpleDateFormat("dd.MM.yyyy").format(repair.getDate());
-            System.out.println("2 " + repairDate);
-            System.out.println("check " +(repair.getStatus() != RepairStatus.FINISHED));
-            System.out.println("check2 " +(repairDate == todayDate));
             if (repair.getStatus() != RepairStatus.FINISHED){// && repairDate == todayDate) {
                 repairResponses.add(new RepairResponse(repair, reportService.generateReportResponse(repair.getReport())));
             }
