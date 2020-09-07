@@ -5,6 +5,7 @@ import com.oms.serverapp.repository.*;
 import com.oms.serverapp.util.RepairStatus;
 import com.oms.serverapp.util.ReportStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -73,5 +74,20 @@ public class OptimizationServices {
 
     public static void updateRepair(Repair repair) {
         repairRepository.save(repair);
+    }
+
+    public static void closeRepair(Long repairId, String username) {
+        Repair repair = repairRepository.findById(repairId).orElse(null);
+        if (repair != null) {
+            repair.setStatus(RepairStatus.FINISHED);
+            Report report = repair.getReport();
+            report.setStatus(ReportStatus.FINISHED);
+            repairRepository.save(repair);
+            reportRepository.save(report);
+            ServiceTechnician serviceTechnician = serviceTechnicianRepository.findByUsername(username).orElse(null);
+            Repair newRepair = repairRepository.findFirstByServiceTechnicianIdAndStatusOrderByDateAsc(serviceTechnician.getId(), RepairStatus.PENDING);
+            newRepair.setStatus(RepairStatus.REPAIRING);
+            repairRepository.save(newRepair);
+        }
     }
 }

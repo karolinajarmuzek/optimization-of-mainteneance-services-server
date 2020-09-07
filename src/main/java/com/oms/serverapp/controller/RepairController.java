@@ -1,5 +1,6 @@
 package com.oms.serverapp.controller;
 
+import com.oms.serverapp.OptimizationServices;
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Repair;
 import com.oms.serverapp.payload.RepairRequest;
@@ -47,5 +48,10 @@ public class RepairController {
     @PutMapping(path = "{id}")
     public ResponseEntity<Object> updateRepairById(@RequestBody RepairRequest repairRequest, @PathVariable("id") Long id) {
         return repairService.updateRepair(repairRequest, id);
+    }
+
+    @PutMapping(path = "close/{id}")
+    public void closeRepair(Authentication authentication, @PathVariable("id") Long id) {
+        OptimizationServices.closeRepair(id, authentication.getName());
     }
 }

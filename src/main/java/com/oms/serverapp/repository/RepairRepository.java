@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public interface RepairRepository extends JpaRepository<Repair, Long> {
     Repair findFirstByServiceTechnicianIdOrderByDateDesc(Long serviceTechnicianId);
+    Repair findFirstByServiceTechnicianIdAndStatusOrderByDateAsc(Long serviceTechnicianId, RepairStatus repairStatus);
 
     List<Repair> findByServiceTechnicianAndStatusNot(ServiceTechnician serviceTechnician, RepairStatus repairStatus);
 }
