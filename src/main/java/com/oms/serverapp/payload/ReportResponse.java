@@ -3,11 +3,8 @@ package com.oms.serverapp.payload;
 import com.oms.serverapp.model.Report;
 import com.oms.serverapp.util.ReportStatus;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Map;
 
 public class ReportResponse {
     private Long id;
@@ -22,11 +19,12 @@ public class ReportResponse {
     private String description;
     private ReportStatus status;
     private Long repair;
+    private Map<String, Integer> spareParts;
 
     public ReportResponse() {
     }
 
-    public ReportResponse(Report report, CustomerPayload customerPayload, FailurePayload failurePayload, DevicePayload devicePayload) {
+    public ReportResponse(Report report, CustomerPayload customerPayload, FailurePayload failurePayload, DevicePayload devicePayload, Map<String, Integer> spareParts) {
         this.id = report.getId();
         this.customerPayload = customerPayload;
         this.failurePayload = failurePayload;
@@ -40,6 +38,7 @@ public class ReportResponse {
         this.status = report.getStatus();
         if (report.getRepair() != null) {
             this.repair = report.getRepair().getId();
+            this.spareParts = spareParts;
         }
 
     }
@@ -138,5 +137,13 @@ public class ReportResponse {
 
     public void setRepair(Long repair) {
         this.repair = repair;
+    }
+
+    public Map<String, Integer> getSpareParts() {
+        return spareParts;
+    }
+
+    public void setSpareParts(Map<String, Integer> spareParts) {
+        this.spareParts = spareParts;
     }
 }

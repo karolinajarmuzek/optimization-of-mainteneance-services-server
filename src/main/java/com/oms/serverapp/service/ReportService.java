@@ -21,21 +21,28 @@ public class ReportService {
     private DeviceRepository deviceRepository;
     private FailureRepository failureRepository;
     private RepairRepository repairRepository;
+    private SkillRepository skillRepository;
 
     @Autowired
-    public ReportService(ReportRepository reportRepository, CustomerRepository customerRepository, DeviceRepository deviceRepository, FailureRepository failureRepository, RepairRepository repairRepository) {
+    public ReportService(ReportRepository reportRepository, CustomerRepository customerRepository, DeviceRepository deviceRepository, FailureRepository failureRepository, RepairRepository repairRepository, SkillRepository skillRepository) {
         this.reportRepository = reportRepository;
         this.customerRepository = customerRepository;
         this.deviceRepository = deviceRepository;
         this.failureRepository = failureRepository;
         this.repairRepository = repairRepository;
+        this.skillRepository = skillRepository;
     }
 
     public ReportResponse generateReportResponse(Report report) {
         CustomerPayload customerPayload = new CustomerPayload(customerRepository.findById(report.getCustomer().getId()).orElse(null));
         FailurePayload failurePayload = new FailurePayload(failureRepository.findById(report.getFailure().getId()).orElse(null));
         DevicePayload devicePayload = new DevicePayload(deviceRepository.findById(report.getDevice().getId()).orElse(null));
-        return new ReportResponse(report, customerPayload, failurePayload, devicePayload);
+        Set<SparePartNeeded> sparePartsNeeded = skillRepository.findByDeviceAndFailure(report.getDevice(), report.getFailure()).getSparePartsNeeded();
+        Map<String, Integer> spareParts = new HashMap<>();
+        for (SparePartNeeded sparePartNeeded : sparePartsNeeded) {
+            spareParts.put(sparePartNeeded.getSparePart().getName(), sparePartNeeded.getQuantity());
+        }
+        return new ReportResponse(report, customerPayload, failurePayload, devicePayload, spareParts);
     }
 
     public Report generateReport(Report report, ReportRequest reportRequest) {
