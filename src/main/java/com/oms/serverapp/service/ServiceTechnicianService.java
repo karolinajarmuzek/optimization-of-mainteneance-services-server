@@ -73,7 +73,7 @@ public class ServiceTechnicianService {
         List<RepairResponse> repairResponses = new ArrayList<>();
         for (Repair repair : serviceTechnician.getRepairs()) {
             repairDate = new SimpleDateFormat("dd.MM.yyyy").format(repair.getDate());
-            if (repair.getStatus() != RepairStatus.FINISHED && repairDate == todayDate) {
+            if (repair.getStatus() != RepairStatus.FINISHED && repairDate.equals(todayDate)) {
                 repairResponses.add(new RepairResponse(repair, reportService.generateReportResponse(repair.getReport())));
             }
         }
