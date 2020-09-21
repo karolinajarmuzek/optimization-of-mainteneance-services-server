@@ -47,6 +47,7 @@ public abstract class Algorithm {
             int intervals = maxRepairTime / scheduleInterval;
             resetReportsStatuses();
             for (int i = 0; i < intervals; i++) {
+                reportsWithId = new HashMap<>();
                 setInterval(i);
                 prepare(firstSchedule);
 

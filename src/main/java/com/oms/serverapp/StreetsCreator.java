@@ -1,7 +1,8 @@
 package com.oms.serverapp;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,11 +13,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class StreetsCreator {
 
@@ -46,18 +44,18 @@ public class StreetsCreator {
 
     public String[] generateAddress() {
         Random rand = new Random();
-        String coordinates = "";
+        double[] coordinates;
         String randomAddress = "";
         do {
             randomAddress = streets.get(rand.nextInt(streets.size())) + " " + (rand.nextInt(99) + 1) + " Poznań";
             coordinates = getCoordinates(randomAddress);
-        } while (coordinates == "");
-        String longitude = coordinates.split(",")[0];
-        String latitude = coordinates.split(",")[1];
+        } while (coordinates == null);
+        String longitude = String.valueOf(coordinates[0]);
+        String latitude = String.valueOf(coordinates[1]);
         return new String[]{randomAddress, longitude, latitude};
     }
 
-    public static String getCoordinates(String address) {
+    public static double[] getCoordinates(String address) {
         String normalizedAddress = Normalizer.normalize(address, Normalizer.Form.NFD)
                 .replaceAll("ł", "l")
                 .replaceAll("[^\\p{ASCII}]", "")
@@ -80,24 +78,15 @@ public class StreetsCreator {
             e.printStackTrace();
         }
 
-        Pattern p = Pattern.compile("\"confidence\":[0-9]\\.[0-9]");
-        Matcher m = p.matcher(response.body());
-        if (m.find())
-        {
-            String theGroup = m.group(0);
-            theGroup = theGroup.replace("\"confidence\":", "");
-            float confidence = Float.parseFloat(theGroup);
-            if (confidence < 0.8) return "";
-        }
+        Gson gson = new Gson();
+        JsonElement jsonElement = gson.fromJson(response.body(), JsonElement.class);
+        JsonObject jsonObject = jsonElement.getAsJsonObject().getAsJsonArray("features").get(0).getAsJsonObject();
+        float confidence = jsonObject.getAsJsonObject("properties").getAsJsonPrimitive("confidence").getAsFloat();
 
-        p = Pattern.compile("\\\"coordinates\\\":\\[[0-9]*\\.[0-9]*,[0-9]*\\.[0-9]*\\]");
-        m = p.matcher(response.body());
-        if (m.find())
-        {
-            String theGroup = m.group(0);
-             return theGroup.replaceAll("\\\"coordinates\\\":\\[", "").replaceAll("]", "");
-        }
+        if (confidence < 0.8) return null;
 
-        return "";
+        double[] coordinates = gson.fromJson(jsonObject.getAsJsonObject("geometry").getAsJsonArray("coordinates"), double[].class);
+
+        return coordinates;
     }
 }

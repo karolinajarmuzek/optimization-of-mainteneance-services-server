@@ -130,9 +130,18 @@ public class GreedyAlgorithm extends Algorithm {
             public int compare(Report r1, Report r2) {
                 Skill s1 = getReportsLoader().getReportSkillMap().get(r1);
                 Skill s2 = getReportsLoader().getReportSkillMap().get(r2);
-                Integer v1 = s1.getProfit() / (s1.getMaxRepairTime() / 60  + 1);
-                Integer v2 = s2.getProfit() / (s2.getMaxRepairTime() / 60 + 1);
-                return v2.compareTo(v1);
+
+                if (s1.getProfit().equals(s2.getProfit()) && s1.getMaxRepairTime().equals(s2.getMaxRepairTime())) {
+                    return r1.getId().compareTo(r2.getId());
+                }
+                else if (s1.getProfit().equals(s2.getProfit())) {
+                    return s2.getMaxRepairTime().compareTo(s1.getMaxRepairTime());
+                }
+                else {
+                    Integer v1 = s1.getProfit() / (s1.getMaxRepairTime() / 60  + 1);
+                    Integer v2 = s2.getProfit() / (s2.getMaxRepairTime() / 60 + 1);
+                    return v2.compareTo(v1);
+                }
             }
         });
 

@@ -2,14 +2,15 @@ package com.oms.serverapp.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class DurationsMatrix {
 
@@ -19,25 +20,10 @@ public class DurationsMatrix {
     public DurationsMatrix(int totalSize, double[][] allLocations) {
         durations = new double[totalSize][totalSize];
         locations = allLocations;
-        getDurationsInS();
+        loadDurationMatrixFromAPI(locations);
     }
 
-    public static void getDurationsInS() {
-        // Get the time needed to travel between two points
-        String durationMatrix = loadDurationMatrixFromAPI(locations);
-
-        // Parse times to matrix
-        //double[][] durationsInS = new double[reportsLoader.getReportsToSchedule().size() + serviceTechnicians.size()][reportsLoader.getReportsToSchedule().size() + serviceTechnicians.size()];
-        String[] durationMatrixStringSplit = durationMatrix.split("\\],\\[");
-        for (int i = 0; i < durationMatrixStringSplit.length; i++) {
-            String[] durationsInS = durationMatrixStringSplit[i].replaceAll("\\[", "").replaceAll("\\]", "").split(",");
-            for (int j = 0; j < durationsInS.length; j++) {
-                durations[i][j] = Double.parseDouble(durationsInS[j]);
-            }
-        }
-    }
-
-    public static String loadDurationMatrixFromAPI(double[][] locations){
+    public static void loadDurationMatrixFromAPI(double[][] locations){
         var body = new HashMap<String, Object>() {{
             put("locations", locations);
             put("metrics", new String[] {"duration"});
@@ -72,15 +58,10 @@ public class DurationsMatrix {
             e.printStackTrace();
         }
 
-        Pattern p = Pattern.compile("\\[(\\[([0-9]+\\.[0-9]+.)+.)+");
-        Matcher m = p.matcher(response.body());
-        if (m.find())
-        {
-            return m.group(0);
-        }
-
-        return "";
-
+        Gson gson = new Gson();
+        JsonElement jsonElement = gson.fromJson(response.body(), JsonElement.class);
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+        durations = gson.fromJson(jsonObject.getAsJsonArray("durations"), double[][].class);
     }
 
     public static double[][] getDurations() {
