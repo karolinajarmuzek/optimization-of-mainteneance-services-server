@@ -13,19 +13,52 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 
 public class DurationsMatrix {
+    private int routesLimit = 3500;
+    private int locationLimit = (int) Math.floor(Math.sqrt(routesLimit));
 
-    private static double[][] durations;
-    private static double[][] locations;
+    private double[][] durations;
+    private double[][] locations;
 
     public DurationsMatrix(int totalSize, double[][] allLocations) {
         durations = new double[totalSize][totalSize];
         locations = allLocations;
-        loadDurationMatrixFromAPI(locations);
+        loadDurationMatrix();
     }
 
-    public static void loadDurationMatrixFromAPI(double[][] locations){
+    public void loadDurationMatrix() {
+        if (locations.length > locationLimit) {
+            int rowsPerRequest = (int) Math.floor(routesLimit / locations.length);
+            int requests = (int) Math.ceil((float)locations.length / (float)rowsPerRequest);
+            for (int i = 0; i < requests; i++) {
+                int limit = rowsPerRequest;
+                if (i == requests - 1) {
+                    limit = locations.length - i * rowsPerRequest;
+                }
+                int[] destinations = new int[limit];
+                for (int j = 0; j < limit; j++) {
+                    destinations[j] = rowsPerRequest * i + j;
+                }
+
+                double[][] partialDurations = loadDurationMatrixFromAPI(locations, destinations, true);
+                for (int row = 0; row < partialDurations.length; row++) {
+                    for (int col = 0; col < partialDurations[row].length; col++) {
+                        durations[row][rowsPerRequest * i + col] = partialDurations[row][col];
+                    }
+                }
+            }
+        } else {
+            durations = loadDurationMatrixFromAPI(locations);
+        }
+    }
+
+    public double[][] loadDurationMatrixFromAPI(double[][] locations) {
+        return loadDurationMatrixFromAPI(locations, null, false);
+    }
+
+    public double[][] loadDurationMatrixFromAPI(double[][] locations, int[] destinations, boolean isPartial){
         var body = new HashMap<String, Object>() {{
             put("locations", locations);
+            if(isPartial) put("destinations", destinations);
             put("metrics", new String[] {"duration"});
             put("resolve_locations", "false");
         }};
@@ -61,10 +94,10 @@ public class DurationsMatrix {
         Gson gson = new Gson();
         JsonElement jsonElement = gson.fromJson(response.body(), JsonElement.class);
         JsonObject jsonObject = jsonElement.getAsJsonObject();
-        durations = gson.fromJson(jsonObject.getAsJsonArray("durations"), double[][].class);
+        return gson.fromJson(jsonObject.getAsJsonArray("durations"), double[][].class);
     }
 
-    public static double[][] getDurations() {
+    public double[][] getDurations() {
         return durations;
     }
 }
