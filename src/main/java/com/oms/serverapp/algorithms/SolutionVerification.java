@@ -89,12 +89,14 @@ public class SolutionVerification {
         if (isCorrect && (profit != totalProfit)) {
             isCorrect = false;
             message = "Total profit is not correct. Expected total profit: " + profit + ", given profit: " + totalProfit;
+            System.out.println(message);
         }
 
         for (Map.Entry<Long, Integer> entry : sparePartUsedMap.entrySet()) {
             if (entry.getValue() != sparePartCountMap.get(entry.getKey())) {
                 isCorrect = false;
                 message = "Spare part " + entry.getKey() + " quantity does not match. Expected quantity: " + entry.getValue() + ", given quantity " + sparePartCountMap.get(entry.getKey());
+                System.out.println(message);
             }
         }
 

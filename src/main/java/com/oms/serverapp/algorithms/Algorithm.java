@@ -3,7 +3,6 @@ package com.oms.serverapp.algorithms;
 import com.oms.serverapp.OptimizationServices;
 import com.oms.serverapp.model.*;
 import com.oms.serverapp.util.*;
-
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -41,40 +40,11 @@ public abstract class Algorithm {
     }
 
     public void exec() {
-
         loadSpareParts();
         if (testing) {
-            int intervals = maxRepairTime / scheduleInterval;
-            resetReportsStatuses();
-            for (int i = 0; i < intervals; i++) {
-                reportsWithId = new HashMap<>();
-                setInterval(i);
-                prepare(firstSchedule);
-
-                int index = 0;
-                for (Report report : getReportsLoader().getReportsToSchedule()) {
-                    reportsWithId.put(index, report); //map reports to ids
-                    index++;
-                }
-                schedule();
-            }
-
+           runInTestingMode();
         } else {
-            Date date = new Date();
-            SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-            int startTime = timeInMs(firstSchedule);
-            int time = timeInMs(formatter.format(date));
-            int interval = (int) Math.floor((time - startTime) / (scheduleInterval * 60 * 1000));
-            loadServiceTechnicians();
-            fillServiceTechnicianRepairInfos(startTimeOfWork);
-            setInterval(interval);
-            prepare(firstSchedule);
-            int index = 0;
-            for (Report report : getReportsLoader().getReportsToSchedule()) {
-                reportsWithId.put(index, report); //map reports to ids
-                index++;
-            }
-            schedule();
+            runInNormalMode();
         }
         System.out.println("Total profit " + getTotalProfit());
         for (Map.Entry<Long, ServiceTechnicianRepairInfos> entry : getServiceTechniciansRepairInfos().entrySet()) {
@@ -86,13 +56,59 @@ public abstract class Algorithm {
         checkSolution();
     }
 
-    public static void prepare(String firstSchedule) {
+    public SolutionDetails tests() {
+        loadSpareParts();
+        runInTestingMode();
+        Boolean isSolutionCorrect = checkSolution();
+        if (isSolutionCorrect) {
+            return new SolutionDetails(getTotalProfit(), getServiceTechniciansRepairInfos());
+        } else {
+            return null;
+        }
+    }
+
+    private void runInTestingMode() {
+        int intervals = maxRepairTime / scheduleInterval;
+        resetReportsStatuses();
+        for (int i = 0; i < intervals; i++) {
+            reportsWithId = new HashMap<>();
+            setInterval(i);
+            prepare(firstSchedule);
+
+            int index = 0;
+            for (Report report : getReportsLoader().getReportsToSchedule()) {
+                reportsWithId.put(index, report); //map reports to ids
+                index++;
+            }
+            schedule();
+        }
+    }
+
+    private void runInNormalMode() {
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+        int startTime = timeInMs(firstSchedule);
+        int time = timeInMs(formatter.format(date));
+        int interval = (int) Math.floor((time - startTime) / (scheduleInterval * 60 * 1000));
+        loadServiceTechnicians();
+        fillServiceTechnicianRepairInfos(startTimeOfWork);
+        setInterval(interval);
+        prepare(firstSchedule);
+        int index = 0;
+        for (Report report : getReportsLoader().getReportsToSchedule()) {
+            reportsWithId.put(index, report); //map reports to ids
+            index++;
+        }
+        schedule();
+    }
+
+    private static void prepare(String firstSchedule) {
         if (getInterval() == 0 || !isTesting()) loadServiceTechnicians();
         loadReports(firstSchedule);
         prepareTravelDurations();
     }
 
-    public static void loadServiceTechnicians() {
+    private static void loadServiceTechnicians() {
         setServiceTechnicians(OptimizationServices.loadServiceTechnicians());
         ServiceTechnician admin = serviceTechnicians.stream().filter(serviceTechnician -> serviceTechnician.getFirstName().equals("Admin")).findFirst().orElse(null);
         serviceTechnicians.remove(admin); //remove admin
@@ -100,7 +116,7 @@ public abstract class Algorithm {
         numberOfServiceTechnicians = serviceTechniciansRepairInfos.keySet().size();
     }
 
-    public static void loadReports(String firstSchedule) {
+    private static void loadReports(String firstSchedule) {
         // Load reports that were reported before the scheduling time
         int scheduleTimeInMs;
         if (testing) {
@@ -113,7 +129,7 @@ public abstract class Algorithm {
         loadReportsToSchedule(scheduleTimeInMs);
     }
 
-    public static void loadReportsToSchedule(int scheduleTimeInMs) {
+    private static void loadReportsToSchedule(int scheduleTimeInMs) {
         List<Report> reportsToSchedule = new ArrayList<>();
         Map<Report, Skill> reportSkillMap = new HashMap<>();
 
@@ -131,7 +147,7 @@ public abstract class Algorithm {
         numberOfReports = reportsToSchedule.size();
     }
 
-    public static void loadSpareParts() {
+    private static void loadSpareParts() {
         List<SparePart> spareParts = OptimizationServices.loadSpareParts();
         sparePartCountMap = new HashMap<>();
         for (SparePart sparePart : spareParts) {
@@ -139,7 +155,7 @@ public abstract class Algorithm {
         }
     }
 
-    public static void fillServiceTechnicianRepairInfos(String startTimeOfWork) {
+    private static void fillServiceTechnicianRepairInfos(String startTimeOfWork) {
         for (ServiceTechnician serviceTechnician : serviceTechnicians) {
             Repair lastRepair = OptimizationServices.getRepairByServiceTechnician(serviceTechnician.getId());
             List<Repair> repairsNotFinished = OptimizationServices.getRepairsNotFinished(serviceTechnician);
@@ -165,7 +181,7 @@ public abstract class Algorithm {
         }
     }
 
-    public static void prepareTravelDurations() {
+    private static void prepareTravelDurations() {
         // Create array with all locations (reports locations and serviceTechnician locations - previous report location or start location)
         double[][] locations = new double[reportsLoader.getReportsToSchedule().size() + serviceTechnicians.size()][2];
         for (int i = 0; i < serviceTechnicians.size(); i++) {
@@ -203,7 +219,7 @@ public abstract class Algorithm {
         return repairInfos;
     }
 
-    public static void resetReportsStatuses() {
+    private static void resetReportsStatuses() {
         List<Report> reports = OptimizationServices.loadReportsWithStatus(ReportStatus.ASSIGNED);
         for (Report report : reports) {
             report.setStatus(ReportStatus.REPORTED);
@@ -215,7 +231,7 @@ public abstract class Algorithm {
         OptimizationServices.updateReport(report);
     }
 
-    public void checkSolution() {
+    private static Boolean checkSolution() {
         Map<ServiceTechnician, List<Report>> serviceTechnicianListMap = new HashMap<>();
         Map<Long, Integer> repairTimes = new HashMap<>();
         for (ServiceTechnician serviceTechnician : serviceTechnicians) {
@@ -229,6 +245,7 @@ public abstract class Algorithm {
         boolean isSolutionCorrect = solutionVerification.isSolutionCorrect();
         System.out.println("Is solution correct: " + isSolutionCorrect);
         if (!isSolutionCorrect) System.out.println(solutionVerification.getMessage());
+        return isSolutionCorrect;
 
     }
 
@@ -265,7 +282,7 @@ public abstract class Algorithm {
         }
     }
 
-    public static Integer timeInMs(String time) {
+    private static Integer timeInMs(String time) {
         String[] timeParts = time.split(":");
         return (((Integer.parseInt(timeParts[0]) - 1) * 60 + Integer.parseInt(timeParts[1])) * 60 + Integer.parseInt(timeParts[2])) * 1000;
     }
