@@ -1,10 +1,7 @@
 package com.oms.serverapp.util;
 
 import com.oms.serverapp.OptimizationServices;
-import com.oms.serverapp.algorithms.Algorithm;
-import com.oms.serverapp.algorithms.AntColony;
-import com.oms.serverapp.algorithms.GreedyAlgorithm;
-import com.oms.serverapp.algorithms.Scheduler;
+import com.oms.serverapp.algorithms.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +22,7 @@ public class TestsGenerator {
         int numberOfServiceTechnicians = OptimizationServices.loadServiceTechnicians().size() - 1;
         int numberOfReports = OptimizationServices.loadReports().size();
         String fileName = CSV_FILE_PATH + algorithmName + "_I" + scheduleInterval + "_S" + numberOfServiceTechnicians + "_R" + numberOfReports;
+        if (algorithmName == Scheduler.algorithms.ANT) fileName += "_af" + AntColony.getAntFactor() + "_it" + AntColony.getMaxIterations() + "_rf" + AntColony.getRandomFactor() + "_alpha" + AntColony.getAlpha() + "_beta" + AntColony.getBeta() + "_e" + AntColony.getEvaporation();
         List<String[]> data = new ArrayList<>();
 
         for (int i = 0; i < numberOfTests; i++) {

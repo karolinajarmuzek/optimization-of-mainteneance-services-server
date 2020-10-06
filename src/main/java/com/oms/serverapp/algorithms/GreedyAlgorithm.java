@@ -49,7 +49,11 @@ public class GreedyAlgorithm extends Algorithm {
                 serviceTechniciansSorted.sort(new Comparator<ServiceTechnician>() {
                     @Override
                     public int compare(ServiceTechnician s1, ServiceTechnician s2) {
-                        return s2.getExperience().compareTo(s1.getExperience());
+                        if (s2.getExperience().equals(s1.getExperience())) {
+                            return s1.getId().compareTo(s2.getId());
+                        } else {
+                            return s2.getExperience().compareTo(s1.getExperience());
+                        }
                     }
                 });
 

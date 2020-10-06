@@ -10,12 +10,12 @@ import java.util.*;
 public class AntColony extends Algorithm {
 
     private double c = 1.0;             // initial value on each trail
-    private double alpha = 1;           // pheromone importance
-    private double beta = 5;            // distance priority
-    private double evaporation = 0.5;   // pheromone evaporating
-    private double antFactor = 0.9;     // number of ants use per city?
-    private double randomFactor = 0.1;  // randomness
-    private int maxIterations = 3;
+    private static double alpha = 1;           // pheromone importance
+    private static double beta = 5;            // distance priority
+    private static double evaporation = 0.5;   // pheromone evaporating
+    private static double antFactor = 0.9;     // number of ants use per city?
+    private static double randomFactor = 0.1;  // randomness
+    private static int maxIterations = 1000;
 
     private int numberOfAnts;                                                   // number of ants
     private double[][][] trails;                                                // ant trails for each serviceTechnician
@@ -64,7 +64,7 @@ public class AntColony extends Algorithm {
 
         // check if solution exists
         if (bestSolution != null) {
-            System.out.println("Best found solution profit " + bestSolution.profit);
+            //System.out.println("Best found solution profit " + bestSolution.profit);
             for (int serviceTechnician = 0; serviceTechnician < getNumberOfServiceTechnicians(); serviceTechnician++) {
                 for (int report = 1; report < getNumberOfReports(); report++) {
                     if (bestSolution.trail[serviceTechnician][report] != -1) {
@@ -84,7 +84,7 @@ public class AntColony extends Algorithm {
             }
             updateSparePartCountMap();
         } else {
-            System.out.println("No correct solution found");
+            if(isShowMessages()) System.out.println("No correct solution found");
         }
     }
 
@@ -170,7 +170,7 @@ public class AntColony extends Algorithm {
                             }
                         }
                     } catch (RuntimeException ex) {
-                        System.out.println("err " + ex.getMessage());
+                        if (isShowMessages()) System.out.println("err " + ex.getMessage());
                     }
                 }
             }
@@ -373,8 +373,33 @@ public class AntColony extends Algorithm {
         }
     }
 
+
+
     public int getNumberOfAnts() {
         return numberOfAnts;
     }
 
+    public static double getAlpha() {
+        return alpha;
+    }
+
+    public static double getBeta() {
+        return beta;
+    }
+
+    public static double getEvaporation() {
+        return evaporation;
+    }
+
+    public static double getAntFactor() {
+        return antFactor;
+    }
+
+    public static double getRandomFactor() {
+        return randomFactor;
+    }
+
+    public static int getMaxIterations() {
+        return maxIterations;
+    }
 }
