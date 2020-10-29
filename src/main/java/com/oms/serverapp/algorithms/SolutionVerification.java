@@ -11,7 +11,6 @@ public class SolutionVerification {
     private static int scheduleMaxTime;
     private static Map<ServiceTechnician, List<Report>> serviceTechnicianReportsMap;
     private static int totalProfit;
-    private static Map<Integer, Object> indexToObjectMap;
     private static double[][] durationsInS;
     private static Map<Long, Integer> sparePartCountMap;
 
@@ -20,16 +19,17 @@ public class SolutionVerification {
     private static Map<Long, Integer> repairTimes;
     private static String message;
     private static Boolean testing;
+    private static double[][] allDurations;
 
-    public SolutionVerification(int scheduleMinTime, int scheduleMaxTime, Map<ServiceTechnician, List<Report>> serviceTechnicianReportsMap, int totalProfit, Map<Long, Integer> repairTimes, Map<Long, Integer> sparePartCountMap, Boolean testing) {
+    public SolutionVerification(int scheduleMinTime, int scheduleMaxTime, Map<ServiceTechnician, List<Report>> serviceTechnicianReportsMap, int totalProfit, Map<Long, Integer> repairTimes, Map<Long, Integer> sparePartCountMap, Boolean testing, double[][] allDurations) {
         this.scheduleMinTime = scheduleMinTime;
         this.scheduleMaxTime = scheduleMaxTime;
         this.serviceTechnicianReportsMap = serviceTechnicianReportsMap;
         this.totalProfit = totalProfit;
         this.repairTimes = repairTimes;
-        this.indexToObjectMap = new HashMap<>();
         this.sparePartCountMap = sparePartCountMap;
         this.testing = testing;
+        this.allDurations = allDurations;
     }
 
     public static boolean isSolutionCorrect() {
@@ -42,7 +42,9 @@ public class SolutionVerification {
             sparePartUsedMap.put(sparePart.getId(), sparePart.getQuantity());
         }
 
-        prepareDurations();
+        if (allDurations == null)
+            prepareDurations();
+        else prepareTravelDurationsTesting();
 
         for (ServiceTechnician serviceTechnician : serviceTechnicianReportsMap.keySet()) {
             int repairTimeCalculated = 0;
@@ -53,7 +55,7 @@ public class SolutionVerification {
                 int travelTime;
                 if (i == 0) {
                     Integer serviceTechnicianIdx = serviceTechnicianIdToIdxMap.get(serviceTechnician.getId());
-                    travelTime = (int) getDurationsInS()[serviceTechnicianIdx][serviceTechnicianReportIdxMap.get(serviceTechnician).get(i)] / 60;
+                     travelTime = (int) getDurationsInS()[serviceTechnicianIdx][serviceTechnicianReportIdxMap.get(serviceTechnician).get(i)] / 60;
                 } else {
                     travelTime = (int) getDurationsInS()[serviceTechnicianReportIdxMap.get(serviceTechnician).get(i - 1)][serviceTechnicianReportIdxMap.get(serviceTechnician).get(i)] / 60;
                 }
@@ -116,7 +118,6 @@ public class SolutionVerification {
 
         int index = 0;
         for (ServiceTechnician serviceTechnician : serviceTechnicianReportsMap.keySet()) {
-            indexToObjectMap.put(index, serviceTechnician);
             locations[index][0] = Double.parseDouble(serviceTechnician.getLongitude());
             locations[index][1] = Double.parseDouble(serviceTechnician.getLatitude());
             serviceTechnicianIdToIdxMap.put(serviceTechnician.getId(), index);
@@ -126,7 +127,6 @@ public class SolutionVerification {
         for (ServiceTechnician serviceTechnician : serviceTechnicianReportsMap.keySet()) {
             List<Integer> reportIdx = new ArrayList<>();
             for (Report report : serviceTechnicianReportsMap.get(serviceTechnician)) {
-                indexToObjectMap.put(index, report);
                 locations[index][0] = Double.parseDouble(report.getLongitude());
                 locations[index][1] = Double.parseDouble(report.getLatitude());
                 reportIdx.add(index);
@@ -139,6 +139,60 @@ public class SolutionVerification {
         DurationsMatrix durationsMatrix = new DurationsMatrix(index, locations);
         setDurationsInS(durationsMatrix.getDurations());
 
+    }
+
+    private static void prepareTravelDurationsTesting() {
+        int numberOfServiceTechnicians = serviceTechnicianReportsMap.size();
+        List<Report> allReports = OptimizationServices.loadReports();
+        int numberOfReports = 0;
+
+        List<ServiceTechnician> serviceTechnicians = new ArrayList<>(serviceTechnicianReportsMap.keySet());
+        Collections.sort(serviceTechnicians, (ServiceTechnician s1, ServiceTechnician s2) -> {
+            return s1.getId().compareTo(s2.getId());
+        });
+
+        for (ServiceTechnician serviceTechnician : serviceTechnicians) {
+            numberOfReports += serviceTechnicianReportsMap.get(serviceTechnician).size();
+        }
+
+        int totalSize = numberOfServiceTechnicians + numberOfReports;
+
+        Map<Long, Integer> serviceTechniciansMap = new HashMap<>();
+        Map<Long, Integer> reportsMap = new HashMap<>();
+        int temp = 0;
+        for (ServiceTechnician serviceTechnician : serviceTechnicians) {
+            serviceTechniciansMap.put(serviceTechnician.getId(), temp);
+            temp++;
+        }
+        for (Report report : allReports) {
+            reportsMap.put(report.getId(), temp);
+            temp++;
+        }
+
+        int[] ids = new int[totalSize];
+        temp = 0;
+        for (ServiceTechnician serviceTechnician : serviceTechnicianReportsMap.keySet()) {
+            ids[temp] = serviceTechniciansMap.get(serviceTechnician.getId());
+            serviceTechnicianIdToIdxMap.put(serviceTechnician.getId(), temp);
+            temp++;
+        }
+        for (ServiceTechnician serviceTechnician : serviceTechnicianReportsMap.keySet()) {
+            List<Integer> reportIdx = new ArrayList<>();
+            for (Report report : serviceTechnicianReportsMap.get(serviceTechnician)) {
+                ids[temp] = reportsMap.get(report.getId());
+                reportIdx.add(temp);
+                temp++;
+            }
+            serviceTechnicianReportIdxMap.put(serviceTechnician, reportIdx);
+        }
+        double[][] durations = new double[totalSize][totalSize];
+        for (int i = 0; i < totalSize; i++) {
+            for (int j = 0; j < totalSize; j++) {
+                durations[i][j] = allDurations[ids[i]][ids[j]];
+            }
+        }
+
+        setDurationsInS(durations);
     }
 
 

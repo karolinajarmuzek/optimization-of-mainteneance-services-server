@@ -3,8 +3,12 @@ package com.oms.serverapp.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -82,16 +86,21 @@ public class DurationsMatrix {
                 .build();
 
         HttpResponse<String> response = null;
-        try {
-            response = client.send(request,
-                    HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        do {
+            try {
+                response = client.send(request,
+                        HttpResponse.BodyHandlers.ofString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } while (response.statusCode() != 200);
 
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
         JsonElement jsonElement = gson.fromJson(response.body(), JsonElement.class);
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         return gson.fromJson(jsonObject.getAsJsonArray("durations"), double[][].class);

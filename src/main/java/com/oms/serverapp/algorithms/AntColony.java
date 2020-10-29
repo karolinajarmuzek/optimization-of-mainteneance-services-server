@@ -9,13 +9,13 @@ import java.util.*;
 
 public class AntColony extends Algorithm {
 
-    private double c = 1.0;             // initial value on each trail
+    private double c = 1.0;                     // initial value on each trail
     private static double alpha = 1;           // pheromone importance
     private static double beta = 5;            // distance priority
     private static double evaporation = 0.5;   // pheromone evaporating
-    private static double antFactor = 0.9;     // number of ants use per city?
+    private static double antFactor = 2.0;     // used to calculate the number of Ants
     private static double randomFactor = 0.1;  // randomness
-    private static int maxIterations = 1000;
+    private static int maxIterations = 2000;
 
     private int numberOfAnts;                                                   // number of ants
     private double[][][] trails;                                                // ant trails for each serviceTechnician
@@ -28,8 +28,17 @@ public class AntColony extends Algorithm {
     private int[][] currentIndex;                                               // array of index of last scheduled report for each serviceTechnician
     private Map<Integer, Map<Long, Integer>> sparePartsForEachAntInColony;      // id and quantity of spare parts for each ant
 
-    public AntColony(int scheduleInterval, int maxRepairTime, boolean isTesting, String firstSchedule, String startTimeOfWork) {
-        super(scheduleInterval, maxRepairTime, isTesting, firstSchedule, startTimeOfWork);
+    public AntColony(int scheduleInterval, int maxRepairTime, boolean isTesting, String firstSchedule, String startTimeOfWork, double[][] allDurations) {
+        super(scheduleInterval, maxRepairTime, isTesting, firstSchedule, startTimeOfWork, allDurations);
+    }
+
+    public void setParams(double alpha, double beta, double evaporation, double antFactor, double randomFactor, int maxIterations) {
+        setAlpha(alpha);
+        setBeta(beta);
+        setEvaporation(evaporation);
+        setAntFactor(antFactor);
+        setMaxIterations(maxIterations);
+        setRandomFactor(randomFactor);
     }
 
     @Override
@@ -57,7 +66,7 @@ public class AntColony extends Algorithm {
     }
 
     private void startAntOptimization() {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 1; i++) {
             if (isShowMessages()) System.out.println("Attempt #" + i);
             solve();
         }
@@ -80,7 +89,7 @@ public class AntColony extends Algorithm {
             if (isTesting()) {
                 updateServiceTechnicianRepairInfos(bestSolution);
             } else {
-                addReports(bestSolution);
+                addRepairs(bestSolution);
             }
             updateSparePartCountMap();
         } else {
@@ -190,9 +199,7 @@ public class AntColony extends Algorithm {
                 return randomIndex;
             }
         }
-
         calculateProbabilities(ant, serviceTechnician);
-
         double r = random.nextDouble();
         double total = 0;
         for (int i = 0; i < reportsAvailable.get(serviceTechnician).size(); i++) {
@@ -330,13 +337,13 @@ public class AntColony extends Algorithm {
          }
     }
 
-    private void addReports(Ant bestAnt) {
+    private void addRepairs(Ant bestAnt) {
         for (int serviceTechnician = 0; serviceTechnician < getNumberOfServiceTechnicians(); serviceTechnician++) {
             ServiceTechnician serviceTechnician1 = getServiceTechnicians().get(serviceTechnician);
             int previousRepairsTime = getServiceTechniciansRepairInfos().get(serviceTechnician1.getId()).getRepairsTime();
             for (int i = 1; i < getNumberOfReports(); i++) {
                 if (bestAnt.trail[serviceTechnician][i] == -1) break;
-                addReport(previousRepairsTime, serviceTechnician1, getReportsWithId().get(bestAnt.trail[serviceTechnician][i]));
+                addRepair(previousRepairsTime, serviceTechnician1, getReportsWithId().get(bestAnt.trail[serviceTechnician][i] - getNumberOfServiceTechnicians()));
                 previousRepairsTime += bestAnt.getRepairTimes()[serviceTechnician][i];
             }
         }
@@ -373,7 +380,29 @@ public class AntColony extends Algorithm {
         }
     }
 
+    public static void setAlpha(double alpha) {
+        AntColony.alpha = alpha;
+    }
 
+    public static void setBeta(double beta) {
+        AntColony.beta = beta;
+    }
+
+    public static void setEvaporation(double evaporation) {
+        AntColony.evaporation = evaporation;
+    }
+
+    public static void setAntFactor(double antFactor) {
+        AntColony.antFactor = antFactor;
+    }
+
+    public static void setRandomFactor(double randomFactor) {
+        AntColony.randomFactor = randomFactor;
+    }
+
+    public static void setMaxIterations(int maxIterations) {
+        AntColony.maxIterations = maxIterations;
+    }
 
     public int getNumberOfAnts() {
         return numberOfAnts;

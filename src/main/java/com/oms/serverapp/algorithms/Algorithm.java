@@ -9,7 +9,7 @@ import java.util.*;
 public abstract class Algorithm {
 
     private static boolean testing;                                                                             // is it algorithms testing mode
-    private static final boolean showMessages = false;                                                          // print messages
+    private static final boolean showMessages = false;                                                          // whether to print messages
     private static final int shiftTime = 30;                                                                    // max repair time may be exceeded by this time [in min]
 
     private static ReportsLoader reportsLoader;                                                                 // reports details
@@ -30,13 +30,16 @@ public abstract class Algorithm {
 
     private static Map<Integer, Report> reportsWithId = new HashMap<>();                                        // cast each report to index (idx) for easy identification
 
-    public Algorithm(int scheduleInterval, int maxRepairTime, boolean isTesting, String firstSchedule, String startTimeOfWork) {
+    private static double[][] allDurations;                                                                     // matrix with all durations (for testing purposes)
+
+    public Algorithm(int scheduleInterval, int maxRepairTime, boolean isTesting, String firstSchedule, String startTimeOfWork, double[][] allDurations) {
         this.scheduleInterval = scheduleInterval;
         this.maxRepairTime = maxRepairTime;
         this.totalProfit = 0;
         this.testing = isTesting;
         this.firstSchedule = firstSchedule;
         this.startTimeOfWork = startTimeOfWork;
+        if (allDurations != null) this.allDurations = allDurations;
     }
 
     public void exec() {
@@ -105,7 +108,8 @@ public abstract class Algorithm {
     private static void prepare(String firstSchedule) {
         if (getInterval() == 0 || !isTesting()) loadServiceTechnicians();
         loadReports(firstSchedule);
-        prepareTravelDurations();
+        if (testing && allDurations != null) prepareTravelDurationsTesting();
+        else prepareTravelDurations();
     }
 
     private static void loadServiceTechnicians() {
@@ -206,6 +210,45 @@ public abstract class Algorithm {
         setDurationsInS(durationsMatrix.getDurations());
     }
 
+    private static void prepareTravelDurationsTesting() {
+        List<Report> allReports = OptimizationServices.loadReports();
+        int actualSize = reportsLoader.getReportsToSchedule().size() + serviceTechnicians.size();
+
+        Map<Long, Integer> serviceTechniciansMap = new HashMap<>();
+        Map<Long, Integer> reportsMap = new HashMap<>();
+        int temp = 0;
+        for (ServiceTechnician serviceTechnician : serviceTechnicians) {
+            serviceTechniciansMap.put(serviceTechnician.getId(), temp);
+            temp++;
+        }
+        for (Report report : allReports) {
+            reportsMap.put(report.getId(), temp);
+            temp++;
+        }
+
+        int[] ids = new int[actualSize];
+        temp = 0;
+        for (ServiceTechnician serviceTechnician : serviceTechnicians) {
+            if (serviceTechniciansRepairInfos.get(serviceTechnician.getId()).getLastReport() == null) {
+                ids[temp] = serviceTechniciansMap.get(serviceTechnician.getId());
+            } else {
+                ids[temp] = reportsMap.get(serviceTechniciansRepairInfos.get(serviceTechnician.getId()).getLastReport().getId());
+            }
+            temp++;
+        }
+        for (Report report : reportsLoader.getReportsToSchedule()) {
+            ids[temp] = reportsMap.get(report.getId());
+            temp++;
+        }
+        double[][] durations = new double[actualSize][actualSize];
+        for (int i = 0; i < actualSize; i++) {
+            for (int j = 0; j < actualSize; j++) {
+                durations[i][j] = allDurations[ids[i]][ids[j]];
+            }
+        }
+        setDurationsInS(durations);
+    }
+
     //get profit and repair time
     public static RepairInfos getRepairInfos(Skill skillNeeded, int experienceOrServiceTechnicianIdx, boolean isExperience) {
         int profit = skillNeeded.getProfit();
@@ -241,7 +284,7 @@ public abstract class Algorithm {
             }
 
         }
-        SolutionVerification solutionVerification = new SolutionVerification(getMaxRepairTime() - scheduleInterval, getMaxRepairTime() + getShiftTime(), serviceTechnicianListMap, getTotalProfit(), repairTimes, getSparePartCountMap(), testing);
+        SolutionVerification solutionVerification = new SolutionVerification(getMaxRepairTime() - scheduleInterval, getMaxRepairTime() + getShiftTime(), serviceTechnicianListMap, getTotalProfit(), repairTimes, getSparePartCountMap(), testing, allDurations);
         boolean isSolutionCorrect = solutionVerification.isSolutionCorrect();
         System.out.println("Is solution correct: " + isSolutionCorrect);
         if (!isSolutionCorrect) System.out.println(solutionVerification.getMessage());
@@ -249,7 +292,7 @@ public abstract class Algorithm {
 
     }
 
-    public void addReport(int previousRepairsTime, ServiceTechnician serviceTechnician, Report report) {
+    public void addRepair(int previousRepairsTime, ServiceTechnician serviceTechnician, Report report) {
         String[] startTime = getStartTimeOfWork().split(":");
 
         String time = "";

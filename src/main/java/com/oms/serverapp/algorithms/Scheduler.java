@@ -24,10 +24,10 @@ public class Scheduler {
             scheduleInterval = 240;
 
         if (algorithm == algorithms.GREEDY) {
-            GreedyAlgorithm greedyAlgorithm = new GreedyAlgorithm(scheduleInterval, MAX_REPAIR_TIME, false, FIRST_SCHEDULE, START_TIME);
+            GreedyAlgorithm greedyAlgorithm = new GreedyAlgorithm(scheduleInterval, MAX_REPAIR_TIME, false, FIRST_SCHEDULE, START_TIME, null);
             greedyAlgorithm.exec();
         } else if (algorithm == algorithms.ANT) {
-            AntColony antColony = new AntColony(scheduleInterval, MAX_REPAIR_TIME, false, FIRST_SCHEDULE, START_TIME);
+            AntColony antColony = new AntColony(scheduleInterval, MAX_REPAIR_TIME, false, FIRST_SCHEDULE, START_TIME, null);
             antColony.exec();
         }
     }

@@ -23,6 +23,8 @@ public class SparePartPayload {
     @Min(0)
     private int price;
 
+    public SparePartPayload() {};
+
     public SparePartPayload(SparePart sparePart) {
         this.id = sparePart.getId();
         this.name = sparePart.getName();

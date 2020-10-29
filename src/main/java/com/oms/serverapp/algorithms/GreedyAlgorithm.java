@@ -11,8 +11,8 @@ public class GreedyAlgorithm extends Algorithm {
     private List<Integer> reportsSortedIds;
     private Map<Long, Integer> serviceTechnicianIdToIntegerMap;
 
-    public GreedyAlgorithm(int scheduleInterval, int maxRepairTime, boolean isTesting, String firstSchedule, String startTimeOfWork) {
-        super(scheduleInterval, maxRepairTime, isTesting, firstSchedule, startTimeOfWork);
+    public GreedyAlgorithm(int scheduleInterval, int maxRepairTime, boolean isTesting, String firstSchedule, String startTimeOfWork, double[][] allDurations) {
+        super(scheduleInterval, maxRepairTime, isTesting, firstSchedule, startTimeOfWork, allDurations);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class GreedyAlgorithm extends Algorithm {
                         if ((previousRepairsTime + totalTime <= maxTime) || (firstAssigment.get(serviceTechnician.getId()) && (previousRepairsTime + totalTime <= getMaxRepairTime() + getShiftTime()))) {
 
                             if (!isTesting()) {
-                                addReport(previousRepairsTime, serviceTechnician, report);
+                                addRepair(previousRepairsTime, serviceTechnician, report);
                             }
 
                             getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).setRepairsTime(previousRepairsTime + totalTime);
