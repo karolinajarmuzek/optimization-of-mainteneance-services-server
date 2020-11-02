@@ -1,9 +1,7 @@
-package com.oms.serverapp;
+package com.oms.serverapp.generator;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
-import com.oms.serverapp.model.Skill;
+import com.oms.serverapp.util.StreetsCreator;
 import com.oms.serverapp.model.SparePart;
 import com.oms.serverapp.payload.*;
 import com.oms.serverapp.util.Helpers;

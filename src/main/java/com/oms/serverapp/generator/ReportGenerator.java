@@ -1,6 +1,7 @@
-package com.oms.serverapp;
+package com.oms.serverapp.generator;
 
 import com.google.gson.Gson;
+import com.oms.serverapp.util.StreetsCreator;
 import com.oms.serverapp.payload.CustomerPayload;
 import com.oms.serverapp.payload.DevicePayload;
 import com.oms.serverapp.payload.FailurePayload;

@@ -1,9 +1,13 @@
-package com.oms.serverapp.util;
+package com.oms.serverapp.generator;
 
-import com.oms.serverapp.OptimizationServices;
-import com.oms.serverapp.algorithms.*;
+import com.oms.serverapp.util.OptimizationServices;
+import com.oms.serverapp.algorithm.*;
 import com.oms.serverapp.model.Report;
 import com.oms.serverapp.model.ServiceTechnician;
+import com.oms.serverapp.util.CSVGenerator;
+import com.oms.serverapp.util.DurationsMatrix;
+import com.oms.serverapp.util.ServiceTechnicianRepairInfos;
+import com.oms.serverapp.util.SolutionDetails;
 
 import java.io.*;
 import java.util.*;

@@ -1,6 +1,6 @@
-package com.oms.serverapp.algorithms;
+package com.oms.serverapp.algorithm;
 
-import com.oms.serverapp.OptimizationServices;
+import com.oms.serverapp.util.OptimizationServices;
 import com.oms.serverapp.model.*;
 import com.oms.serverapp.util.*;
 import java.text.SimpleDateFormat;

@@ -1,6 +1,6 @@
 package com.oms.serverapp.controller;
 
-import com.oms.serverapp.OptimizationServices;
+import com.oms.serverapp.util.OptimizationServices;
 import com.oms.serverapp.exception.NotFoundException;
 import com.oms.serverapp.model.Repair;
 import com.oms.serverapp.payload.RepairRequest;

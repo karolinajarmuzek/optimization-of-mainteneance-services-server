@@ -1,10 +1,5 @@
 package com.oms.serverapp;
 
-import com.oms.serverapp.algorithms.Algorithm;
-import com.oms.serverapp.algorithms.AntColony;
-import com.oms.serverapp.algorithms.GreedyAlgorithm;
-import com.oms.serverapp.algorithms.Scheduler;
-import com.oms.serverapp.util.TestsGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -15,6 +10,7 @@ public class ServerAppApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ServerAppApplication.class, args);
+
     }
 }
 

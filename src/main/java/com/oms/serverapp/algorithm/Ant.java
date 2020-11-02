@@ -1,4 +1,4 @@
-package com.oms.serverapp.algorithms;
+package com.oms.serverapp.algorithm;
 
 import java.io.Serializable;
 import java.util.Arrays;

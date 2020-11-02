@@ -1,4 +1,4 @@
-package com.oms.serverapp.algorithms;
+package com.oms.serverapp.algorithm;
 
 import com.oms.serverapp.model.*;
 import com.oms.serverapp.util.RepairInfos;

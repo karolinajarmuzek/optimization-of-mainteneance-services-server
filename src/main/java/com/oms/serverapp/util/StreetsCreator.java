@@ -1,4 +1,4 @@
-package com.oms.serverapp;
+package com.oms.serverapp.util;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

@@ -1,4 +1,4 @@
-package com.oms.serverapp;
+package com.oms.serverapp.util;
 
 import com.oms.serverapp.model.*;
 import com.oms.serverapp.repository.*;
