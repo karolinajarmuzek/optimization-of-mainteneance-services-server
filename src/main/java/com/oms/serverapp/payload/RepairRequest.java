@@ -18,8 +18,12 @@ public class RepairRequest {
     @NotNull(message = "Repair date cannot be null.")
     private Date date;
 
-    @NotNull(message = "Repair time cannot be null.")
-    private String time;
+    @NotNull(message = "Repair start time cannot be null.")
+    private String start_time;
+
+    @NotNull(message = "Repair end time cannot be null.")
+    private String end_time;
+
 
     @NotNull(message = "Status cannot be null.")
     @Enumerated(EnumType.STRING)
@@ -35,7 +39,8 @@ public class RepairRequest {
         this.id = repair.getId();
         this.serviceTechnician = repair.getServiceTechnician().getId();
         this.date = repair.getDate();
-        this.time = repair.getTime();
+        this.start_time = repair.getStartTime();
+        this.end_time = repair.getEndTime();
         this.status = repair.getStatus();
         if (repair.getReport() != null) { // when throw ex -> remove this
             this.report = repair.getReport().getId();
@@ -66,12 +71,20 @@ public class RepairRequest {
         this.date = date;
     }
 
-    public String getTime() {
-        return time;
+    public String getStartTime() {
+        return start_time;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setStartTime(String start_time) {
+        this.start_time = start_time;
+    }
+
+    public String getEndTime() {
+        return end_time;
+    }
+
+    public void setEndTime(String end_time) {
+        this.end_time = end_time;
     }
 
     public RepairStatus getStatus() {

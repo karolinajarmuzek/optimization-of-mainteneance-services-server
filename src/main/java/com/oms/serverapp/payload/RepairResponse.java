@@ -9,7 +9,8 @@ public class RepairResponse {
 
     private Long id;
     private String date;
-    private String time;
+    private String startTime;
+    private String endTime;
     private RepairStatus status;
     private ReportResponse reportResponse;
 
@@ -19,7 +20,8 @@ public class RepairResponse {
     public RepairResponse(Repair repair, ReportResponse reportResponse) {
         this.id = repair.getId();
         this.date = new SimpleDateFormat("dd.MM.yyyy").format(repair.getDate());
-        this.time = repair.getTime();
+        this.startTime = repair.getStartTime();
+        this.endTime = repair.getEndTime();
         this.status = repair.getStatus();
         this.reportResponse = reportResponse;
     }
@@ -40,12 +42,20 @@ public class RepairResponse {
         this.date = date;
     }
 
-    public String getTime() {
-        return time;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 
     public RepairStatus getStatus() {

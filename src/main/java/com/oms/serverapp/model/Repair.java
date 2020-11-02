@@ -22,8 +22,11 @@ public class Repair {
     @NotNull(message = "Repair date cannot be null.")
     private Date date;
 
-    @NotNull(message = "Repair time cannot be null.")
-    private String time; ///????
+    @NotNull(message = "Repair start time cannot be null.")
+    private String start_time;
+
+    @NotNull(message = "Repair end time cannot be null.")
+    private String end_time;
 
     @Enumerated(EnumType.STRING)
     private RepairStatus status;
@@ -35,10 +38,11 @@ public class Repair {
     public Repair() {
     }
 
-    public Repair(ServiceTechnician serviceTechnician, Date date, String time, Report report, RepairStatus repairStatus) {
+    public Repair(ServiceTechnician serviceTechnician, Date date, String startTime, String endTime, Report report, RepairStatus repairStatus) {
         this.serviceTechnician = serviceTechnician;
         this.date = date;
-        this.time = time;
+        this.start_time = startTime;
+        this.end_time = endTime;
         this.report = report;
         this.status = repairStatus;
     }
@@ -48,7 +52,8 @@ public class Repair {
             this.serviceTechnician = serviceTechnician;
         }
         this.date = repairRequest.getDate();
-        this.time = repairRequest.getTime();
+        this.start_time = repairRequest.getStartTime();
+        this.end_time = repairRequest.getEndTime();
         this.status = repairRequest.getStatus(); //Status.REPORTED ??
         if (report != null) { //report should not be null!
             this.report = report;
@@ -62,7 +67,8 @@ public class Repair {
         }
         this.date = repairRequest.getDate() != null ? repairRequest.getDate() : repair.getDate();
         this.date = repairRequest.getDate() != null ? repairRequest.getDate() : repair.getDate();
-        this.time = repairRequest.getTime() != null ? repairRequest.getTime() : repair.getTime();
+        this.start_time = repairRequest.getStartTime() != null ? repairRequest.getStartTime() : repair.getStartTime();
+        this.end_time = repairRequest.getEndTime() != null ? repairRequest.getEndTime() : repair.getEndTime();
         this.status = repairRequest.getStatus() != null ? repairRequest.getStatus() : repair.getStatus();
         if (report != null) {
             this.report = report;
@@ -93,12 +99,20 @@ public class Repair {
         this.date = date;
     }
 
-    public String getTime() {
-        return time;
+    public String getStartTime() {
+        return start_time;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setStartTime(String start_time) {
+        this.start_time = start_time;
+    }
+
+    public String getEndTime() {
+        return end_time;
+    }
+
+    public void setEndTime(String end_time) {
+        this.end_time = end_time;
     }
 
     public RepairStatus getStatus() {
