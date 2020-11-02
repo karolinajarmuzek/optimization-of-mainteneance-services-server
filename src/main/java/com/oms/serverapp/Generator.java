@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.Normalizer;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -29,26 +30,26 @@ public class Generator {
 
     private enum UserType{SERVICETECHNICIAN, CUSTOMER, ADMIN}
 
-    private static final Set<String> names = new HashSet<>(Set.of("Adam", "Bartosz", "Cezary", "Damian", "Eryk", "Franciszek", "Grzegorz", "Henryk", "Ignacy", "Jacek", "Karol", "Lech", "Mateusz", "Norbert", "Oliwier", "Piotr", "Rafal", "Sebastian", "Tomasz", "Wojciech", "Zbigniew"));
-    private static final Set<String> surnames = new HashSet<>(Set.of("Nowak", "Kowalski", "Wisniewski", "Wojcik", "Kowalczyk", "Kaminski", "Lewandowski", "Zielinski", "Szymanski", "Wozniak", "Dabrowski", "Kozlowski", "Jankowski"));
+    private static final Set<String> names = new HashSet<>(Set.of("Adam", "Bartosz", "Cezary", "Damian", "Eryk", "Franciszek", "Grzegorz", "Henryk", "Ignacy", "Jacek", "Karol", "Lech", "Mateusz", "Norbert", "Oliwier", "Piotr", "Rafał", "Sebastian", "Tomasz", "Wojciech", "Zbigniew"));
+    private static final Set<String> surnames = new HashSet<>(Set.of("Nowak", "Kowalski", "Wiśniewski", "Wójcik", "Kowalczyk", "Kamiński", "Lewandowski", "Zieliński", "Szymański", "Woźniak", "Dąbrowski", "Kozłowski", "Jankowski"));
     private static Set<String> users = new HashSet<>();
 
     private static final Map<String, String> devices = new HashMap<String,String>(){
         {
-            put("Bosch Condens GC7000iW", "kociol kondensacyjny");
-            put("Bosch Condens GC9000iW", "kociol kondensacyjny");
-            put("Bosch Condens GC2300iW", "kociol kondensacyjny");
-            put("Cerapur Midi", "kociol kondensacyjny");
-            put("Cerapur Acu Smart", "kociol kondensacyjny");
-            put("Suprapur KBR 65-98", "kociol kondensacyjny");
-            put("HT Earth", "pompa ciepla");
-            put("HT Air 40-60 kW", "pompa ciepla");
-            put("HT AIR", "pompa ciepla");
+            put("Bosch Condens GC7000iW", "kocioł kondensacyjny");
+            put("Bosch Condens GC9000iW", "kocioł kondensacyjny");
+            put("Bosch Condens GC2300iW", "kocioł kondensacyjny");
+            put("Cerapur Midi", "kocioł kondensacyjny");
+            put("Cerapur Acu Smart", "kocioł kondensacyjny");
+            put("Suprapur KBR 65-98", "kocioł kondensacyjny");
+            put("HT Earth", "pompa ciepła");
+            put("HT Air 40-60 kW", "pompa ciepła");
+            put("HT AIR", "pompa ciepła");
             put("WARMTEC WRM06+", "kurtyna powietrzna");
             put("WARMTEC WRMS12+", "kurtyna powietrzna");
         }};
 
-    private static final Set<String> failures = new HashSet<>(Set.of("F1", "F2", "F3"));
+    private static final Set<String> failures = new HashSet<>(Set.of("Wyłączenie awaryjne", "Nieznany błąd", "Przegląd/Czyszczenie", "Urządzenie nie grzeje"));
 
     private static final Integer sparePartMaxQuantity = 100;
     private static final Integer sparePartMinPrice = 20;
@@ -303,8 +304,11 @@ public class Generator {
                 put("phoneNumber", Integer.toString(random.nextInt(899999999) + 100000000));
                 if (userType != UserType.CUSTOMER) {
                     String[] address = streetsCreator.generateAddress();
-                    put("username", finalName.toLowerCase() + finalSurname.toLowerCase());
-                    put("password", finalName.toLowerCase() + finalSurname.toLowerCase());
+                    String username = Normalizer.normalize(finalName.toLowerCase() + finalSurname.toLowerCase(), Normalizer.Form.NFD)
+                            .replaceAll("ł", "l")
+                            .replaceAll("[^\\p{ASCII}]", "");
+                    put("username", username);
+                    put("password", username);
                     put("startLocalization", address[0]);
                     put("longitude", address[1]);
                     put("latitude", address[2]);
