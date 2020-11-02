@@ -10,6 +10,7 @@ public class SolutionVerification {
     private static int scheduleMinTime;
     private static int scheduleMaxTime;
     private static Map<ServiceTechnician, List<Report>> serviceTechnicianReportsMap;
+    private static Map<Long, Integer> serviceTechniciansIdTimesBeforeStart;
     private static int totalProfit;
     private static double[][] durationsInS;
     private static Map<Long, Integer> sparePartCountMap;
@@ -21,7 +22,7 @@ public class SolutionVerification {
     private static Boolean testing;
     private static double[][] allDurations;
 
-    public SolutionVerification(int scheduleMinTime, int scheduleMaxTime, Map<ServiceTechnician, List<Report>> serviceTechnicianReportsMap, int totalProfit, Map<Long, Integer> repairTimes, Map<Long, Integer> sparePartCountMap, Boolean testing, double[][] allDurations) {
+    public SolutionVerification(int scheduleMinTime, int scheduleMaxTime, Map<ServiceTechnician, List<Report>> serviceTechnicianReportsMap, int totalProfit, Map<Long, Integer> repairTimes, Map<Long, Integer> sparePartCountMap, Boolean testing, double[][] allDurations, Map<Long, Integer> serviceTechniciansIdTimesBeforeStart) {
         this.scheduleMinTime = scheduleMinTime;
         this.scheduleMaxTime = scheduleMaxTime;
         this.serviceTechnicianReportsMap = serviceTechnicianReportsMap;
@@ -30,6 +31,7 @@ public class SolutionVerification {
         this.sparePartCountMap = sparePartCountMap;
         this.testing = testing;
         this.allDurations = allDurations;
+        this.serviceTechniciansIdTimesBeforeStart = serviceTechniciansIdTimesBeforeStart;
     }
 
     public static boolean isSolutionCorrect() {
@@ -69,6 +71,7 @@ public class SolutionVerification {
                     }
                 }
             }
+            repairTimeCalculated += serviceTechniciansIdTimesBeforeStart.get(serviceTechnician.getId());
             int repairTimeProvided = repairTimes.get(serviceTechnician.getId());
             if (repairTimeProvided != repairTimeCalculated) {
                 isCorrect = false;

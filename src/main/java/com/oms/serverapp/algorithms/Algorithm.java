@@ -286,7 +286,9 @@ public abstract class Algorithm {
             }
 
         }
-        SolutionVerification solutionVerification = new SolutionVerification(getMaxRepairTime() - scheduleInterval, getMaxRepairTime() + getShiftTime(), serviceTechnicianListMap, getTotalProfit(), repairTimes, getSparePartCountMap(), testing, allDurations);
+        int scheduleMinTime = getMaxRepairTime() - (getMaxRepairTime()/scheduleInterval - (getInterval() + 1)) * scheduleInterval;
+        if (getInterval() == (getMaxRepairTime() / scheduleInterval - 1)) scheduleMinTime = getMaxRepairTime() - scheduleInterval;
+        SolutionVerification solutionVerification = new SolutionVerification(scheduleMinTime, getMaxRepairTime() + getShiftTime(), serviceTechnicianListMap, getTotalProfit(), repairTimes, getSparePartCountMap(), testing, allDurations, serviceTechniciansIdsToTimesBeforeStart);
         boolean isSolutionCorrect = solutionVerification.isSolutionCorrect();
         System.out.println("Is solution correct: " + isSolutionCorrect);
         if (!isSolutionCorrect) System.out.println(solutionVerification.getMessage());
