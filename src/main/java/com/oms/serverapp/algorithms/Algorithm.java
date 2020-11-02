@@ -17,6 +17,7 @@ public abstract class Algorithm {
     private static int interval;                                                                                // interval during the day
     private static List<ServiceTechnician> serviceTechnicians;                                                  // list of service technicians
     private static Map<Long, ServiceTechnicianRepairInfos> serviceTechniciansRepairInfos = new HashMap<>();     // information about repairs for all service technicians
+    private static Map<Long, Integer> serviceTechniciansIdsToTimesBeforeStart = new HashMap<>();                // total repair times for given day for each service technician
     private static int scheduleInterval;                                                                        // size of one schedule interval [in min]
     private static int maxRepairTime;                                                                           // max work time [in min]
     private static int totalProfit;                                                                             // total profit from all intervals
@@ -93,10 +94,9 @@ public abstract class Algorithm {
         int startTime = timeInMs(firstSchedule);
         int time = timeInMs(formatter.format(date));
         int interval = (int) Math.floor((time - startTime) / (scheduleInterval * 60 * 1000));
-        loadServiceTechnicians();
-        fillServiceTechnicianRepairInfos(startTimeOfWork);
         setInterval(interval);
         prepare(firstSchedule);
+        fillServiceTechnicianRepairInfos(startTimeOfWork);
         int index = 0;
         for (Report report : getReportsLoader().getReportsToSchedule()) {
             reportsWithId.put(index, report); //map reports to ids
@@ -172,17 +172,19 @@ public abstract class Algorithm {
                 OptimizationServices.updateReport(report);
             }
             int timeInMin = 0;
+            String todayDate = new SimpleDateFormat("dd.MM.yyyy").format(new Date());
             if (lastRepair != null) {
-                Skill skillNeeded = OptimizationServices.getSkillByDeviceAndFailure(lastRepair.getReport().getDevice(), lastRepair.getReport().getFailure());
-                RepairInfos repairInfos = getRepairInfos(skillNeeded, serviceTechnician.getExperience(), true);
-
-                String[] time = lastRepair.getTime().split(":");
-                String[] startTime = startTimeOfWork.split(":");
-                timeInMin = Integer.parseInt(time[0]) * 60 +Integer.parseInt(time[1]) - (Integer.parseInt(startTime[0]) * 60 +Integer.parseInt(startTime[1])) + repairInfos.getRepairTime();
+                String lastRepairDate = new SimpleDateFormat("dd.MM.yyyy").format(lastRepair.getDate());
+                if (lastRepairDate.equals(todayDate)) {
+                    String[] time = lastRepair.getEndTime().split(":");
+                    String[] startTime = startTimeOfWork.split(":");
+                    timeInMin = (Integer.parseInt(time[0]) - Integer.parseInt(startTime[0]))* 60  + Integer.parseInt(time[1]) - Integer.parseInt(startTime[1]);
+                }
             }
+            serviceTechniciansIdsToTimesBeforeStart.put(serviceTechnician.getId(), timeInMin);
             serviceTechniciansRepairInfos.get(serviceTechnician.getId()).setLastReport(lastRepair != null ? lastRepair.getReport() : null);
             serviceTechniciansRepairInfos.get(serviceTechnician.getId()).setRepairsTime(timeInMin);
-        }
+         }
     }
 
     private static void prepareTravelDurations() {
@@ -292,17 +294,38 @@ public abstract class Algorithm {
 
     }
 
-    public void addRepair(int previousRepairsTime, ServiceTechnician serviceTechnician, Report report) {
+    public void addRepair(int previousRepairsTime, ServiceTechnician serviceTechnician, Report report, Integer repairTime) {
         String[] startTime = getStartTimeOfWork().split(":");
 
-        String time = "";
         int hours = previousRepairsTime / 60 + Integer.parseInt(startTime[0]);
+        int minutes = previousRepairsTime % 60 + Integer.parseInt(startTime[1]);
+        String stTime = timeAsString(hours, minutes);
+
+        hours = (previousRepairsTime + repairTime) / 60 + Integer.parseInt(startTime[0]);
+        minutes = (previousRepairsTime + repairTime) % 60 + Integer.parseInt(startTime[1]);
+        String endTime = timeAsString(hours, minutes);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), hours, minutes, 0 );
+        Date date = calendar.getTime();
+        RepairStatus repairStatus = RepairStatus.PENDING;
+        if (previousRepairsTime == 0)  repairStatus = RepairStatus.REPAIRING; // if it is a first repair - set status to REPAIRING
+        Repair repair = new Repair(serviceTechnician, date, stTime, endTime, report, repairStatus);
+        OptimizationServices.addRepair(repair);
+        for (SparePartNeeded sparePartNeeded : getReportsLoader().getReportSkillMap().get(report).getSparePartsNeeded()) {
+            SparePart sparePart = OptimizationServices.getSparePartById(sparePartNeeded.getSparePart().getId());
+            sparePart.setQuantity(sparePart.getQuantity() - sparePartNeeded.getQuantity());
+            OptimizationServices.updateSparePart(sparePart);
+        }
+    }
+
+    private static String timeAsString(Integer hours, Integer minutes) {
+        String time = "";
         if (String.valueOf(hours).length() == 1) {
             time = "0" + hours + ":";
         } else {
             time = hours + ":";
         }
-        int minutes = previousRepairsTime % 60 + Integer.parseInt(startTime[1]);
         if (String.valueOf(minutes).length() == 1) {
             if (minutes == 0)
                 time = time + minutes + "0";
@@ -311,18 +334,7 @@ public abstract class Algorithm {
         } else {
             time += minutes;
         }
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), hours, minutes, 0 );
-        Date date = calendar.getTime();
-        RepairStatus repairStatus = RepairStatus.PENDING;
-        if (previousRepairsTime == 0)  repairStatus = RepairStatus.REPAIRING; // if it is a first repair - set status to REPAIRING
-        Repair repair = new Repair(serviceTechnician, date, time, report, repairStatus);
-        OptimizationServices.addRepair(repair);
-        for (SparePartNeeded sparePartNeeded : getReportsLoader().getReportSkillMap().get(report).getSparePartsNeeded()) {
-            SparePart sparePart = OptimizationServices.getSparePartById(sparePartNeeded.getSparePart().getId());
-            sparePart.setQuantity(sparePart.getQuantity() - sparePartNeeded.getQuantity());
-            OptimizationServices.updateSparePart(sparePart);
-        }
+        return time;
     }
 
     private static Integer timeInMs(String time) {
@@ -413,5 +425,13 @@ public abstract class Algorithm {
 
     public static String getStartTimeOfWork() {
         return startTimeOfWork;
+    }
+
+    public static Map<Long, Integer> getServiceTechniciansIdsToTimesBeforeStart() {
+        return serviceTechniciansIdsToTimesBeforeStart;
+    }
+
+    public static void setServiceTechniciansIdsToTimesBeforeStart(Map<Long, Integer> serviceTechniciansIdsToTimesBeforeStart) {
+        Algorithm.serviceTechniciansIdsToTimesBeforeStart = serviceTechniciansIdsToTimesBeforeStart;
     }
 }

@@ -99,7 +99,7 @@ public class GreedyAlgorithm extends Algorithm {
                         if ((previousRepairsTime + totalTime <= maxTime) || (firstAssigment.get(serviceTechnician.getId()) && (previousRepairsTime + totalTime <= getMaxRepairTime() + getShiftTime()))) {
 
                             if (!isTesting()) {
-                                addRepair(previousRepairsTime, serviceTechnician, report);
+                                addRepair(previousRepairsTime, serviceTechnician, report, totalTime);
                             }
 
                             getServiceTechniciansRepairInfos().get(serviceTechnician.getId()).setRepairsTime(previousRepairsTime + totalTime);
