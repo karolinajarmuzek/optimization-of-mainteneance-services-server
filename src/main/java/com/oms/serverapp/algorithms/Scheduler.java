@@ -12,7 +12,7 @@ public class Scheduler {
     public static final String FOUR_H_INTERVAL = "0 50 7,11 ? * MON-FRI";
     public static final int MAX_REPAIR_TIME = 480; //in minutes
 
-    private static final Scheduler.algorithms algorithm = algorithms.GREEDY;
+    private static final Scheduler.algorithms algorithm = algorithms.ANT;
     private static final String interval = TWO_H_INTERVAL;
 
     @Scheduled(cron = interval)
