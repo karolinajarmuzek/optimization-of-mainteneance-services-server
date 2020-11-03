@@ -46,6 +46,7 @@ public class ServiceTechnicianPayload {
 
     private Set<Long> skills;
     private Set<Long> repairs;
+    private Set<Long> roles;
 
     public ServiceTechnicianPayload() {
     }
@@ -63,6 +64,7 @@ public class ServiceTechnicianPayload {
         this.experience = serviceTechnician.getExperience();
         this.skills = serviceTechnician.getOwnedSkills().stream().map(skill -> skill.getId()).collect(Collectors.toSet());
         this.repairs = serviceTechnician.getRepairs().stream().map(repair -> repair.getId()).collect(Collectors.toSet());
+        this.roles = serviceTechnician.getRoles().stream().map(role -> role.getId()).collect(Collectors.toSet());
     }
 
     public Long getId() {
@@ -159,5 +161,13 @@ public class ServiceTechnicianPayload {
 
     public void setRepairs(Set<Long> repairs) {
         this.repairs = repairs;
+    }
+
+    public Set<Long> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Long> roles) {
+        this.roles = roles;
     }
 }

@@ -26,14 +26,16 @@ public class ServiceTechnicianService {
     private RepairService repairService;
     private PasswordEncoder encoder;
     private ReportService reportService;
+    private RoleService roleService;
 
     @Autowired
-    public ServiceTechnicianService(ServiceTechnicianRepository serviceTechnicianRepository, SkillService skillService, RepairService repairService, PasswordEncoder encoder, ReportService reportService) {
+    public ServiceTechnicianService(ServiceTechnicianRepository serviceTechnicianRepository, SkillService skillService, RepairService repairService, PasswordEncoder encoder, ReportService reportService, RoleService roleService) {
         this.serviceTechnicianRepository = serviceTechnicianRepository;
         this.skillService = skillService;
         this.repairService = repairService;
         this.encoder = encoder;
         this.reportService = reportService;
+        this.roleService = roleService;
     }
 
     public List<ServiceTechnicianPayload> getAllServiceTechnicians() {
@@ -103,7 +105,7 @@ public class ServiceTechnicianService {
     }
 
     public ResponseEntity<ServiceTechnician> addServiceTechnician(ServiceTechnicianPayload serviceTechnicianPayload) {
-        ServiceTechnician savedServiceTechnician = serviceTechnicianRepository.save(new ServiceTechnician(serviceTechnicianPayload, encoder.encode(serviceTechnicianPayload.getPassword()), skillService.idsToSkills(serviceTechnicianPayload.getSkills()), repairService.idsToRepairs(serviceTechnicianPayload.getRepairs())));
+        ServiceTechnician savedServiceTechnician = serviceTechnicianRepository.save(new ServiceTechnician(serviceTechnicianPayload, encoder.encode(serviceTechnicianPayload.getPassword()), skillService.idsToSkills(serviceTechnicianPayload.getSkills()), repairService.idsToRepairs(serviceTechnicianPayload.getRepairs()), roleService.idsToRoles(serviceTechnicianPayload.getRoles())));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedServiceTechnician.getId()).toUri();
         return ResponseEntity.created(location).build();
     }
@@ -118,7 +120,7 @@ public class ServiceTechnicianService {
             return ResponseEntity.notFound().build();
         }
         String password = serviceTechnicianPayload.getPassword() != null ? encoder.encode(serviceTechnicianPayload.getPassword()) : null;
-        serviceTechnicianRepository.save(new ServiceTechnician(serviceTechnician, serviceTechnicianPayload, password, skillService.idsToSkills(serviceTechnicianPayload.getSkills()), repairService.idsToRepairs(serviceTechnicianPayload.getRepairs())));
+        serviceTechnicianRepository.save(new ServiceTechnician(serviceTechnician, serviceTechnicianPayload, password, skillService.idsToSkills(serviceTechnicianPayload.getSkills()), repairService.idsToRepairs(serviceTechnicianPayload.getRepairs()), roleService.idsToRoles(serviceTechnicianPayload.getRoles())));
         return ResponseEntity.ok().build();
     }
 

@@ -6,6 +6,7 @@ import com.oms.serverapp.payload.FailurePayload;
 import com.oms.serverapp.service.FailureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,16 +33,19 @@ public class FailureController {
         return failureService.getFailureById(id);
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public ResponseEntity<Failure> createFailure(@Valid @RequestBody FailurePayload failurePayload) {
         return failureService.addFailure(failurePayload);
     }
 
+    @Secured("ROLE_ADMIN")
     @DeleteMapping(path = "{id}")
     public void deleteFailureById(@PathVariable Long id) {
         failureService.deleteFailure(id);
     }
 
+    @Secured("ROLE_ADMIN")
     @PutMapping(path = "{id}")
     public ResponseEntity<Object> updateFailureById(@RequestBody FailurePayload failurePayload, @PathVariable("id") Long id) {
         return failureService.updateFailure(failurePayload, id);

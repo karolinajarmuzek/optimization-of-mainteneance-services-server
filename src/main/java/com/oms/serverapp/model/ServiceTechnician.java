@@ -72,7 +72,7 @@ public class ServiceTechnician {
     public ServiceTechnician() {
     }
 
-    public ServiceTechnician(ServiceTechnicianPayload serviceTechnicianPayload, String password, Set<Skill> skills, Set<Repair> repairs) {
+    public ServiceTechnician(ServiceTechnicianPayload serviceTechnicianPayload, String password, Set<Skill> skills, Set<Repair> repairs,Set<Role> roles) {
         this.firstName = serviceTechnicianPayload.getFirstName();
         this.lastName = serviceTechnicianPayload.getLastName();
         this.phoneNumber = serviceTechnicianPayload.getPhoneNumber();
@@ -84,9 +84,10 @@ public class ServiceTechnician {
         this.experience = serviceTechnicianPayload.getExperience();
         this.ownedSkills = skills;
         this.repairs = repairs;
+        this.roles = roles;
     }
 
-    public ServiceTechnician(ServiceTechnician serviceTechnician, ServiceTechnicianPayload serviceTechnicianPayload, String password, Set<Skill> skills, Set<Repair> repairs) {
+    public ServiceTechnician(ServiceTechnician serviceTechnician, ServiceTechnicianPayload serviceTechnicianPayload, String password, Set<Skill> skills, Set<Repair> repairs, Set<Role> roles) {
         this.id = serviceTechnician.getId();
         this.firstName = serviceTechnicianPayload.getFirstName() != null ? serviceTechnicianPayload.getFirstName() : serviceTechnician.getFirstName();
         this.lastName = serviceTechnicianPayload.getLastName() != null ? serviceTechnicianPayload.getLastName() : serviceTechnician.getLastName();
@@ -99,6 +100,7 @@ public class ServiceTechnician {
         this.experience = serviceTechnicianPayload.getExperience() != null ? serviceTechnicianPayload.getExperience() : serviceTechnician.getExperience();
         this.ownedSkills = skills;
         this.repairs = repairs;
+        this.roles = roles;
     }
 
     public Long getId() {

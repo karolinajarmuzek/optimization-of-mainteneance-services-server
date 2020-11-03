@@ -1,5 +1,6 @@
 package com.oms.serverapp;
 
+import com.oms.serverapp.generator.Generator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -10,6 +11,7 @@ public class ServerAppApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ServerAppApplication.class, args);
+        Generator.generateData();
 
     }
 }

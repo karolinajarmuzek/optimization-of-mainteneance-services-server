@@ -8,6 +8,7 @@ import com.oms.serverapp.service.ReportService;
 import com.oms.serverapp.util.ReportStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -44,6 +45,7 @@ public class ReportController {
         return reportService.addReport(reportRequest);
     }
 
+    @Secured("ROLE_ADMIN")
     @DeleteMapping(path = "{id}")
     public void deleteReportById(@PathVariable("id") Long id) {
         reportService.deleteReport(id);

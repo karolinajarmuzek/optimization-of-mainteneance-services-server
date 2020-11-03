@@ -8,6 +8,7 @@ import com.oms.serverapp.payload.RepairResponse;
 import com.oms.serverapp.service.RepairService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,11 +36,13 @@ public class RepairController {
         return repairService.getRepairById(id);
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public ResponseEntity<Repair> createRepair(@Valid @RequestBody RepairRequest repairRequest) {
         return repairService.addRepair(repairRequest);
     }
 
+    @Secured("ROLE_ADMIN")
     @DeleteMapping(path = "{id}")
     public void deleteRepairById(@PathVariable("id") Long id) {
         repairService.deleteRepair(id);

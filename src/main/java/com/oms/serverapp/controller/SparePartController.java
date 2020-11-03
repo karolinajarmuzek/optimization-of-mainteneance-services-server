@@ -6,6 +6,7 @@ import com.oms.serverapp.payload.SparePartPayload;
 import com.oms.serverapp.service.SparePartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,11 +33,13 @@ public class SparePartController {
         return sparePartService.getSparePartById(id);
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public ResponseEntity<SparePart> createSparePart(@Valid @RequestBody SparePartPayload sparePartPayload) {
         return sparePartService.addSparePart(sparePartPayload);
     }
 
+    @Secured("ROLE_ADMIN")
     @DeleteMapping(path = "{id}")
     public void deleteSparePartById(@PathVariable("id") Long id) {
         sparePartService.deleteSparePart(id);

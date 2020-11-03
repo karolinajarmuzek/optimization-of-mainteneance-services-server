@@ -321,6 +321,8 @@ public class Generator {
                         }
                         put("skills", ownedSkills);
                     }
+                    int role = userType != UserType.ADMIN ? 1 : 2;
+                    put("roles", new HashSet<>(Arrays.asList(role)));
                 }
             }};
             Helpers.sendPostRequest(body, userType == UserType.CUSTOMER ? URL_CUSTOMER : URL_SERVICETECHNICIAN, token);
