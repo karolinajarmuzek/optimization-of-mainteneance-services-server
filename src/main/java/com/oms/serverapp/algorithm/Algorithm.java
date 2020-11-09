@@ -3,6 +3,8 @@ package com.oms.serverapp.algorithm;
 import com.oms.serverapp.util.OptimizationServices;
 import com.oms.serverapp.model.*;
 import com.oms.serverapp.util.*;
+
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -140,8 +142,10 @@ public abstract class Algorithm {
         List<Report> reports = OptimizationServices.loadReports();
         for (Report report: reports) {
             int reportTimeInMs = timeInMs(report.getReportTime().toString());
+            long todayDate = getDate(new Date());
+            long reportDate = getDate(report.getReportDate());
 
-            if (reportTimeInMs <= scheduleTimeInMs && report.getStatus() == ReportStatus.REPORTED) {
+            if (reportTimeInMs <= scheduleTimeInMs && report.getStatus() == ReportStatus.REPORTED && reportDate <= todayDate) {
                 reportsToSchedule.add(report);
                 Skill skill = OptimizationServices.getSkillByDeviceAndFailure(report.getDevice(), report.getFailure());
                 reportSkillMap.put(report, skill);
@@ -149,6 +153,18 @@ public abstract class Algorithm {
         }
         setReportsLoader(new ReportsLoader(reportsToSchedule, reportSkillMap));
         numberOfReports = reportsToSchedule.size();
+    }
+
+    private static long getDate(Date date) {
+        Date res = date;
+        Calendar d1 = Calendar.getInstance();
+        d1.setTime(date);
+        d1.set(Calendar.HOUR_OF_DAY, 0);
+        d1.set(Calendar.MINUTE, 0);
+        d1.set(Calendar.SECOND, 0);
+        d1.set(Calendar.MILLISECOND, 0);
+
+        return res.getTime();
     }
 
     private static void loadSpareParts() {

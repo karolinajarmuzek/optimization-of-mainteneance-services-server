@@ -287,7 +287,6 @@ public class AntColony extends Algorithm {
                 }
             }
             if (isCorrect && (bestSolution == null || ant.profit > bestSolution.profit)) {
-                //potrzeba id serwisanta
                 for (Map.Entry<Long, Integer> entry : sparePartsForEachAntInColony.get(ants.indexOf(ant)).entrySet()) {
                     sparePartsForBestSolution.put(entry.getKey(), entry.getValue());
                 }
